@@ -241,7 +241,7 @@ const normKey = (s) => String(s).toLowerCase().replace(/[.\s-]/g, '')
  *  - "기타"(미분류 묶음)는 버블차트 대상에서 제외
  *  - 섹션은 다수결이 아니라 환산횟수 가중합으로 비중(mix)을 계산해 파이 조각으로 표시
  *  - TOP5, 5위가 동점이면 그 동점 그룹만 통째로 포함 (동점이 top5 경계에 걸릴 때만 확장)
- *  - 카테고리별 키워드는 3~7개
+ *  - 카테고리별 키워드는 언급 횟수 상위 5개 (그보다 적으면 있는 만큼만)
  *  - 인물/솔루션 워치리스트 언급 횟수는 카테고리와 무관하게 시트 전체에서 합산 */
 function parseCategorySheet(workbook, sheetName) {
   const sheet = workbook.Sheets[sheetName]
@@ -278,14 +278,26 @@ function parseCategorySheet(workbook, sheetName) {
       secMap.set(section, (secMap.get(section) || 0) + count)
     }
     if (kw) {
-      if (!keywordTotals.has(cat)) keywordTotals.set(cat, new Map())
-      const kws = keywordTotals.get(cat)
-      kws.set(kw, (kws.get(kw) || 0) + count)
-
       const kwKey = normKey(kw)
+      // 자기 이름 제외는 '정확히 같은 문자열'일 때만 (참고 디자인과 동일 기준) — normKey로 비교하면
+      // "어드민나이트" 카테고리가 "어드민 나이트"(공백만 다른 키워드)까지 자기 이름으로 오인해 지워버림
+      const isSelfName = String(kw).trim() === String(cat).trim()
+      let isPersonMatch = false
       personNorm.forEach((p) => {
-        if (kwKey.includes(p.key)) personCounts.set(p.name, personCounts.get(p.name) + count)
+        if (kwKey.includes(p.key)) {
+          isPersonMatch = true
+          personCounts.set(p.name, personCounts.get(p.name) + count)
+        }
       })
+
+      // 버블 자기 이름("타불라" 카테고리에 키워드 "타불라")과 인물/솔루션 워치리스트에 걸리는
+      // 키워드는 태그 목록에서 뺀다 — 전자는 원 중앙 이름과 중복이고, 후자는 이미 별도의
+      // "솔루션·인물" 태그로 표시되므로 두 번 나오면 안 됨 (총 횟수/섹션 비중 집계에는 그대로 포함)
+      if (!isSelfName && !isPersonMatch) {
+        if (!keywordTotals.has(cat)) keywordTotals.set(cat, new Map())
+        const kws = keywordTotals.get(cat)
+        kws.set(kw, (kws.get(kw) || 0) + count)
+      }
     }
   }
 
@@ -297,11 +309,11 @@ function parseCategorySheet(workbook, sheetName) {
       .map(([section, count]) => ({ section, pct: +((count / total) * 100).toFixed(1) }))
   }
 
-  const topKeywords = (cat, max = 7, min = 3) => {
+  const topKeywords = (cat, max = 5) => {
     const kws = keywordTotals.get(cat)
     if (!kws) return []
     const sorted = [...kws.entries()].sort((a, b) => b[1] - a[1])
-    return sorted.slice(0, Math.max(min, Math.min(max, sorted.length))).map(([name, count]) => ({ name, count }))
+    return sorted.slice(0, max).map(([name, count]) => ({ name, count }))
   }
 
   const allCategories = [...totals.entries()]
