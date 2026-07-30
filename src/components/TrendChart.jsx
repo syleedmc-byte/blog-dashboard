@@ -29,7 +29,7 @@ function TooltipContent({ active, payload, label }) {
 export default function TrendChart({ trend, activeLabel }) {
   return (
     <div style={{ width: '100%', height: 240 }}>
-      <ResponsiveContainer>
+      <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 520, height: 240 }}>
         <LineChart data={trend} margin={{ top: 12, right: 16, left: 0, bottom: 0 }}>
           <CartesianGrid stroke="var(--line)" vertical={false} />
           <XAxis
