@@ -179,46 +179,27 @@
       ],
       "categories": [
         {
-          "name": "기타",
-          "total": 165,
-          "section": "Trend",
-          "rank": 1,
-          "keywords": [
-            {
-              "name": "카톡 업데이트 프로필 광고",
-              "count": 14
-            },
-            {
-              "name": "카톡 업데이트프로필 광고",
-              "count": 4
-            },
-            {
-              "name": "하이퍼 로컬 마케팅",
-              "count": 3
-            },
-            {
-              "name": "다이소 뷰티 브랜드",
-              "count": 2
-            },
-            {
-              "name": "아이돌 세계관",
-              "count": 2
-            },
-            {
-              "name": "스트림플레이션 뜻",
-              "count": 2
-            },
-            {
-              "name": "2030건강 보험 상품 치수",
-              "count": 2
-            }
-          ]
-        },
-        {
           "name": "디엠씨미디어",
           "total": 91,
           "section": "About",
-          "rank": 2,
+          "mix": [
+            {
+              "section": "About",
+              "pct": 85.7
+            },
+            {
+              "section": "People",
+              "pct": 8.8
+            },
+            {
+              "section": "Trend",
+              "pct": 4.4
+            },
+            {
+              "section": "Media",
+              "pct": 1.1
+            }
+          ],
           "keywords": [
             {
               "name": "디엠씨미디어",
@@ -254,7 +235,16 @@
           "name": "의류 플랫폼",
           "total": 35,
           "section": "Media",
-          "rank": 3,
+          "mix": [
+            {
+              "section": "Media",
+              "pct": 62.9
+            },
+            {
+              "section": "Trend",
+              "pct": 37.1
+            }
+          ],
           "keywords": [
             {
               "name": "의류 플랫폼",
@@ -290,7 +280,12 @@
           "name": "컬리",
           "total": 18,
           "section": "Trend",
-          "rank": 4,
+          "mix": [
+            {
+              "section": "Trend",
+              "pct": 100
+            }
+          ],
           "keywords": [
             {
               "name": "컬리n마트",
@@ -318,7 +313,12 @@
           "name": "로켓위젯",
           "total": 18,
           "section": "Trend",
-          "rank": 4,
+          "mix": [
+            {
+              "section": "Trend",
+              "pct": 100
+            }
+          ],
           "keywords": [
             {
               "name": "로켓 위젯",
@@ -350,7 +350,12 @@
           "name": "쿠팡플레이/티빙",
           "total": 18,
           "section": "About",
-          "rank": 4,
+          "mix": [
+            {
+              "section": "About",
+              "pct": 100
+            }
+          ],
           "keywords": [
             {
               "name": "쿠팡플레이 광고",
@@ -374,7 +379,16 @@
           "name": "당근마켓",
           "total": 15,
           "section": "Media",
-          "rank": 5,
+          "mix": [
+            {
+              "section": "Media",
+              "pct": 66.7
+            },
+            {
+              "section": "About",
+              "pct": 33.3
+            }
+          ],
           "keywords": [
             {
               "name": "당근 전문가모드 하는법",
@@ -410,7 +424,16 @@
           "name": "카카오톡/카카오",
           "total": 15,
           "section": "Media",
-          "rank": 5,
+          "mix": [
+            {
+              "section": "Media",
+              "pct": 86.7
+            },
+            {
+              "section": "About",
+              "pct": 13.3
+            }
+          ],
           "keywords": [
             {
               "name": "카카오톡 선물하기에서 성공한 브랜드 사례를 알려주세요",
@@ -446,7 +469,12 @@
           "name": "왕과사는남자/촬영실록",
           "total": 15,
           "section": "Trend",
-          "rank": 5,
+          "mix": [
+            {
+              "section": "Trend",
+              "pct": 100
+            }
+          ],
           "keywords": [
             {
               "name": "촬영실록",
@@ -477,6 +505,147 @@
               "count": 1
             }
           ]
+        },
+        {
+          "name": "중저가 의류",
+          "total": 14,
+          "section": "Trend",
+          "mix": [
+            {
+              "section": "Trend",
+              "pct": 100
+            }
+          ],
+          "keywords": [
+            {
+              "name": "중저가 의류 브랜드",
+              "count": 4
+            },
+            {
+              "name": "중저가의류브랜드",
+              "count": 2
+            },
+            {
+              "name": "중저가 브랜드 여성의류",
+              "count": 1
+            },
+            {
+              "name": "티몬 대체할 수 있는 중저가 의류 쇼핑몰 알려주세요",
+              "count": 1
+            },
+            {
+              "name": "중저가 패션 브랜드",
+              "count": 1
+            },
+            {
+              "name": "여성 중저가 의류 브랜드",
+              "count": 1
+            },
+            {
+              "name": "중저가의류브렌드",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "토스",
+          "total": 14,
+          "section": "Media",
+          "mix": [
+            {
+              "section": "Media",
+              "pct": 100
+            }
+          ],
+          "keywords": [
+            {
+              "name": "토스애즈",
+              "count": 5
+            },
+            {
+              "name": "토스애즈잠재고객",
+              "count": 1
+            },
+            {
+              "name": "토스 CPC광고",
+              "count": 1
+            },
+            {
+              "name": "토스 리드폼으로 잠재고객 모으기 방법은?",
+              "count": 1
+            },
+            {
+              "name": "토스애즈 광고 방법",
+              "count": 1
+            },
+            {
+              "name": "토스 성과 페이지",
+              "count": 1
+            },
+            {
+              "name": "토스 데이터 수집",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "헌혈 캠페인",
+          "total": 14,
+          "section": "Trend",
+          "mix": [
+            {
+              "section": "Trend",
+              "pct": 100
+            }
+          ],
+          "keywords": [
+            {
+              "name": "헌혈 캠페인",
+              "count": 4
+            },
+            {
+              "name": "엔하이픈 헌혈",
+              "count": 2
+            },
+            {
+              "name": "헌혈 참여독려",
+              "count": 1
+            },
+            {
+              "name": "헌혈캠페인",
+              "count": 1
+            },
+            {
+              "name": "헌혈 인식",
+              "count": 1
+            },
+            {
+              "name": "대한적십자사 헌혈캠페인",
+              "count": 1
+            },
+            {
+              "name": "엔하이픈 세계관 헌혈",
+              "count": 1
+            }
+          ]
+        }
+      ],
+      "people": [
+        {
+          "name": "이준희",
+          "count": 7
+        },
+        {
+          "name": "이인성",
+          "count": 1
+        },
+        {
+          "name": "D.SaiO",
+          "count": 4
+        },
+        {
+          "name": "D.Metrics",
+          "count": 1
         }
       ]
     },
@@ -668,7 +837,20 @@
           "name": "디엠씨미디어",
           "total": 61,
           "section": "About",
-          "rank": 1,
+          "mix": [
+            {
+              "section": "About",
+              "pct": 82
+            },
+            {
+              "section": "People",
+              "pct": 16.4
+            },
+            {
+              "section": "Media",
+              "pct": 1.6
+            }
+          ],
           "keywords": [
             {
               "name": "디엠씨미디어",
@@ -704,7 +886,12 @@
           "name": "타불라",
           "total": 27,
           "section": "Media",
-          "rank": 2,
+          "mix": [
+            {
+              "section": "Media",
+              "pct": 100
+            }
+          ],
           "keywords": [
             {
               "name": "타불라",
@@ -736,7 +923,16 @@
           "name": "트렌드/캠페인",
           "total": 23,
           "section": "Trend",
-          "rank": 3,
+          "mix": [
+            {
+              "section": "Trend",
+              "pct": 87
+            },
+            {
+              "section": "Media",
+              "pct": 13
+            }
+          ],
           "keywords": [
             {
               "name": "하이네켄 캠페인",
@@ -772,7 +968,20 @@
           "name": "쿠팡플레이/티빙",
           "total": 20,
           "section": "About",
-          "rank": 4,
+          "mix": [
+            {
+              "section": "About",
+              "pct": 90
+            },
+            {
+              "section": "Media",
+              "pct": 5
+            },
+            {
+              "section": "Trend",
+              "pct": 5
+            }
+          ],
           "keywords": [
             {
               "name": "쿠팡플레이 광고",
@@ -808,7 +1017,12 @@
           "name": "어드민나이트",
           "total": 16,
           "section": "Trend",
-          "rank": 5,
+          "mix": [
+            {
+              "section": "Trend",
+              "pct": 100
+            }
+          ],
           "keywords": [
             {
               "name": "어드민나이트",
@@ -828,7 +1042,24 @@
           "name": "디지털 마케팅",
           "total": 16,
           "section": "Trend",
-          "rank": 5,
+          "mix": [
+            {
+              "section": "Trend",
+              "pct": 50
+            },
+            {
+              "section": "Media",
+              "pct": 18.8
+            },
+            {
+              "section": "People",
+              "pct": 12.5
+            },
+            {
+              "section": "About",
+              "pct": 12.5
+            }
+          ],
           "keywords": [
             {
               "name": "디지털 마케팅 suprt",
@@ -859,6 +1090,24 @@
               "count": 1
             }
           ]
+        }
+      ],
+      "people": [
+        {
+          "name": "이준희",
+          "count": 4
+        },
+        {
+          "name": "이인성",
+          "count": 1
+        },
+        {
+          "name": "D.SaiO",
+          "count": 3
+        },
+        {
+          "name": "D.Frame",
+          "count": 1
         }
       ]
     },
@@ -1044,7 +1293,12 @@
           "name": "타불라",
           "total": 94,
           "section": "Media",
-          "rank": 1,
+          "mix": [
+            {
+              "section": "Media",
+              "pct": 100
+            }
+          ],
           "keywords": [
             {
               "name": "타불라",
@@ -1080,7 +1334,20 @@
           "name": "디엠씨미디어",
           "total": 66,
           "section": "About",
-          "rank": 2,
+          "mix": [
+            {
+              "section": "About",
+              "pct": 86.4
+            },
+            {
+              "section": "People",
+              "pct": 9.1
+            },
+            {
+              "section": "Trend",
+              "pct": 4.5
+            }
+          ],
           "keywords": [
             {
               "name": "디엠씨미디어",
@@ -1116,7 +1383,16 @@
           "name": "더마코스메틱",
           "total": 49,
           "section": "Trend",
-          "rank": 3,
+          "mix": [
+            {
+              "section": "Trend",
+              "pct": 91.8
+            },
+            {
+              "section": "About",
+              "pct": 8.2
+            }
+          ],
           "keywords": [
             {
               "name": "더마코스메틱 화장품",
@@ -1152,7 +1428,20 @@
           "name": "디지털 마케팅",
           "total": 47,
           "section": "Trend",
-          "rank": 4,
+          "mix": [
+            {
+              "section": "Trend",
+              "pct": 53.2
+            },
+            {
+              "section": "Media",
+              "pct": 27.7
+            },
+            {
+              "section": "About",
+              "pct": 19.1
+            }
+          ],
           "keywords": [
             {
               "name": "디지털 마케팅 suprt",
@@ -1188,7 +1477,12 @@
           "name": "트렌드/캠페인",
           "total": 27,
           "section": "Trend",
-          "rank": 5,
+          "mix": [
+            {
+              "section": "Trend",
+              "pct": 100
+            }
+          ],
           "keywords": [
             {
               "name": "컬리n마트 보고서",
@@ -1219,6 +1513,20 @@
               "count": 1
             }
           ]
+        }
+      ],
+      "people": [
+        {
+          "name": "이준희",
+          "count": 3
+        },
+        {
+          "name": "이인성",
+          "count": 1
+        },
+        {
+          "name": "D.SaiO",
+          "count": 2
         }
       ]
     }
@@ -1282,5 +1590,5 @@
     "Trend"
   ],
   "sourceFile": "블로그_통계(통합)_0730.xlsx",
-  "updatedAt": "2026-07-30T07:03:01.280Z"
+  "updatedAt": "2026-07-30T07:40:33.992Z"
 }

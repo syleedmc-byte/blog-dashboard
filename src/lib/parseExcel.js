@@ -231,13 +231,23 @@ function parseKeywordSheet(workbook, sheetName) {
   }
 }
 
-/** 동점 처리: 총합 기준 내림차순 dense-rank(1,2,2,3...)를 매겨 상위 5개 "순위"에 속하는
- * 카테고리를 모두 포함한다 (동점 카테고리를 임의로 자르지 않음). */
+// 인물/솔루션 워치리스트: "카테고리 분류" 시트의 키워드 열에서 아래 이름을 찾아 노란색 태그로
+// 뽑아낸다 (마침표/공백/대소문자 차이는 무시). 추적 대상이 늘어나면 이 배열에만 추가하면 된다.
+export const PERSON_WATCHLIST = ['이준희', '이인성', 'D.SaiO', 'D.Frame', 'D.Metrics', 'D.Flow', 'theCAP']
+
+const normKey = (s) => String(s).toLowerCase().replace(/[.\s-]/g, '')
+
+/** 카테고리 분류 시트 파싱 (참고 디자인 blog_dashboard_monthly_18.html의 버블차트 로직과 동일):
+ *  - "기타"(미분류 묶음)는 버블차트 대상에서 제외
+ *  - 섹션은 다수결이 아니라 환산횟수 가중합으로 비중(mix)을 계산해 파이 조각으로 표시
+ *  - TOP5, 5위가 동점이면 그 동점 그룹만 통째로 포함 (동점이 top5 경계에 걸릴 때만 확장)
+ *  - 카테고리별 키워드는 3~7개
+ *  - 인물/솔루션 워치리스트 언급 횟수는 카테고리와 무관하게 시트 전체에서 합산 */
 function parseCategorySheet(workbook, sheetName) {
   const sheet = workbook.Sheets[sheetName]
   const grid = sheetToGrid(sheet)
   const header = findHeaderCell(grid, (t) => t === '카테고리', { maxRow: 3 })
-  if (!header) return []
+  if (!header) return { categories: [], people: [] }
 
   const colOf = (label) => {
     const pos = findHeaderCell(grid, (t) => t === label, { maxRow: header.row + 1 })
@@ -249,41 +259,42 @@ function parseCategorySheet(workbook, sheetName) {
   const sectionCol = colOf('섹션')
 
   const totals = new Map()
-  const sectionVotes = new Map()
+  const sectionTotals = new Map()
   const keywordTotals = new Map()
+  const personNorm = PERSON_WATCHLIST.map((name) => ({ name, key: normKey(name) }))
+  const personCounts = new Map(PERSON_WATCHLIST.map((name) => [name, 0]))
 
   for (let r = header.row + 1; r < grid.length; r++) {
     const cat = cell(grid, r, catCol)
-    if (cat == null || cat === '') continue
+    if (cat == null || cat === '' || String(cat).trim() === '기타') continue
     const count = Number(cell(grid, r, countCol)) || 0
     const section = sectionCol != null ? cell(grid, r, sectionCol) : null
     const kw = kwCol != null ? cell(grid, r, kwCol) : null
 
     totals.set(cat, (totals.get(cat) || 0) + count)
     if (section) {
-      if (!sectionVotes.has(cat)) sectionVotes.set(cat, new Map())
-      const votes = sectionVotes.get(cat)
-      votes.set(section, (votes.get(section) || 0) + 1)
+      if (!sectionTotals.has(cat)) sectionTotals.set(cat, new Map())
+      const secMap = sectionTotals.get(cat)
+      secMap.set(section, (secMap.get(section) || 0) + count)
     }
     if (kw) {
       if (!keywordTotals.has(cat)) keywordTotals.set(cat, new Map())
       const kws = keywordTotals.get(cat)
       kws.set(kw, (kws.get(kw) || 0) + count)
+
+      const kwKey = normKey(kw)
+      personNorm.forEach((p) => {
+        if (kwKey.includes(p.key)) personCounts.set(p.name, personCounts.get(p.name) + count)
+      })
     }
   }
 
-  const majoritySection = (cat) => {
-    const votes = sectionVotes.get(cat)
-    if (!votes) return null
-    let best = null
-    let bestCount = -1
-    for (const [section, c] of votes) {
-      if (c > bestCount) {
-        best = section
-        bestCount = c
-      }
-    }
-    return best
+  const mixFor = (cat, total) => {
+    const secMap = sectionTotals.get(cat)
+    if (!secMap || total === 0) return []
+    return [...secMap.entries()]
+      .sort((a, b) => b[1] - a[1])
+      .map(([section, count]) => ({ section, pct: +((count / total) * 100).toFixed(1) }))
   }
 
   const topKeywords = (cat, max = 7, min = 3) => {
@@ -293,21 +304,30 @@ function parseCategorySheet(workbook, sheetName) {
     return sorted.slice(0, Math.max(min, Math.min(max, sorted.length))).map(([name, count]) => ({ name, count }))
   }
 
-  const distinctTotals = [...new Set(totals.values())].sort((a, b) => b - a)
-  const rankOf = (total) => distinctTotals.indexOf(total) + 1
-
-  const categories = [...totals.entries()]
-    .map(([name, total]) => ({
-      name,
-      total,
-      section: majoritySection(name),
-      rank: rankOf(total),
-      keywords: topKeywords(name),
-    }))
-    .filter((c) => c.rank <= 5)
+  const allCategories = [...totals.entries()]
+    .map(([name, total]) => {
+      const mix = mixFor(name, total)
+      return {
+        name,
+        total,
+        section: mix.length > 0 ? mix[0].section : null,
+        mix,
+        keywords: topKeywords(name),
+      }
+    })
     .sort((a, b) => b.total - a.total)
 
-  return categories
+  // TOP5: 동점은 같은 순위로 취급하고 그다음 순위까지 연쇄적으로 포함한다 (dense rank).
+  // 예: 18회×3 · 15회×3 · 14회×2 처럼 동점이 이어지면 top5보다 카테고리 수가 늘어날 수 있다.
+  const distinctTotals = [...new Set(allCategories.map((c) => c.total))].sort((a, b) => b - a)
+  const rankOf = (total) => distinctTotals.indexOf(total) + 1
+  const categories = allCategories.filter((c) => rankOf(c.total) <= 5)
+
+  const people = PERSON_WATCHLIST.map((name) => ({ name, count: personCounts.get(name) })).filter(
+    (p) => p.count > 0
+  )
+
+  return { categories, people }
 }
 
 const SECTION_ORDER = ['About', 'Data', 'Media', 'People', 'Trend']
@@ -400,7 +420,7 @@ export function parseWorkbook(workbook) {
 
   const months = parsedKeyword.map((m, idx) => {
     const prev = idx > 0 ? parsedKeyword[idx - 1] : null
-    const categories = categoryByMonth.get(m.monthNumber) || []
+    const { categories = [], people = [] } = categoryByMonth.get(m.monthNumber) || {}
     return {
       key: `${m.year}-${String(m.monthNumber).padStart(2, '0')}`,
       monthNumber: m.monthNumber,
@@ -420,6 +440,7 @@ export function parseWorkbook(workbook) {
       device: m.device,
       posts: m.posts,
       categories,
+      people,
     }
   })
 

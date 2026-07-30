@@ -183,11 +183,19 @@ body {
 .kwd-legend .item { display: flex; align-items: center; gap: 6px; }
 .kwd-legend .swatch { width: 11px; height: 11px; border-radius: 50%; }
 
-.bubble-map { margin-bottom: 26px; }
-.bubble-map svg { display: block; max-width: 720px; margin: 0 auto; }
+.bubble-map { margin-bottom: 26px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; }
+.bubble-map svg { display: block; width: 100%; }
 @media (max-width: 700px) {
   .bubble-map { display: none; }
 }
+
+/* 방사형 마인드맵 (참고 디자인 blog_dashboard_monthly_18.html 이식, 정적 버전) */
+.kwd-link { stroke: #C9CEDA; stroke-width: 1; opacity: .7; }
+.kwd-node-tag rect { fill: #fff; stroke: var(--line); }
+.kwd-node-tag text { font-size: 11px; fill: var(--ink); font-family: inherit; }
+.kwd-node-tag.person rect { fill: #FFE9C8; stroke: #F0C888; }
+.kwd-node-tag.person text { fill: #8A5A17; font-weight: 800; }
+.kwd-bubble-node text { font-family: inherit; fill: #fff; text-anchor: middle; pointer-events: none; }
 
 .bubble-group { margin-bottom: 22px; }
 .bubble-group:last-child { margin-bottom: 0; }
@@ -198,6 +206,7 @@ body {
 .kw-chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-left: 44px; }
 .kw-chip { background: var(--bg); border: 1px solid var(--line); border-radius: 20px; padding: 5px 12px; font-size: 12px; color: var(--ink); }
 .kw-chip .chip-count { color: var(--sub); font-weight: 700; margin-left: 5px; }
+.kw-chip.person { background: #FFE9C8; border-color: #F0C888; color: #8A5A17; font-weight: 700; }
 
 @media (max-width: 1100px) {
   .stats-row { grid-template-columns: repeat(3, 1fr); }
