@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>월간 블로그 통계</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<style>
+  :root{
+    --bg:#F5F6FA; --card:#FFFFFF; --card-border:#ECEDF3; --ink:#1E2233; --sub:#8A8FA3; --line:#ECEDF3;
+    --accent:#6C5CE0; --accent-soft:#EFECFE;
+    --teal:#17B8A6; --blue:#4C6FFF; --green:#20B26C; --red:#F0553D; --navy:#232849;
+    --trend:#8FD98F; --people:#F0A868; --about:#B7B9C4; --media:#1FAE5A; --data:#4C6FFF;
+    --font-mono:inherit;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",Arial,sans-serif;color:var(--ink);padding:28px;}
+  .wrap{max-width:1320px;margin:0 auto;}
+
+  /* month tabs */
+  .month-tabs{display:flex;gap:8px;margin-bottom:20px;}
+  .month-tab{
+    padding:10px 22px;border-radius:10px;font-weight:700;font-size:14px;
+    background:#fff;color:var(--sub);cursor:pointer;border:1px solid var(--line);
+    transition:all .15s ease;
+  }
+  .month-tab:hover{border-color:var(--accent);color:var(--accent);}
+  .month-tab.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+
+  .month-panel{display:none;}
+  .month-panel.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+  /* header */
+  .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;}
+  .header h1{font-size:24px;font-weight:800;margin:0 0 6px;letter-spacing:-0.5px;}
+  .header p{margin:0;color:var(--sub);font-size:13.5px;}
+  .year-pill{display:flex;align-items:center;gap:8px;background:var(--navy);color:#fff;padding:8px 15px;border-radius:10px;font-size:13.5px;font-weight:600;height:fit-content;}
+  .year-pill .live-dot{width:6px;height:6px;border-radius:50%;background:#fff;}
+
+  .section-head{display:flex;align-items:center;gap:10px;margin-bottom:4px;}
+  .badge{background:var(--accent-soft);color:var(--accent);font-size:12px;font-weight:800;padding:3px 9px;border-radius:6px;}
+  .section-title{font-size:15.5px;font-weight:800;margin:0;}
+  .section-sub{color:var(--sub);font-size:12px;margin:6px 0 14px;}
+  .section-block{margin-bottom:28px;}
+
+  /* stats */
+  .stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;}
+  .stat-card{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 1px 2px rgba(20,20,40,0.04);}
+  .stat-icon{width:28px;height:28px;border-radius:50%;background:var(--line);margin-bottom:12px;display:flex;align-items:center;justify-content:center;color:var(--sub);font-size:12px;}
+  .stat-label{color:var(--sub);font-size:12.5px;margin-bottom:7px;}
+  .stat-value{font-size:23px;font-weight:800;margin-bottom:7px;letter-spacing:-0.5px;}
+  .stat-delta{font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;}
+  .stat-delta.up{color:var(--green);} .stat-delta.down{color:var(--red);}
+  .stat-delta .muted{color:var(--sub);font-weight:500;}
+  .stat-card.ai-card{background:linear-gradient(160deg,#F3F1FF,#FFFFFF);border:1px solid #E4DFFF;}
+  .ai-sub{font-size:12px;color:var(--sub);margin-top:7px;}
+  .ai-sub b{color:var(--ink);}
+
+  .top-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:18px;align-items:start;}
+  .user-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:start;}
+  .card{background:var(--card);border-radius:14px;padding:20px;box-shadow:0 1px 2px rgba(20,20,40,0.04);}
+
+  .chart-legend{display:flex;gap:14px;margin-bottom:8px;font-size:12px;color:var(--sub);}
+  .chart-legend .item{display:flex;align-items:center;gap:6px;}
+  .chart-legend .swatch{width:9px;height:9px;border-radius:50%;}
+
+  .rank-bar-list{display:flex;flex-direction:column;gap:11px;}
+  .rank-bar-row{cursor:pointer;padding:4px;border-radius:8px;transition:background .12s;}
+  .rank-bar-row:hover{background:var(--accent-soft);}
+  .rank-bar-row .top{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;}
+  .rank-bar-row .top .name{font-weight:600;}
+  .rank-bar-row .top .pct{color:var(--accent);font-weight:800;}
+  .bar-track{height:6px;background:var(--line);border-radius:4px;overflow:hidden;}
+  .bar-fill{height:100%;background:var(--accent);border-radius:4px;transition:width .4s ease;}
+
+  .kw-list{display:flex;flex-direction:column;gap:9px;}
+  .kw-row{display:flex;align-items:center;gap:9px;font-size:12.5px;cursor:pointer;padding:3px 4px;border-radius:8px;transition:background .12s;}
+  .kw-row:hover{background:var(--accent-soft);}
+  .kw-rank{width:19px;height:19px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .kw-name{flex:1;}
+  .kw-pct{color:var(--sub);font-weight:700;font-size:11.5px;}
+
+  .subcard-title{font-size:12.5px;font-weight:800;margin:0 0 11px;}
+  .subcard-title .accent-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:6px;}
+  .divider{height:1px;background:var(--line);margin:18px 0;}
+
+  .device-row{display:flex;align-items:center;gap:16px;}
+  .device-legend{display:flex;flex-direction:column;gap:7px;font-size:12px;}
+  .device-legend .item{display:flex;align-items:center;gap:6px;}
+  .device-legend .swatch{width:9px;height:9px;border-radius:2px;}
+  .device-legend .pct{font-weight:800;margin-left:3px;}
+  .donut-ring{transition:stroke-dashoffset 1s cubic-bezier(.22,.9,.3,1);}
+
+  .posts-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(5,auto);grid-auto-flow:column;gap:0 16px;}
+  .post-row{display:flex;align-items:flex-start;gap:9px;padding:8px 6px;border-bottom:1px solid var(--line);font-size:12.2px;cursor:pointer;border-radius:6px;transition:background .12s;}
+  .post-row:hover{background:var(--accent-soft);}
+  .post-row.open{background:var(--accent-soft);}
+  .post-row:nth-child(5), .post-row:nth-child(10){border-bottom:none;}
+  .post-rank{width:19px;height:19px;border-radius:50%;font-size:10.5px;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+  .post-title{flex:1;line-height:1.32;}
+  .post-title.clamp{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .post-views{font-weight:800;font-size:12.5px;flex-shrink:0;}
+  .link-ico{font-size:10px;opacity:.6;}
+
+  /* keyword detail (bubble chart, pptx style) */
+  .kwd-legend{display:flex;gap:16px;margin-bottom:14px;font-size:12.5px;flex-wrap:wrap;}
+  .kwd-legend .item{display:flex;align-items:center;gap:6px;}
+  .kwd-legend .swatch{width:11px;height:11px;border-radius:50%;}
+  .kwd-chart-wrap{width:100%;overflow:visible;background:var(--bg);border-radius:10px;border:1px solid var(--line);}
+  .kwd-add-row{display:flex;gap:8px;margin-bottom:14px;}
+  .kwd-add-input{
+    flex:1;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:12.5px;
+    font-family:inherit;outline:none;background:#fff;color:var(--ink);
+  }
+  .kwd-add-input::placeholder{color:var(--sub);}
+  .kwd-add-input:focus{border-color:var(--accent);}
+  .kwd-add-btn{
+    background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 16px;
+    font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .12s;
+  }
+  .kwd-add-btn:hover{background:#5A4CD1;}
+  .kwd-sync-status{font-size:11.5px;color:var(--sub);margin-left:auto;white-space:nowrap;align-self:center;}
+  .kwd-sync-status.ok{color:var(--green);}
+  .kwd-sync-status.offline{color:var(--red);}
+  .kwd-color-row{display:flex;gap:6px;align-items:center;padding:0 2px;}
+  .kwd-color-swatch{
+    width:18px;height:18px;border-radius:50%;cursor:pointer;flex-shrink:0;
+    border:2px solid rgba(0,0,0,0.08);box-sizing:border-box;transition:transform .1s;
+  }
+  .kwd-color-swatch:hover{transform:scale(1.12);}
+  .kwd-color-swatch.selected{border-color:var(--ink);box-shadow:0 0 0 1.5px #fff inset;}
+  .kwd-color-custom{
+    width:22px;height:22px;padding:0;border:none;border-radius:50%;cursor:pointer;flex-shrink:0;
+    background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red);
+  }
+  .kwd-color-custom::-webkit-color-swatch-wrapper{padding:2px;}
+  .kwd-color-custom::-webkit-color-swatch{border:2px solid rgba(0,0,0,0.08);border-radius:50%;}
+  .kwd-node-tag{cursor:pointer;}
+  .kwd-node-tag rect{fill:#fff;stroke:var(--line);transition:stroke .15s, fill .15s;}
+  .kwd-node-tag:hover rect{stroke:var(--accent);}
+  .kwd-node-tag.person rect{fill:#FFE9C8;stroke:#F0C888;}
+  .kwd-node-tag.standalone rect{fill:#E3F6FD;stroke:#A9DFF0;}
+  .kwd-node-tag text{font-size:11px;fill:var(--ink);font-family:inherit;}
+  .kwd-node-tag.person text{fill:#8A5A17;font-weight:800;}
+  .kwd-node-tag.standalone text{fill:#1E6E8C;}
+  .kwd-tag-delete{opacity:0;transition:opacity .12s;cursor:pointer;}
+  .kwd-node-tag:hover .kwd-tag-delete{opacity:1;}
+  .kwd-tag-delete circle{fill:var(--red);}
+  .kwd-tag-delete text{fill:#fff;font-size:9px;font-weight:800;pointer-events:none;}
+  .kwd-tag-recolor{opacity:0;transition:opacity .12s;cursor:pointer;}
+  .kwd-node-tag:hover .kwd-tag-recolor{opacity:1;}
+  .kwd-tag-recolor circle{fill:#fff;stroke:var(--line);stroke-width:1;}
+  .kwd-inline-edit{
+    text-align:center;border:1.5px solid var(--accent);border-radius:6px;padding:0 4px;
+    outline:none;font-family:inherit;font-weight:700;background:#fff;color:var(--ink);
+    box-shadow:0 2px 10px rgba(20,20,40,0.18);
+  }
+  .kwd-bubble-node{cursor:grab;}
+  .kwd-resize-handle circle{fill:var(--navy);opacity:0;transition:opacity .15s;}
+  .kwd-resize-handle path{opacity:0;transition:opacity .15s;}
+  .kwd-resize-handle{cursor:nwse-resize;}
+  svg:hover .kwd-resize-handle circle, svg:hover .kwd-resize-handle path{opacity:1;}
+  .kwd-bubble-node circle{transition:transform .15s ease;transform-origin:center;}
+  .kwd-bubble-node:hover circle{filter:brightness(1.06);}
+  .kwd-bubble-node text{font-family:inherit;fill:#fff;text-anchor:middle;pointer-events:none;}
+  .kwd-bubble-node .bubble-count-text{pointer-events:auto;cursor:text;}
+  .kwd-bubble-node .bubble-count-text:hover{opacity:1 !important;text-decoration:underline dotted;}
+  .kwd-link{stroke:#C9CEDA;stroke-width:1;opacity:.7;}
+
+  @media (max-width:1100px){.stats-row{grid-template-columns:repeat(3,1fr);} .top-grid{grid-template-columns:1fr;} .user-grid{grid-template-columns:1fr;}}
+  @media (max-width:700px){.stats-row{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:600px){.stats-row{grid-template-columns:repeat(2,1fr);} .posts-grid{grid-template-columns:1fr;grid-template-rows:none;grid-auto-flow:row;} .posts-grid .post-row:nth-child(5){border-bottom:1px solid var(--line);}}
+
+  .tooltip{
+    position:fixed;background:var(--navy);color:#fff;font-size:11.5px;padding:6px 10px;border-radius:8px;
+    pointer-events:none;opacity:0;transition:opacity .1s;z-index:50;white-space:nowrap;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="month-tabs" id="monthTabs"></div>
+  <div id="panels"></div>
+</div>
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const FIREBASE_DB_URL = "https://test-aee35-default-rtdb.firebaseio.com";
+/* ============ DATA (pptx 원본 수치 기반) ============ */
+const DATA = {
+  "6월": {
+    range:"2026.06.01 ~ 06.30",
+    yearLabel:"2026.06",
+    aiCitation:{monthly:null, cumulative:null},
+    stats:[
+      {icon:"👁",label:"조회수",value:"1,686",delta:"+51.3%",dir:"up"},
+      {icon:"👤",label:"순방문자수",value:"799",delta:"+26.8%",dir:"up"},
+      {icon:"🔁",label:"방문횟수",value:"1,089",delta:"+43.3%",dir:"up"},
+      {icon:"⟳",label:"재방문율",value:"11.30%",delta:"+0.5%p",dir:"up"},
+      {icon:"⏱",label:"평균 사용시간",value:"4m 46s",delta:"-8초",dir:"down"},
+    ],
+    months:["2026.02","2026.03","2026.04","2026.05","2026.06"],
+    views:[1267,2216,1835,1114,1686],
+    visitors:[577,1448,1105,630,799],
+    referrers:[
+      {name:"네이버 블로그_PC",pct:32.81},
+      {name:"gw.dmcmedia.co.kr",pct:20.51},
+      {name:"네이버 통합검색_모바일",pct:14.99},
+      {name:"네이버 통합검색_PC",pct:12.59},
+      {name:"네이버 블로그_모바일",pct:4.67},
+    ],
+    keywords:[
+      {name:"타불라",pct:12.17},
+      {name:"더마코스메틱 화장품",pct:7.40},
+      {name:"디엠씨미디어",pct:5.97},
+      {name:"디지털 마케팅 suprt",pct:5.01},
+      {name:"타불라 광고",pct:3.82},
+    ],
+    device:{pc:74.60, mobile:25.40},
+    posts:[
+      {title:"격주 DMCian l 때로는 나침반~ 때로는 버팀목~ 바쁘다바빠 디엠씨미디어 리더 사회♬",views:135,url:"http://blog.naver.com/dmcmedia_official/224297964682"},
+      {title:"격주 DMCian l \"성장 야호~\" 업무 적응 종료→폭풍 활약 준비가 한창인 디엠씨미디어의 루키들",views:111,url:"https://blog.naver.com/dmcmedia_official/224313089932"},
+      {title:"AI 기술로 진화한 네이티브 광고 플랫폼 '타불라' 핵심 요약",views:108,url:"https://blog.naver.com/dmcmedia_official/224290016541"},
+      {title:"디엠씨미디어의 사내 AI 활용 경진대회 'D.match 2026', 본선PT 현장 스케치",views:90,url:"https://blog.naver.com/dmcmedia_official/224324845160"},
+      {title:"디엠씨미디어 창립 24주년 기념행사 현장 스케치",views:77,url:"https://blog.naver.com/dmcmedia_official/224328204507"},
+      {title:"2040 여성 10명 중 4명이 아는 더마 코스메틱 브랜드, 라로슈포제가 그림자를 홍보대사로 발탁한 이유는?",views:65,url:"https://blog.naver.com/dmcmedia_official/224303643372"},
+      {title:"격주 DMCian l 디엠씨미디어가 라디오 프로그램이라면, 이 경력직 3인방은 고정 게스트일거야",views:35,url:"https://blog.naver.com/dmcmedia_official/224245183312"},
+      {title:"스티커 1개가 만드는 반복구매의 비밀! 2026월드컵 앞둔 코카콜라 마케팅 전략 분석",views:35,url:"https://blog.naver.com/dmcmedia_official/224326696550"},
+      {title:"디엠씨미디어, '디싸이오(D.SaiO)' 전략 고도화… GEO 측정 체계 강화",views:31,url:"https://blog.naver.com/dmcmedia_official/224310794560"},
+      {title:"격주 DMCian l 스트레스 많이 받을거지만 운동 많이 될 굿파트너, 승진자 그룹인터뷰",views:25,url:"https://blog.naver.com/dmcmedia_official/224144628479"},
+    ],
+    keywordDetail:{
+      people:[{name:"이준희",n:3},{name:"이인성",n:1},{name:"D.SaiO",n:2}],
+      loose:[],
+      bubbles:[
+        {name:"디엠씨미디어",count:66,cat:"about",size:240,mix:[{cat:"about",pct:86.4},{cat:"people",pct:9.1},{cat:"trend",pct:4.5}],related:["dmc미디어","DMC미디어","모비엠","디엠씨미디어 복지","디엠씨미디어 채용"]},
+        {name:"타불라",count:94,cat:"media",size:220,mix:[{cat:"media",pct:100}],related:["타불라 광고","타블라광고","타블라 광고","타불라코리아","타불라 코리아"]},
+        {name:"더마코스메틱",count:49,cat:"trend",size:158,mix:[{cat:"trend",pct:91.8},{cat:"about",pct:8.2}],related:["더마코스메틱 화장품","더마 코스메틱 브랜드","라로슈포제 더마코스메틱","올리브영 터블","tubble"]},
+        {name:"디지털 마케팅",count:47,cat:"trend",size:156,mix:[{cat:"trend",pct:53.2},{cat:"about",pct:19.1},{cat:"media",pct:27.7}],related:["디지털 마케팅 suprt","온드미디어","네이티브 광고","리테일 미디어 뜻","구글 pmax"]},
+        {name:"트렌드/캠페인",count:27,cat:"trend",size:128,mix:[{cat:"trend",pct:100}],related:["컬리n마트 보고서","웬즈데이 웬디스","롯데 칸초광고","육아 삼신기","중고거래 플랫폼 비교"]},
+      ]
+    }
+  },
+  "5월": {
+    range:"2026.05.01 ~ 05.31",
+    yearLabel:"2026.05",
+    aiCitation:{monthly:null, cumulative:null},
+    stats:[
+      {icon:"👁",label:"조회수",value:"1,114",delta:"-39.3%",dir:"down"},
+      {icon:"👤",label:"순방문자수",value:"630",delta:"-43.0%",dir:"down"},
+      {icon:"🔁",label:"방문횟수",value:"760",delta:"-39.0%",dir:"down"},
+      {icon:"⟳",label:"재방문율",value:"10.80%",delta:"+4.9%p",dir:"up"},
+      {icon:"⏱",label:"평균 사용시간",value:"4m 54s",delta:"+34초",dir:"up"},
+    ],
+    months:["2026.01","2026.02","2026.03","2026.04","2026.05"],
+    views:[1710,1267,2216,1835,1114],
+    visitors:[669,577,1448,1105,630],
+    referrers:[
+      {name:"네이버 블로그_PC",pct:25.65},
+      {name:"네이버 통합검색_PC",pct:17.10},
+      {name:"gw.dmcmedia.co.kr",pct:16.79},
+      {name:"네이버 통합검색_모바일",pct:11.37},
+      {name:"Google",pct:7.51},
+    ],
+    keywords:[
+      {name:"디엠씨미디어",pct:6.89},
+      {name:"타불라",pct:6.23},
+      {name:"쿠팡플레이 광고",pct:3.61},
+      {name:"디지털 마케팅 suprt",pct:2.62},
+      {name:"어드민나이트",pct:2.30},
+    ],
+    device:{pc:73.90, mobile:26.10},
+    posts:[
+      {title:"격주 DMCian l 스트레스 많이 받을거지만 운동 많이 될 굿파트너, 승진자 그룹인터뷰",views:106,url:"https://blog.naver.com/dmcmedia_official/224144628479"},
+      {title:"AI 기술로 진화한 네이티브 광고 플랫폼 '타불라' 핵심 요약",views:47,url:"https://blog.naver.com/dmcmedia_official/224290016541"},
+      {title:"디엠씨미디어 '디프레임', 데이터·GEO 웨비나로 마케팅 성과 극대화 전략 공유",views:44,url:"https://blog.naver.com/dmcmedia_official/224277658917"},
+      {title:"격주 DMCian l 디엠씨미디어가 라디오 프로그램이라면, 이 경력직 3인방은 고정 게스트일거야",views:33,url:"https://blog.naver.com/dmcmedia_official/224245183312"},
+      {title:"디엠씨미디어, AI 브랜드 측정 체계 'ABBE' 통한 D.SaiO 중심 GEO 전략 고도화",views:33,url:"https://blog.naver.com/dmcmedia_official/224291569176"},
+      {title:"알쏭달쏭한 카카오 채널 메시지 유형 구분해보기",views:27,url:"https://blog.naver.com/dmcmedia_official/223601798828"},
+      {title:"디엠씨미디어, 넷플릭스·티빙·쿠팡플레이까지…OTT 광고시장의 'Key Player'",views:21,url:"https://blog.naver.com/dmcmedia_official/224198353581"},
+      {title:"연령이 낮을수록 유용한 습관(루틴) 형성 의향 낮아 … 서로 독려하며 각자 할 일을 해내는 오프라인 모임, 어드민 나이트(Admin Night) 부상",views:21,url:"https://blog.naver.com/dmcmedia_official/224263410268"},
+      {title:"영화 '왕과 사는 남자' 열풍의 숨은 공신 쇼박스, 관객과 소통하기 위해 공유한 '촬영 실록' 콘텐츠를 흥행의 동력으로 전환",views:19,url:"https://blog.naver.com/dmcmedia_official/224221928550"},
+      {title:"디엠씨미디어의 4월 모임, 월간 디톡스(D-talks) 현장 스케치",views:19,url:"https://blog.naver.com/dmcmedia_official/224268022818"},
+    ],
+    keywordDetail:{
+      people:[{name:"이준희",n:4},{name:"이인성",n:1},{name:"D.SaiO",n:4},{name:"D.Frame",n:1}],
+      loose:[],
+      bubbles:[
+        {name:"디엠씨미디어",count:61,cat:"about",size:240,mix:[{cat:"about",pct:82},{cat:"people",pct:16.4},{cat:"media",pct:1.6}],related:["디엠씨미디어 복지","디엠씨미디어 블로그","DMC미디어 블로그","dmc미디어","디엠씨미디어 면접"]},
+        {name:"타불라",count:27,cat:"media",size:158,mix:[{cat:"media",pct:100}],related:["타불라 광고","타불라 계정 생성","타불라 지면","타불라 마케팅","타블라 광고"]},
+        {name:"트렌드/캠페인",count:23,cat:"trend",size:148,mix:[{cat:"trend",pct:87},{cat:"media",pct:13}],related:["하이네켄 캠페인","아이돌 세계관","콜라보 굿즈 레포트","wendy's 브랜드페르소나","잡화 트렌드"]},
+        {name:"쿠팡플레이/티빙",count:20,cat:"about",size:140,mix:[{cat:"media",pct:5},{cat:"about",pct:90},{cat:"trend",pct:5}],related:["쿠팡플레이 광고","티빙 광고 대행사","쿠팡 광고 리테일 미디어","쿠팡플레이 티빙","쿠팡 티빙 광고"]},
+        {name:"어드민나이트",count:16,cat:"trend",size:130,mix:[{cat:"trend",pct:100}],related:["어드민나이트","어드민 나이트","admin night"]},
+        {name:"디지털 마케팅",count:16,cat:"trend",size:130,mix:[{cat:"trend",pct:53.3},{cat:"media",pct:20.0},{cat:"people",pct:13.3},{cat:"about",pct:13.3}],related:["디지털 마케팅 suprt","온드미디어","m브랜딩 da","데이터 기반 퍼포먼스 마케팅 원리","AEO마케팅 제안서"]},
+      ]
+    }
+  },
+  "4월": {
+    range:"2026.04.01 ~ 04.30",
+    yearLabel:"2026.04",
+    aiCitation:{monthly:null, cumulative:null},
+    stats:[
+      {icon:"👁",label:"조회수",value:"1,835",delta:"-17.2%",dir:"down"},
+      {icon:"👤",label:"순방문자수",value:"1,105",delta:"-23.7%",dir:"down"},
+      {icon:"🔁",label:"방문횟수",value:"1,246",delta:"-21.2%",dir:"down"},
+      {icon:"⟳",label:"재방문율",value:"5.90%",delta:"+2.0%p",dir:"up"},
+      {icon:"⏱",label:"평균 사용시간",value:"4m 20s",delta:"-17초",dir:"down"},
+    ],
+    months:["2025.12","2026.01","2026.02","2026.03","2026.04"],
+    views:[1408,1710,1267,2216,1835],
+    visitors:[732,669,577,1448,1105],
+    referrers:[
+      {name:"네이버 블로그_PC",pct:30.14},
+      {name:"네이버 통합검색_모바일",pct:17.25},
+      {name:"네이버 통합검색_PC",pct:11.81},
+      {name:"gw.dmcmedia.co.kr",pct:9.59},
+      {name:"네이버 블로그_모바일",pct:9.51},
+    ],
+    keywords:[
+      {name:"디엠씨미디어",pct:2.07},
+      {name:"디엠씨미디어 블로그",pct:1.46},
+      {name:"의류 플랫폼",pct:1.15},
+      {name:"쿠팡플레이 광고",pct:1.15},
+      {name:"카톡 업데이트 프로필 광고",pct:1.07},
+    ],
+    device:{pc:75.00, mobile:25.00},
+    posts:[
+      {title:"격주 DMCian l 디엠씨미디어가 라디오 프로그램이라면, 이 경력직 3인방은 고정 게스트일거야",views:91,url:"https://blog.naver.com/dmcmedia_official/224245183312"},
+      {title:"패션 커머스 주요 3개 플랫폼의 광고상품 살펴보기",views:35,url:"https://blog.naver.com/dmcmedia_official/223858118673"},
+      {title:"디엠씨미디어, <실무자를 위한 데이터 기반 마케팅 & AI 검색 최적화> 웨비나 개최",views:28,url:"https://blog.naver.com/dmcmedia_official/224262253859"},
+      {title:"격주 DMCian l 인터뷰 차례 지나간 줄 알았는데 하자고 해서 또 열심히 하고 온 디엠씨미디어 뉴페이스 세사람",views:22,url:"https://blog.naver.com/dmcmedia_official/224162487056"},
+      {title:"의류소비자 60% \"중저가 브랜드 사\" 패션시장 판도 흔드는 초저가 플랫폼 '쉬인'",views:19,url:"https://blog.naver.com/dmcmedia_official/224019812100"},
+      {title:"요리조리 살펴보는 카카오톡 전면형 광고",views:17,url:"https://blog.naver.com/dmcmedia_official/223751460553"},
+      {title:"영화 '왕과 사는 남자' 열풍의 숨은 공신 쇼박스, '촬영 실록' 콘텐츠를 흥행의 동력으로 전환",views:15,url:"https://blog.naver.com/dmcmedia_official/224221928550"},
+      {title:"디엠씨미디어의 3월 모임, 월간 디톡스(D-talks) 현장 스케치",views:14,url:"https://blog.naver.com/dmcmedia_official/224235639094"},
+      {title:"알쏭달쏭한 카카오 채널 메시지 유형 구분해보기",views:12,url:"https://blog.naver.com/dmcmedia_official/223601798828"},
+      {title:"디엠씨미디어, 넷플릭스·티빙·쿠팡플레이까지…OTT 광고시장의 'Key Player'",views:11,url:"https://blog.naver.com/dmcmedia_official/224198353581"},
+    ],
+    keywordDetail:{
+      people:[{name:"이준희",n:7},{name:"이인성",n:1},{name:"D.SaiO",n:3},{name:"D.Metrics",n:1}],
+      loose:[],
+      bubbles:[
+        {name:"디엠씨미디어",count:91,cat:"about",size:240,mix:[{cat:"about",pct:85.7},{cat:"trend",pct:4.4},{cat:"people",pct:8.8},{cat:"media",pct:1.1}],related:["디엠씨미디어 블로그","DMC미디어","dmc미디어","디엠씨미디어 공채","dmc미디어 장기근속"]},
+        {name:"의류 플랫폼",count:35,cat:"media",size:148,mix:[{cat:"media",pct:62.9},{cat:"trend",pct:37.1}],related:["옷 플랫폼","의류플랫폼","옷플랫폼","옷 플렛폼","의류 플렛폼"]},
+        {name:"로켓위젯",count:18,cat:"trend",size:122,mix:[{cat:"trend",pct:100}],related:["로켓 위젯","로켓위쳇","rocket widget","locket 광고","locket widget"]},
+        {name:"쿠팡플레이/티빙",count:18,cat:"about",size:122,mix:[{cat:"about",pct:100}],related:["쿠팡플레이 광고","tving 광고대행사","티빙 쿠팡","티빙 쿠팡플레이"]},
+        {name:"컬리",count:18,cat:"trend",size:122,mix:[{cat:"trend",pct:100}],related:["컬리n마트","컬리N마트","컬리n마트 멤버십","컬리N마트 거래액","컬리 n"]},
+        {name:"당근마켓",count:15,cat:"media",size:116,mix:[{cat:"media",pct:66.7},{cat:"about",pct:33.3}],related:["당근 전문가모드 하는법","당근 전문가모드광고방법","당근마켓 동영상 광고","무신사 당근 카탈로그 광고 기반 개인화","당근 전문가모드 맞춤타겟"]},
+        {name:"카카오톡/카카오",count:15,cat:"media",size:116,mix:[{cat:"media",pct:86.7},{cat:"about",pct:13.3}],related:["카카오t 택시 핀테마","카카오 플친 유형","카카오t rse광고","카카오채널 메세지와 모먼트 차이","카카오톡 선물하기 광고 수상작"]},
+        {name:"왕과사는남자/촬영실록",count:15,cat:"trend",size:116,mix:[{cat:"trend",pct:100}],related:["촬영실록","왕사남 노션","쇼박스 실록","왕과 사는 남자 촬영 실록","왕과 사는 남자 소품팀"]},
+        {name:"토스",count:14,cat:"media",size:114,mix:[{cat:"media",pct:100}],related:["토스애즈","토스애즈잠재고객","토스 CPC광고","토스 리드폼 잠재고객 모으기","토스 성과 페이지"]},
+        {name:"헌혈 캠페인",count:14,cat:"trend",size:114,mix:[{cat:"trend",pct:100}],related:["엔하이픈 헌혈","헌혈 참여독려","헌혈 인식","대한적십자사 헌혈캠페인","엔하이픈 세계관 헌혈"]},
+      ]
+    }
+  }
+};
+
+const CAT_COLOR = {trend:"var(--trend)", people:"var(--people)", about:"var(--about)", media:"var(--media)", data:"var(--data)"};
+const CAT_LABEL = {trend:"Trend", people:"People", about:"About", media:"Media", data:"Data"};
+
+const tooltip = document.getElementById("tooltip");
+function showTip(e, text){
+  tooltip.textContent = text;
+  tooltip.style.left = (e.clientX+12)+"px";
+  tooltip.style.top = (e.clientY+12)+"px";
+  tooltip.style.opacity = 1;
+}
+function hideTip(){ tooltip.style.opacity = 0; }
+
+/* ============ build tabs ============ */
+const monthKeys = Object.keys(DATA); // 6월,5월,4월 -> want order 6,5,4 (latest first) as authored
+const tabsEl = document.getElementById("monthTabs");
+const panelsEl = document.getElementById("panels");
+
+monthKeys.forEach(async (m,i)=>{
+  const tab = document.createElement("div");
+  tab.className = "month-tab" + (i===0?" active":"");
+  tab.textContent = m;
+  tab.onclick = ()=> selectMonth(m);
+  tab.dataset.month = m;
+  tabsEl.appendChild(tab);
+
+  const panel = document.createElement("div");
+  panel.className = "month-panel" + (i===0?" active":"");
+  panel.id = "panel-"+m;
+  panelsEl.appendChild(panel);
+  await renderMonth(m, panel);
+  playIntro(m);
+});
+
+function selectMonth(m){
+  document.querySelectorAll(".month-tab").forEach(t=> t.classList.toggle("active", t.dataset.month===m));
+  document.querySelectorAll(".month-panel").forEach(p=> p.classList.toggle("active", p.id==="panel-"+m));
+  requestAnimationFrame(()=> playIntro(m));
+}
+
+function playIntro(monthName){
+  const panel = document.getElementById("panel-"+monthName);
+  if(!panel) return;
+
+  const bars = panel.querySelectorAll(".bar-fill");
+  bars.forEach(b=>{ b.style.transition = "none"; b.style.width = "0%"; });
+
+  const ring = panel.querySelector(".donut-ring");
+  if(ring){ ring.style.transition = "none"; ring.style.strokeDashoffset = ring.dataset.circ; }
+
+  const paths = panel.querySelectorAll(".chart-path");
+  paths.forEach(p=>{
+    const len = p.getTotalLength();
+    p.style.transition = "none";
+    p.style.strokeDasharray = len;
+    p.style.strokeDashoffset = len;
+  });
+
+  const points = panel.querySelectorAll(".pt");
+  points.forEach(pt=>{
+    pt.style.transition = "none";
+    pt.style.opacity = "0";
+  });
+
+  const statCards = panel.querySelectorAll(".stat-card");
+  statCards.forEach(c=>{ c.style.transition = "none"; c.style.opacity = "0"; c.style.transform = "translateY(8px)"; });
+
+  // force reflow so the "reset" state is committed before animating to target
+  void panel.offsetHeight;
+
+  requestAnimationFrame(()=>{
+    bars.forEach(b=>{ b.style.transition = "width .8s cubic-bezier(.22,.9,.3,1)"; b.style.width = b.dataset.target; });
+    if(ring){ ring.style.transition = "stroke-dashoffset 1s cubic-bezier(.22,.9,.3,1)"; ring.style.strokeDashoffset = ring.dataset.offset; }
+    paths.forEach(p=>{ p.style.transition = "stroke-dashoffset 1.1s ease"; p.style.strokeDashoffset = "0"; });
+    points.forEach((pt,i)=>{
+      pt.style.transition = `opacity .4s ease ${(i*35)}ms`;
+      pt.style.opacity = "1";
+    });
+    statCards.forEach((c,i)=>{
+      c.style.transition = `opacity .35s ease ${(i*70)}ms, transform .35s ease ${(i*70)}ms`;
+      c.style.opacity = "1"; c.style.transform = "translateY(0)";
+    });
+  });
+}
+
+/* ============ render one month ============ */
+async function renderMonth(monthName, root){
+  const d = DATA[monthName];
+  await loadStatsOverride(monthName, d);
+
+  root.innerHTML = `
+    <div class="header">
+      <div>
+        <h1>${monthName} 블로그 통계</h1>
+        <p>블로그 운영 성과를 한눈에 확인하세요.</p>
+      </div>
+      <div class="year-pill">📅 ${d.yearLabel}</div>
+    </div>
+
+    <div class="section-block">
+      <div class="section-head"><span class="badge">01</span><h2 class="section-title">주요 현황</h2></div>
+      <p class="section-sub">주요 지표로 보는 이달의 성과 &nbsp;|&nbsp; ${d.range}</p>
+      <div class="stats-row" data-role="stats"></div>
+    </div>
+
+    <div class="top-grid">
+      <div>
+        <div class="section-head"><span class="badge">02</span><h2 class="section-title">월간 방문 분석</h2></div>
+        <p class="section-sub">블로그 방문 패턴을 분석합니다</p>
+        <div class="card">
+          <p class="subcard-title"><span class="accent-dot"></span>월간 조회수·순방문자수 추이</p>
+          <div class="chart-legend">
+            <div class="item"><span class="swatch" style="background:var(--teal)"></span>조회수</div>
+            <div class="item"><span class="swatch" style="background:var(--blue)"></span>순방문자수</div>
+          </div>
+          <svg data-role="chart" viewBox="0 0 320 220" width="100%" height="220"></svg>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-head"><span class="badge">★</span><h2 class="section-title">인기 게시글 TOP 10</h2></div>
+        <p class="section-sub">이달 가장 많이 읽힌 글입니다 (🔗 표시는 클릭 시 원문으로 이동, 그 외는 클릭 시 제목 펼침)</p>
+        <div class="card"><div class="posts-grid" data-role="posts"></div></div>
+      </div>
+    </div>
+
+    <div class="section-block" style="margin-top:26px;">
+      <div class="section-head"><span class="badge">03</span><h2 class="section-title">사용자 분석</h2></div>
+      <p class="section-sub">방문자의 특성과 유입 경로를 확인합니다</p>
+      <div class="user-grid">
+        <div class="card">
+          <p class="subcard-title"><span class="accent-dot"></span>유입 경로 분석 TOP 5</p>
+          <div class="rank-bar-list" data-role="referrers"></div>
+        </div>
+        <div class="card">
+          <p class="subcard-title"><span class="accent-dot"></span>유입 검색어 TOP 5</p>
+          <div class="kw-list" data-role="keywords"></div>
+        </div>
+        <div class="card">
+          <p class="subcard-title"><span class="accent-dot"></span>기기별 분포</p>
+          <div class="device-row">
+            <svg data-role="donut" viewBox="0 0 100 100" width="86" height="86"></svg>
+            <div class="device-legend">
+              <div class="item"><span class="swatch" style="background:var(--navy)"></span>PC <span class="pct">${d.device.pc.toFixed(2)}%</span></div>
+              <div class="item"><span class="swatch" style="background:var(--blue)"></span>모바일 <span class="pct">${d.device.mobile.toFixed(2)}%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-block" style="margin-top:28px;">
+      <div class="section-head"><span class="badge">＋</span><h2 class="section-title">${monthName} 블로그 유입 검색어 세부 결과</h2></div>
+      <p class="section-sub">카테고리별 유입 키워드 빈도를 확인합니다 (원, 태그 클릭 가능)</p>
+      <div class="card">
+        <div class="kwd-legend">
+          ${Object.keys(CAT_LABEL).map(c=>`<div class="item"><span class="swatch" style="background:${CAT_COLOR[c]}"></span>${CAT_LABEL[c]}</div>`).join("")}
+        </div>
+        <div class="kwd-add-row">
+          <input type="text" class="kwd-add-input" placeholder="새 키워드 입력 후 추가 (독립 키워드로 생성, 이후 원으로 드래그해 연결 가능)" maxlength="30"/>
+          <div class="kwd-color-row" title="새 태그 색상 선택">
+            <span class="kwd-color-swatch selected" data-bg="#FFFFFF" data-border="#ECEDF3" data-fg="#1E2233" style="background:#FFFFFF;" title="기본(흰색)"></span>
+            <span class="kwd-color-swatch" data-bg="#FFE9C8" data-border="#F0C888" data-fg="#8A5A17" style="background:#FFE9C8;" title="노랑 (인물·솔루션)"></span>
+            <span class="kwd-color-swatch" data-bg="#E3F6FD" data-border="#A9DFF0" data-fg="#1E6E8C" style="background:#E3F6FD;" title="하늘색 (독립 키워드)"></span>
+            <span class="kwd-color-swatch" data-bg="#E3F7E8" data-border="#A6E0B4" data-fg="#1B6B34" style="background:#E3F7E8;" title="초록"></span>
+            <span class="kwd-color-swatch" data-bg="#FCE4EC" data-border="#F5A8C4" data-fg="#AD1457" style="background:#FCE4EC;" title="분홍"></span>
+            <input type="color" class="kwd-color-custom" value="#ffffff" title="커스텀 색상 선택"/>
+          </div>
+          <button type="button" class="kwd-add-btn">+ 태그 추가</button>
+          <span class="kwd-sync-status" data-role="syncStatus" title="공유 저장소(Firebase) 연결 상태">● 확인 중…</span>
+        </div>
+        <div class="kwd-chart-wrap"><svg data-role="bubbleChart" viewBox="0 0 900 560" width="100%" height="560"></svg></div>
+        <p style="font-size:11px;color:var(--sub);margin-top:12px;">※ 데일리 유입수 중 최솟값을 기준(=1)으로 정규화한 상대 환산값이며, 원과 태그 크기는 유입 빈도에 비례합니다. <span style="color:#1E6E8C;">하늘색 태그</span>는 pptx 원본처럼 원에 연결되지 않은 독립 키워드입니다. <b>원/태그 드래그</b>로 위치 이동, <b>원 우측 하단 ✕ 핸들 드래그</b>로 크기 조절, <b>원이나 태그를 더블클릭하면 그 자리에서 바로 글씨를 입력·수정</b>할 수 있습니다 (Enter로 확정, Esc로 취소), <b>원 안의 "총 N회" 숫자를 더블클릭하면 횟수만 따로 수정</b>할 수 있습니다, <b>태그 좌측 상단 🎨를 클릭하면 색상 변경</b>, <b>태그를 원 가장자리 가까이에 드래그</b>하면 재연결·<b>원에서 충분히 멀리 드래그</b>하면 독립 키워드로 전환, 태그에 마우스를 올리고 우측 상단 <b>빨간 ×</b>를 클릭하면 삭제됩니다. 배치는 매번 자동으로 겹치지 않게 재계산됩니다. <b>수정한 내용은 저장되어, 이 링크를 여는 모두에게 그대로 보입니다</b> (실시간 동시 반영은 아니고, 새로 링크를 열 때 최신 내용이 보이는 방식입니다).</p>
+      </div>
+    </div>
+  `;
+
+  /* stats */
+  const statsRow = root.querySelector('[data-role="stats"]');
+  d.stats.forEach(s=>{
+    const el = document.createElement("div");
+    el.className = "stat-card";
+    el.innerHTML = `
+      <div class="stat-icon">${s.icon}</div>
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-value">${s.value}</div>
+      <div class="stat-delta ${s.dir}">${s.dir==="up"?"▲":"▼"} ${s.delta} <span class="muted">전월 대비</span></div>
+    `;
+    statsRow.appendChild(el);
+  });
+
+  // AI 브리핑 인용수 (실데이터가 없어 직접 입력할 수 있는 편집 가능한 카드로 제공)
+  const ai = d.aiCitation || {monthly:null, cumulative:null};
+  d.aiCitation = ai;
+  const aiEl = document.createElement("div");
+  aiEl.className = "stat-card ai-card";
+  aiEl.innerHTML = `
+    <div class="stat-icon">🤖</div>
+    <div class="stat-label">AI 브리핑 인용수</div>
+    <div class="stat-value">${ai.monthly ?? "-"}</div>
+    <div class="ai-sub">누적 <b>${ai.cumulative ?? "-"}</b></div>
+  `;
+  statsRow.appendChild(aiEl);
+
+  /* referrers */
+  const refList = root.querySelector('[data-role="referrers"]');
+  const maxRef = Math.max(...d.referrers.map(r=>r.pct));
+  d.referrers.forEach(r=>{
+    const el = document.createElement("div");
+    el.className = "rank-bar-row";
+    const targetPct = (r.pct/maxRef*100).toFixed(1)+"%";
+    el.innerHTML = `
+      <div class="top"><span class="name"></span><span class="pct"></span></div>
+      <div class="bar-track"><div class="bar-fill" data-target="${targetPct}" style="width:0%"></div></div>
+    `;
+    const nameEl = el.querySelector(".name");
+    const pctEl = el.querySelector(".pct");
+    nameEl.textContent = r.name;
+    pctEl.textContent = r.pct.toFixed(2)+"%";
+    el.addEventListener("click", (e)=>{ if(e.target===nameEl || e.target===pctEl) return; el.classList.toggle("open"); });
+    refList.appendChild(el);
+  });
+
+  /* keywords */
+  const kwList = root.querySelector('[data-role="keywords"]');
+  d.keywords.forEach((k,i)=>{
+    const el = document.createElement("div");
+    el.className = "kw-row";
+    el.innerHTML = `<div class="kw-rank">${i+1}</div><div class="kw-name"></div><div class="kw-pct"></div>`;
+    const nameEl = el.querySelector(".kw-name");
+    const pctEl = el.querySelector(".kw-pct");
+    nameEl.textContent = k.name;
+    pctEl.textContent = k.pct.toFixed(2)+"%";
+    kwList.appendChild(el);
+  });
+
+  /* donut (SVG ring, animated via playIntro) */
+  const donutSvg = root.querySelector('[data-role="donut"]');
+  const R = 40, CX = 50, CY = 50, CIRC = 2*Math.PI*R;
+  function drawDonut(){
+    const pcLen = (d.device.pc/100)*CIRC;
+    donutSvg.innerHTML = `
+      <circle cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="#4C6FFF" stroke-width="14"/>
+      <circle class="donut-ring" cx="${CX}" cy="${CY}" r="${R}" fill="none" stroke="#232849" stroke-width="14"
+        stroke-dasharray="${CIRC.toFixed(2)}" stroke-dashoffset="${(CIRC-pcLen).toFixed(2)}"
+        data-circ="${CIRC.toFixed(2)}" data-offset="${(CIRC-pcLen).toFixed(2)}"
+        transform="rotate(-90 ${CX} ${CY})"/>
+    `;
+    const ring = donutSvg.querySelector(".donut-ring");
+    ring.addEventListener("mousemove", e=> showTip(e, `PC ${d.device.pc.toFixed(2)}% · 모바일 ${d.device.mobile.toFixed(2)}%`));
+    ring.addEventListener("mouseleave", hideTip);
+  }
+  drawDonut();
+  donutSvg.addEventListener("mousemove", e=> showTip(e, `PC ${d.device.pc.toFixed(2)}% · 모바일 ${d.device.mobile.toFixed(2)}%`));
+  donutSvg.addEventListener("mouseleave", hideTip);
+
+  /* posts */
+  const postsGrid = root.querySelector('[data-role="posts"]');
+  d.posts.forEach((p,i)=>{
+    const rankColor = i < 5 ? "var(--accent)" : "var(--teal)";
+    const el = document.createElement("div");
+    el.className = "post-row";
+    el.innerHTML = `
+      <div class="post-rank" style="background:${rankColor}">${i+1}</div>
+      <div class="post-title clamp"><span class="post-title-text"></span>${p.url?' <span class="link-ico" title="원문 링크">🔗</span>':""}</div>
+      <div class="post-views"></div>
+    `;
+    const titleEl = el.querySelector(".post-title-text");
+    const viewsEl = el.querySelector(".post-views");
+    titleEl.textContent = p.title;
+    viewsEl.textContent = p.views;
+    el.addEventListener("click", (e)=>{
+      if(e.target===titleEl || e.target===viewsEl) return;
+      if(p.url){ window.open(p.url, "_blank", "noopener"); return; }
+      el.classList.toggle("open");
+      el.querySelector(".post-title").classList.toggle("clamp");
+    });
+    postsGrid.appendChild(el);
+  });
+
+
+  /* line chart (svg) */
+  const svg = root.querySelector('[data-role="chart"]');
+  const W=320,H=220,padL=34,padR=10,padT=16,padB=26;
+  const plotW=W-padL-padR, plotH=H-padT-padB;
+  const maxVal = Math.max(...d.views, ...d.visitors)*1.08;
+  const xPos = i => padL + (i/(d.months.length-1))*plotW;
+  const yPos = v => padT + plotH - (v/maxVal)*plotH;
+  const buildPath = arr => arr.map((v,i)=> (i===0?"M":"L")+xPos(i).toFixed(1)+","+yPos(v).toFixed(1)).join(" ");
+
+  let s = "";
+  for(let g=0; g<=4; g++){
+    const y = padT + (plotH/4)*g;
+    s += `<line x1="${padL}" y1="${y}" x2="${W-padR}" y2="${y}" stroke="#ECEDF3" stroke-width="1"/>`;
+  }
+  d.months.forEach((m,i)=>{ s += `<text x="${xPos(i)}" y="${H-6}" font-size="9" fill="#8A8FA3" text-anchor="middle">${m.slice(5)}</text>`; });
+  s += `<path class="chart-path" d="${buildPath(d.views)}" fill="none" stroke="#17B8A6" stroke-width="2.5"/>`;
+  s += `<path class="chart-path" d="${buildPath(d.visitors)}" fill="none" stroke="#4C6FFF" stroke-width="2.5"/>`;
+  d.views.forEach((v,i)=>{
+    s += `<circle class="pt" data-v="조회수 ${d.months[i]}: ${v.toLocaleString()}" cx="${xPos(i)}" cy="${yPos(v)}" r="4" fill="#17B8A6" style="cursor:pointer"/>`;
+    s += `<text x="${xPos(i)}" y="${yPos(v)-8}" font-size="10" font-weight="700" fill="#17B8A6" text-anchor="middle">${v.toLocaleString()}</text>`;
+  });
+  d.visitors.forEach((v,i)=>{
+    s += `<circle class="pt" data-v="순방문자수 ${d.months[i]}: ${v.toLocaleString()}" cx="${xPos(i)}" cy="${yPos(v)}" r="4" fill="#4C6FFF" style="cursor:pointer"/>`;
+    s += `<text x="${xPos(i)}" y="${yPos(v)+16}" font-size="10" font-weight="700" fill="#4C6FFF" text-anchor="middle">${v.toLocaleString()}</text>`;
+  });
+  svg.innerHTML = s;
+  svg.querySelectorAll(".pt").forEach(pt=>{
+    pt.addEventListener("mousemove", e=> showTip(e, pt.dataset.v));
+    pt.addEventListener("mouseleave", hideTip);
+  });
+
+  /* keyword detail: pptx-style bubble chart via d3 force simulation */
+  const bubbleSvg = root.querySelector('[data-role="bubbleChart"]');
+  await renderBubbleChart(d.keywordDetail, bubbleSvg, monthName);
+
+  /* manual "add tag" control */
+  const addInput = root.querySelector(".kwd-add-input");
+  const addBtn = root.querySelector(".kwd-add-btn");
+  const colorSwatches = root.querySelectorAll(".kwd-color-swatch");
+  const colorCustom = root.querySelector(".kwd-color-custom");
+  let selectedColor = null; // null = default (no override)
+  colorSwatches.forEach(sw=>{
+    sw.addEventListener("click", ()=>{
+      colorSwatches.forEach(s=>s.classList.remove("selected"));
+      sw.classList.add("selected");
+      const bg = sw.dataset.bg;
+      selectedColor = (bg.toUpperCase()==="#FFFFFF") ? null : {bg, border:sw.dataset.border, fg:sw.dataset.fg};
+    });
+  });
+  colorCustom.addEventListener("input", ()=>{
+    colorSwatches.forEach(s=>s.classList.remove("selected"));
+    const bg = colorCustom.value;
+    selectedColor = {bg, border:bg, fg: contrastTextColor(bg)};
+  });
+  function handleAddTag(){
+    const text = addInput.value.trim();
+    if(!text) return;
+    addStandaloneTag(bubbleSvg, text, selectedColor);
+    addInput.value = "";
+    addInput.focus();
+  }
+  addBtn.addEventListener("click", handleAddTag);
+  addInput.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); handleAddTag(); } });
+}
+
+function bcStorageKey(monthName){ return "blogDashboard_bubbles_v1_"+monthName; }
+
+function bcFirebaseUrl(monthName){
+  return `${FIREBASE_DB_URL}/bubbleCharts/${encodeURIComponent(monthName)}.json`;
+}
+
+function statsStorageKey(monthName){ return "blogDashboard_stats_v1_"+monthName; }
+
+function statsFirebaseUrl(monthName){
+  return `${FIREBASE_DB_URL}/statsData/${encodeURIComponent(monthName)}.json`;
+}
+
+// loads any manually-corrected stats/posts/referrers/keywords/device values and merges them onto the base DATA object
+async function loadStatsOverride(monthName, d){
+  const key = statsStorageKey(monthName);
+  let override = null;
+  try{
+    const res = await fetch(statsFirebaseUrl(monthName), {cache:"no-store"});
+    if(res.ok){
+      const data = await res.json();
+      if(data){ override = data; try{ localStorage.setItem(key, JSON.stringify(data)); }catch(e){} }
+    }
+  }catch(e){ /* fall back to localStorage below */ }
+  if(!override){
+    try{ const raw = localStorage.getItem(key); if(raw) override = JSON.parse(raw); }catch(e){}
+  }
+  if(!override) return;
+  if(Array.isArray(override.stats)) override.stats.forEach((v,i)=>{ if(d.stats[i] && v!=null) d.stats[i].value = v; });
+  if(override.aiCitation) d.aiCitation = Object.assign({}, d.aiCitation, override.aiCitation);
+  if(Array.isArray(override.referrers)) override.referrers.forEach((v,i)=>{ if(d.referrers[i]){ if(v.name!=null) d.referrers[i].name=v.name; if(v.pct!=null) d.referrers[i].pct=v.pct; } });
+  if(Array.isArray(override.keywords)) override.keywords.forEach((v,i)=>{ if(d.keywords[i]){ if(v.name!=null) d.keywords[i].name=v.name; if(v.pct!=null) d.keywords[i].pct=v.pct; } });
+  if(override.device) d.device = Object.assign({}, d.device, override.device);
+  if(Array.isArray(override.posts)) override.posts.forEach((v,i)=>{ if(d.posts[i]){ if(v.title!=null) d.posts[i].title=v.title; if(v.views!=null) d.posts[i].views=v.views; } });
+}
+
+function setSyncStatus(svgEl, ok){
+  const panel = svgEl.closest(".month-panel");
+  if(!panel) return;
+  const el = panel.querySelector('[data-role="syncStatus"]');
+  if(!el) return;
+  if(ok){ el.textContent = "● 연결됨"; el.className = "kwd-sync-status ok"; }
+  else { el.textContent = "● 연결 안 됨 (이 브라우저에만 저장됨 — 광고 차단 확장 프로그램을 꺼보세요)"; el.className = "kwd-sync-status offline"; }
+}
+
+async function loadBCState(monthName, svgEl){
+  const key = bcStorageKey(monthName);
+  try{
+    const res = await fetch(bcFirebaseUrl(monthName), {cache:"no-store"});
+    if(res.ok){
+      const data = await res.json();
+      if(svgEl) setSyncStatus(svgEl, true);
+      if(data && Array.isArray(data.nodes) && Array.isArray(data.links)){
+        try{ localStorage.setItem(key, JSON.stringify(data)); }catch(e){}
+        return data;
+      }
+      if(data===null) return null; // no shared state saved yet for this month
+    } else if(svgEl) setSyncStatus(svgEl, false);
+  }catch(e){ if(svgEl) setSyncStatus(svgEl, false); /* offline/network error — fall back to whatever was last seen locally */ }
+  try{
+    const raw = localStorage.getItem(key);
+    if(!raw) return null;
+    const parsed = JSON.parse(raw);
+    if(!parsed || !Array.isArray(parsed.nodes) || !Array.isArray(parsed.links)) return null;
+    return parsed;
+  }catch(e){ return null; }
+}
+
+async function persistBC(svgEl){
+  const state = svgEl._bc;
+  const monthName = svgEl.dataset.month;
+  if(!state || !monthName) return;
+  const key = bcStorageKey(monthName);
+  const plainNodes = state.nodes.map(n=>({
+    id:n.id, type:n.type, name:n.name, count:n.count, cat:n.cat, mix:n.mix,
+    text:n.text, w:n.w, h:n.h, r:n.r, x:n.x, y:n.y, standalone:!!n.standalone,
+    tagBg:n.tagBg, tagBorder:n.tagBorder, tagFg:n.tagFg
+  }));
+  const plainLinks = state.links.map(l=>({source:l.source.id||l.source, target:l.target.id||l.target}));
+  const payload = {nodes:plainNodes, links:plainLinks};
+  const json = JSON.stringify(payload);
+  try{ localStorage.setItem(key, json); }catch(e){ /* private browsing etc. */ }
+  try{
+    const res = await fetch(bcFirebaseUrl(monthName), {method:"PUT", headers:{"Content-Type":"application/json"}, body:json, keepalive:true});
+    setSyncStatus(svgEl, res.ok);
+  }catch(e){ setSyncStatus(svgEl, false); /* offline — saved locally only, will retry next edit */ }
+}
+
+function estimateTagSize(text){
+  const w = Math.max(46, text.length*6.6 + 20);
+  const h = 24;
+  return {w,h};
+}
+
+// simple iterative pairwise separation — pushes any still-overlapping node pair apart.
+// run after the force simulation (and again after viewbox clamping) so nothing visibly overlaps.
+function resolveOverlaps(nodes, iterations, boundW, boundH, margin, keepBubblesFixed){
+  for(let iter=0; iter<iterations; iter++){
+    let moved = false;
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const a = nodes[i], b = nodes[j];
+        const dx = b.x-a.x, dy = b.y-a.y;
+        let dist = Math.hypot(dx,dy);
+        const minDist = a.r + b.r + 10;
+        if(dist < minDist){
+          moved = true;
+          if(dist < 0.01){ dist = 0.01; }
+          const overlap = minDist - dist;
+          const ux = dx/dist, uy = dy/dist;
+          const aFixed = !!keepBubblesFixed && a.type==="bubble";
+          const bFixed = !!keepBubblesFixed && b.type==="bubble";
+          if(aFixed && bFixed){
+            // both immovable — can't resolve this pair, leave as-is
+          } else if(aFixed){
+            b.x += ux*overlap; b.y += uy*overlap;
+          } else if(bFixed){
+            a.x -= ux*overlap; a.y -= uy*overlap;
+          } else {
+            const half = overlap/2;
+            a.x -= ux*half; a.y -= uy*half;
+            b.x += ux*half; b.y += uy*half;
+          }
+          if(boundW && boundH){
+            if(!aFixed){
+              a.x = Math.max(margin+a.r, Math.min(boundW-margin-a.r, a.x));
+              a.y = Math.max(margin+a.r, Math.min(boundH-margin-a.r, a.y));
+            }
+            if(!bFixed){
+              b.x = Math.max(margin+b.r, Math.min(boundW-margin-b.r, b.x));
+              b.y = Math.max(margin+b.r, Math.min(boundH-margin-b.r, b.y));
+            }
+          }
+        }
+      }
+    }
+    if(!moved) break;
+  }
+}
+
+function polarPoint(cx,cy,r,deg){
+  const rad = (deg-90)*Math.PI/180;
+  return {x: cx+r*Math.cos(rad), y: cy+r*Math.sin(rad)};
+}
+function pieSlicesSvg(cx,cy,r,mix){
+  let start = 0;
+  let svg = "";
+  mix.forEach(seg=>{
+    const sweep = (seg.pct/100)*360;
+    const end = start+sweep;
+    if(sweep>=359.999){
+      svg += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" style="fill:${CAT_COLOR[seg.cat]}"/>`;
+    } else {
+      const s = polarPoint(cx,cy,r,start), e = polarPoint(cx,cy,r,end);
+      const largeArc = sweep>180?1:0;
+      svg += `<path d="M ${cx.toFixed(1)} ${cy.toFixed(1)} L ${s.x.toFixed(1)} ${s.y.toFixed(1)} A ${r.toFixed(1)} ${r.toFixed(1)} 0 ${largeArc} 1 ${e.x.toFixed(1)} ${e.y.toFixed(1)} Z" style="fill:${CAT_COLOR[seg.cat]}"/>`;
+    }
+    start = end;
+  });
+  return svg;
+}
+
+function tagNodeSvg(n){
+  let cls = "kwd-node-tag";
+  if(n.type==="person") cls += " person";
+  else if(n.standalone) cls += " standalone";
+  const dx = n.w/2 - 2, dy = -n.h/2 + 2;
+  const rdx = -n.w/2 + 2, rdy = -n.h/2 + 2;
+  const customStyle = n.tagBg ? ` style="fill:${n.tagBg};stroke:${n.tagBorder||n.tagBg};"` : "";
+  const customTextStyle = n.tagFg ? ` style="fill:${n.tagFg};"` : "";
+  return `<g class="${cls}" data-id="${n.id}" transform="translate(${n.x.toFixed(1)},${n.y.toFixed(1)})">
+    <rect x="${-n.w/2}" y="${-n.h/2}" width="${n.w}" height="${n.h}" rx="7"${customStyle}/>
+    <text x="0" y="4" text-anchor="middle"${customTextStyle}>${n.text}</text>
+    <g class="kwd-tag-recolor" data-recolor="${n.id}" transform="translate(${rdx.toFixed(1)},${rdy.toFixed(1)})">
+      <circle r="7"/>
+      <text x="0" y="3" text-anchor="middle" style="font-size:8px;pointer-events:none;">🎨</text>
+    </g>
+    <g class="kwd-tag-delete" data-del="${n.id}" transform="translate(${dx.toFixed(1)},${dy.toFixed(1)})">
+      <circle r="7"/>
+      <text x="0" y="3" text-anchor="middle">×</text>
+    </g>
+  </g>`;
+}
+
+// simple relative luminance check to keep tag text readable against any custom background
+function contrastTextColor(hex){
+  const h = hex.replace("#","");
+  const r = parseInt(h.substring(0,2),16), g = parseInt(h.substring(2,4),16), b = parseInt(h.substring(4,6),16);
+  const luminance = (0.299*r + 0.587*g + 0.114*b)/255;
+  return luminance > 0.6 ? "#1E2233" : "#FFFFFF";
+}
+
+// a single reusable hidden native color <input>, shared by all recolor requests
+let _sharedColorInput = null;
+function openColorPicker(initialHex, onPick){
+  if(!_sharedColorInput){
+    _sharedColorInput = document.createElement("input");
+    _sharedColorInput.type = "color";
+    Object.assign(_sharedColorInput.style, {position:"fixed", left:"-9999px", top:"-9999px", opacity:"0"});
+    document.body.appendChild(_sharedColorInput);
+  }
+  _sharedColorInput.value = initialHex;
+  const handler = ()=>{ onPick(_sharedColorInput.value); };
+  _sharedColorInput.addEventListener("input", handler, {once:true});
+  _sharedColorInput.click();
+}
+
+// converts an SVG user-space point to on-screen (fixed-position) pixel coordinates
+function svgPointToScreen(svgEl, x, y){
+  const ctm = svgEl.getScreenCTM();
+  const pt = svgEl.createSVGPoint();
+  pt.x = x; pt.y = y;
+  const p = pt.matrixTransform(ctm);
+  return {x:p.x, y:p.y, scale: ctm.a};
+}
+
+// opens a small floating <input> right on top of a bubble/tag label for immediate in-place editing
+function startInlineEdit(svgEl, node, kind, onCommit){
+  const existing = document.querySelector(".kwd-inline-edit");
+  if(existing) existing.blur();
+
+  const editY = kind==="count" ? node.y+14 : node.y;
+  const {x:sx, y:sy, scale} = svgPointToScreen(svgEl, node.x, editY);
+  const boxW = kind==="count" ? Math.max(50, node.r*0.9*scale) : Math.max(60, (kind==="bubble" ? node.r*1.7 : node.w) * scale);
+  const boxH = kind==="count" ? Math.max(16, 15*scale) : Math.max(20, (kind==="bubble" ? 24 : node.h*0.92) * scale);
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "kwd-inline-edit";
+  input.value = kind==="bubble" ? node.name : (kind==="count" ? node.count : node.text);
+  input.maxLength = 40;
+  Object.assign(input.style, {
+    position:"fixed",
+    left:(sx-boxW/2)+"px",
+    top:(sy-boxH/2)+"px",
+    width:boxW+"px",
+    height:boxH+"px",
+    fontSize:Math.max(10, (kind==="count"?10:12)*scale)+"px",
+    lineHeight:boxH+"px",
+    zIndex:9999
+  });
+  document.body.appendChild(input);
+  input.focus();
+  input.select();
+
+  let settled = false;
+  function finish(commit){
+    if(settled) return; settled = true;
+    input.removeEventListener("blur", onBlur);
+    const val = input.value.trim();
+    input.remove();
+    if(commit && val) onCommit(val);
+  }
+  function onBlur(){ finish(true); }
+  input.addEventListener("blur", onBlur);
+  input.addEventListener("keydown", e=>{
+    if(e.key==="Enter"){ e.preventDefault(); finish(true); }
+    else if(e.key==="Escape"){ e.preventDefault(); finish(false); }
+  });
+}
+
+async function renderBubbleChart(kd, svgEl, monthName){
+  svgEl.dataset.month = monthName || "";
+  const W = 900, H = 560;
+  const margin = 40;
+  let nodes = [];
+  let links = [];
+
+  const saved = monthName ? await loadBCState(monthName, svgEl) : null;
+
+  if(saved){
+    nodes = saved.nodes;
+    links = saved.links;
+    // migrate any person tag saved before the "이름, 숫자" label bug was fixed —
+    // split the old combined text back into a clean name + separate count.
+    nodes.forEach(n=>{
+      if(n.type==="person"){
+        const m = /^(.*),\s*(-?\d+)\s*$/.exec(n.text||"");
+        if(m){
+          n.name = n.name || m[1].trim();
+          if(n.count==null) n.count = parseInt(m[2],10);
+          n.text = n.name;
+          const {w,h} = estimateTagSize(n.text);
+          n.w = w; n.h = h; n.r = Math.sqrt(w*w+h*h)/2;
+        }
+      }
+    });
+  } else {
+    // bubble nodes
+    kd.bubbles.forEach((b,i)=>{
+      nodes.push({
+        id:"b"+i, type:"bubble", name:b.name, count:b.count, cat:b.cat, mix:(b.mix||[{cat:b.cat,pct:100}]),
+        r: b.size/2,
+        x: W/2 + (Math.random()-0.5)*300, y: H/2 + (Math.random()-0.5)*260
+      });
+    });
+    // pick the largest bubble as the anchor for people chips (mirrors pptx layout, people cluster near DMC미디어 / central node)
+    let anchorIdx = 0, maxR = -1;
+    kd.bubbles.forEach((b,i)=>{ if(b.size>maxR){maxR=b.size; anchorIdx=i;} });
+
+    // tag nodes (related keywords), linked to their parent bubble
+    kd.bubbles.forEach((b,i)=>{
+      (b.related||[]).forEach((txt,j)=>{
+        const {w,h} = estimateTagSize(txt);
+        const id = "t"+i+"_"+j;
+        nodes.push({id, type:"tag", text:txt, w, h, r: Math.sqrt(w*w+h*h)/2, parent:"b"+i});
+        links.push({source:"b"+i, target:id});
+      });
+    });
+    // person nodes, linked to the anchor bubble
+    // NOTE: label shows the name only (like every other tag) — the count stays as
+    // separate node data (n.count) surfaced via hover tooltip, not glued into the
+    // display text. Previously this built text as `${p.name}, ${p.n}` which rendered
+    // literally as "이준희, 3" — a malformed label, not a real "3명" or count badge.
+    (kd.people||[]).forEach((p,i)=>{
+      const {w,h} = estimateTagSize(p.name);
+      const id = "p"+i;
+      nodes.push({id, type:"person", name:p.name, count:p.n, text:p.name, w, h, r: Math.sqrt(w*w+h*h)/2, parent:"b"+anchorIdx});
+      links.push({source:"b"+anchorIdx, target:id});
+    });
+
+    // standalone / independent keywords (light-blue in the original pptx) — no bubble connection
+    (kd.loose||[]).forEach((txt,i)=>{
+      const {w,h} = estimateTagSize(txt);
+      const id = "l"+i;
+      nodes.push({id, type:"tag", text:txt, w, h, r: Math.sqrt(w*w+h*h)/2, parent:null, standalone:true,
+        x: W/2 + (Math.random()-0.5)*500, y: H/2 + (Math.random()-0.5)*400});
+    });
+
+    const sim = d3.forceSimulation(nodes)
+      .force("charge", d3.forceManyBody().strength(-55))
+      .force("center", d3.forceCenter(W/2, H/2))
+      .force("collide", d3.forceCollide().radius(d=> d.r + 12).iterations(5))
+      .force("link", d3.forceLink(links).id(d=>d.id).distance(l=>{
+        const s = nodes.find(n=>n.id===(l.source.id||l.source));
+        const t = nodes.find(n=>n.id===(l.target.id||l.target));
+        return (s?s.r:40) + (t?t.r:20) + 30;
+      }).strength(0.75))
+      .force("x", d3.forceX(W/2).strength(0.025))
+      .force("y", d3.forceY(H/2).strength(0.025))
+      .stop();
+
+    for(let i=0;i<500;i++) sim.tick();
+
+    // extra manual pass: guarantee zero overlap even after clamping to the viewbox
+    resolveOverlaps(nodes, 120);
+
+    // clamp inside viewbox with margin
+    nodes.forEach(n=>{
+      n.x = Math.max(margin+n.r, Math.min(W-margin-n.r, n.x));
+      n.y = Math.max(margin+n.r, Math.min(H-margin-n.r, n.y));
+    });
+    resolveOverlaps(nodes, 60, W, H, margin);
+    // normalize link source/target to plain id strings (d3.forceLink mutates them into node refs)
+    links = links.map(l=>({source:l.source.id||l.source, target:l.target.id||l.target}));
+  }
+
+  const byId = Object.fromEntries(nodes.map(n=>[n.id,n]));
+
+  let svg = "";
+  // links first (so they sit behind nodes)
+  links.forEach(l=>{
+    const s = byId[l.source.id||l.source], t = byId[l.target.id||l.target];
+    if(!s||!t) return;
+    svg += `<line class="kwd-link" x1="${s.x.toFixed(1)}" y1="${s.y.toFixed(1)}" x2="${t.x.toFixed(1)}" y2="${t.y.toFixed(1)}"/>`;
+  });
+
+  // tag & person nodes
+  nodes.filter(n=>n.type!=="bubble").forEach(n=>{ svg += tagNodeSvg(n); });
+
+  nodes.filter(n=>n.type==="bubble").forEach(n=>{
+    const fontSize = Math.max(11, n.r/4.6);
+    const hx = n.x + n.r*0.707, hy = n.y + n.r*0.707;
+    svg += `<g class="kwd-bubble-node" data-id="${n.id}" data-tip="${n.name} · 총 ${n.count}회 · ${CAT_LABEL[n.cat]}">
+      ${pieSlicesSvg(n.x,n.y,n.r,n.mix)}
+      <text x="${n.x.toFixed(1)}" y="${(n.y-4).toFixed(1)}" font-size="${fontSize.toFixed(1)}" font-weight="800">${n.name}</text>
+      <text class="bubble-count-text" x="${n.x.toFixed(1)}" y="${(n.y+14).toFixed(1)}" font-size="${Math.max(9,fontSize*0.6).toFixed(1)}" opacity="0.9">총 ${n.count}회</text>
+    </g>
+    <g class="kwd-resize-handle" data-id="${n.id}">
+      <circle cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" r="7"/>
+      <path d="M ${(hx-3).toFixed(1)} ${(hy-3).toFixed(1)} L ${(hx+3).toFixed(1)} ${(hy+3).toFixed(1)} M ${(hx-3).toFixed(1)} ${(hy+3).toFixed(1)} L ${(hx+3).toFixed(1)} ${(hy-3).toFixed(1)}" stroke="#fff" stroke-width="1.4"/>
+    </g>`;
+  });
+
+  svgEl.innerHTML = svg;
+  bindBubbleEvents(svgEl, nodes, byId, links);
+  enableDrag(svgEl, nodes, byId, links);
+  svgEl._bc = {nodes, links, byId, W, H, margin};
+}
+
+// adds a brand-new, unconnected (standalone) keyword tag to an already-rendered bubble chart
+function addStandaloneTag(svgEl, text, color){
+  const state = svgEl._bc;
+  if(!state) return;
+  const {nodes, links, byId, W, H, margin} = state;
+  const {w,h} = estimateTagSize(text);
+  const id = "u"+Date.now()+"_"+Math.floor(Math.random()*1000);
+  const node = {
+    id, type:"tag", text, w, h, r: Math.sqrt(w*w+h*h)/2, parent:null, standalone:true,
+    x: W/2 + (Math.random()-0.5)*200, y: H/2 + (Math.random()-0.5)*160
+  };
+  if(color){ node.tagBg = color.bg; node.tagBorder = color.border; node.tagFg = color.fg; }
+  nodes.push(node);
+  byId[id] = node;
+  resolveOverlaps(nodes, 100, W, H, margin, true);
+  redraw(svgEl, nodes, byId, links);
+  persistBC(svgEl);
+}
+
+function bindBubbleEvents(svgEl, nodes, byId, links){
+  svgEl.querySelectorAll(".kwd-bubble-node").forEach(g=>{
+    g.addEventListener("mousemove", e=> showTip(e, g.dataset.tip));
+    g.addEventListener("mouseleave", hideTip);
+    g.addEventListener("dblclick", e=>{
+      e.stopPropagation();
+      const id = g.dataset.id;
+      const n = byId[id];
+      if(!n) return;
+      hideTip();
+      if(e.target.classList && e.target.classList.contains("bubble-count-text")){
+        startInlineEdit(svgEl, n, "count", (val)=>{
+          const num = parseInt(String(val).replace(/[^0-9]/g,""), 10);
+          if(isNaN(num)) return;
+          n.count = num;
+          redraw(svgEl, nodes, byId, links);
+          persistBC(svgEl);
+        });
+        return;
+      }
+      startInlineEdit(svgEl, n, "bubble", (val)=>{
+        n.name = val;
+        redraw(svgEl, nodes, byId, links);
+        persistBC(svgEl);
+      });
+    });
+  });
+  svgEl.querySelectorAll(".kwd-node-tag").forEach(g=>{
+    g.addEventListener("mousemove", e=>{
+      const n = byId[g.dataset.id];
+      const tip = n && n.type==="person" && n.count!=null ? `${n.name} · ${n.count}회` : g.querySelector("text").textContent;
+      showTip(e, tip);
+    });
+    g.addEventListener("mouseleave", hideTip);
+    g.addEventListener("dblclick", e=>{
+      e.stopPropagation();
+      const id = g.dataset.id;
+      const n = byId[id];
+      if(!n) return;
+      hideTip();
+      startInlineEdit(svgEl, n, "tag", (val)=>{
+        n.text = val;
+        if(n.type==="person") n.name = val;
+        const {w,h} = estimateTagSize(val);
+        n.w = w; n.h = h; n.r = Math.sqrt(w*w+h*h)/2;
+        redraw(svgEl, nodes, byId, links);
+        persistBC(svgEl);
+      });
+    });
+  });
+  svgEl.querySelectorAll(".kwd-resize-handle").forEach(g=>{
+    g.addEventListener("mousemove", e=> showTip(e, "드래그해서 원 크기 조절"));
+    g.addEventListener("mouseleave", hideTip);
+  });
+}
+
+function enableDrag(svgEl, nodes, byId, links){
+  let mode = null; // "move-bubble" | "move-tag" | "resize"
+  let draggingId = null;
+  let lastPos = null;
+  let dragMoved = false;
+  const pt = svgEl.createSVGPoint();
+  function toSvgCoords(evt){
+    pt.x = evt.clientX; pt.y = evt.clientY;
+    const ctm = svgEl.getScreenCTM().inverse();
+    const p = pt.matrixTransform(ctm);
+    return {x:p.x, y:p.y};
+  }
+  function childrenOfBubble(bubbleId){
+    return links.filter(l=> (l.source.id||l.source)===bubbleId).map(l=> l.target.id||l.target);
+  }
+
+  svgEl.addEventListener("mousedown", (e)=>{
+    if(e.target.closest(".kwd-tag-delete")) return; // handled by click listener below
+    if(e.target.closest(".kwd-tag-recolor")) return; // handled by click listener below
+    dragMoved = false;
+    svgEl._interacting = true;
+    const handle = e.target.closest(".kwd-resize-handle");
+    if(handle){ mode="resize"; draggingId = handle.dataset.id; lastPos = toSvgCoords(e); svgEl.style.cursor="nwse-resize"; return; }
+    const tag = e.target.closest(".kwd-node-tag");
+    if(tag){ mode="move-tag"; draggingId = tag.dataset.id; lastPos = toSvgCoords(e); svgEl.style.cursor="grabbing"; return; }
+    const bubble = e.target.closest(".kwd-bubble-node");
+    if(bubble){ mode="move-bubble"; draggingId = bubble.dataset.id; lastPos = toSvgCoords(e); svgEl.style.cursor="grabbing"; return; }
+  });
+
+  svgEl.addEventListener("click", (e)=>{
+    const delBtn = e.target.closest(".kwd-tag-delete");
+    if(delBtn){
+      const id = delBtn.dataset.del;
+      const idx = nodes.findIndex(n=>n.id===id);
+      if(idx>=0) nodes.splice(idx,1);
+      for(let i=links.length-1;i>=0;i--){
+        const l = links[i];
+        if((l.source.id||l.source)===id || (l.target.id||l.target)===id) links.splice(i,1);
+      }
+      delete byId[id];
+      hideTip();
+      redraw(svgEl, nodes, byId, links);
+      persistBC(svgEl);
+      return;
+    }
+    const recolorBtn = e.target.closest(".kwd-tag-recolor");
+    if(recolorBtn){
+      const id = recolorBtn.dataset.recolor;
+      const n = byId[id];
+      if(!n) return;
+      openColorPicker(n.tagBg || "#ffffff", (hex)=>{
+        n.tagBg = hex;
+        n.tagBorder = hex;
+        n.tagFg = contrastTextColor(hex);
+        redraw(svgEl, nodes, byId, links);
+        persistBC(svgEl);
+      });
+      return;
+    }
+  });
+
+  svgEl.addEventListener("mousemove", (e)=>{
+    if(!draggingId) return;
+    const c = toSvgCoords(e);
+    const n = byId[draggingId];
+
+    if(mode==="resize"){
+      dragMoved = true;
+      const newR = Math.max(24, Math.min(170, Math.hypot(c.x-n.x, c.y-n.y)));
+      const dr = newR - n.r;
+      n.r = newR;
+      childrenOfBubble(draggingId).forEach(childId=>{
+        const child = byId[childId];
+        if(!child) return;
+        const vx = child.x-n.x, vy = child.y-n.y;
+        const dist = Math.hypot(vx,vy) || 1;
+        child.x += (vx/dist)*dr;
+        child.y += (vy/dist)*dr;
+      });
+      redraw(svgEl, nodes, byId, links);
+      return;
+    }
+
+    const dx = c.x - lastPos.x, dy = c.y - lastPos.y;
+    if(Math.abs(dx)>1 || Math.abs(dy)>1) dragMoved = true;
+    n.x += dx; n.y += dy;
+    if(mode==="move-bubble"){
+      childrenOfBubble(draggingId).forEach(childId=>{
+        const child = byId[childId];
+        if(child){ child.x += dx; child.y += dy; }
+      });
+    }
+    lastPos = c;
+    redraw(svgEl, nodes, byId, links);
+  });
+
+  window.addEventListener("mouseup", (e)=>{
+    if(mode==="move-tag" && draggingId && dragMoved){
+      const tagNode = byId[draggingId];
+      const existingLinkIdx = links.findIndex(l=> (l.target.id||l.target)===draggingId);
+      const currentParentId = existingLinkIdx>=0 ? (links[existingLinkIdx].source.id||links[existingLinkIdx].source) : null;
+
+      // ATTACH zone: must be dropped close to / touching a bubble (tight radius) to (re)connect
+      const ATTACH_PAD = 26;
+      let attachTarget = null, attachDist = Infinity;
+      nodes.filter(nn=>nn.type==="bubble").forEach(b=>{
+        const dist = Math.hypot(b.x-tagNode.x, b.y-tagNode.y);
+        if(dist < b.r + ATTACH_PAD && dist < attachDist){ attachTarget = b; attachDist = dist; }
+      });
+
+      if(attachTarget){
+        const isNewAttachment = (currentParentId !== attachTarget.id);
+        if(existingLinkIdx>=0) links[existingLinkIdx].source = attachTarget.id;
+        else links.push({source:attachTarget.id, target:draggingId});
+        tagNode.standalone = false;
+        if(isNewAttachment){
+          // snap the tag just outside the bubble's edge so it doesn't render hidden underneath it
+          // (only when it wasn't already connected here — otherwise this would fight the user's own fine position adjustments)
+          let angle = Math.atan2(tagNode.y-attachTarget.y, tagNode.x-attachTarget.x);
+          if(!isFinite(angle)) angle = Math.random()*Math.PI*2;
+          const dist = attachTarget.r + Math.max(tagNode.w,tagNode.h)/2 + 16;
+          tagNode.x = attachTarget.x + Math.cos(angle)*dist;
+          tagNode.y = attachTarget.y + Math.sin(angle)*dist;
+        }
+      } else if(currentParentId){
+        // KEEP zone: still reasonably close to its current bubble -> leave the connection as-is
+        const parent = byId[currentParentId];
+        const KEEP_PAD = 220;
+        const stillClose = parent && Math.hypot(parent.x-tagNode.x, parent.y-tagNode.y) < parent.r + KEEP_PAD;
+        if(!stillClose){
+          // dragged far away from its own bubble too -> detach into an independent (standalone) keyword
+          links.splice(existingLinkIdx,1);
+          tagNode.standalone = true;
+        }
+      }
+      redraw(svgEl, nodes, byId, links);
+    }
+    if(mode && dragMoved) persistBC(svgEl);
+    mode = null; draggingId = null; dragMoved = false;
+    svgEl.style.cursor = "default";
+    setTimeout(()=>{ svgEl._interacting = false; }, 1200);
+  });
+}
+
+function redraw(svgEl, nodes, byId, links){
+  let svg = "";
+  links.forEach(l=>{
+    const s = byId[l.source.id||l.source], t = byId[l.target.id||l.target];
+    if(!s||!t) return;
+    svg += `<line class="kwd-link" x1="${s.x.toFixed(1)}" y1="${s.y.toFixed(1)}" x2="${t.x.toFixed(1)}" y2="${t.y.toFixed(1)}"/>`;
+  });
+  nodes.filter(n=>n.type!=="bubble").forEach(n=>{ svg += tagNodeSvg(n); });
+  nodes.filter(n=>n.type==="bubble").forEach(n=>{
+    const fontSize = Math.max(11, n.r/4.6);
+    const hx = n.x + n.r*0.707, hy = n.y + n.r*0.707;
+    svg += `<g class="kwd-bubble-node" data-id="${n.id}" data-tip="${n.name} · 총 ${n.count}회 · ${CAT_LABEL[n.cat]}">
+      ${pieSlicesSvg(n.x,n.y,n.r,n.mix)}
+      <text x="${n.x.toFixed(1)}" y="${(n.y-4).toFixed(1)}" font-size="${fontSize.toFixed(1)}" font-weight="800">${n.name}</text>
+      <text class="bubble-count-text" x="${n.x.toFixed(1)}" y="${(n.y+14).toFixed(1)}" font-size="${Math.max(9,fontSize*0.6).toFixed(1)}" opacity="0.9">총 ${n.count}회</text>
+    </g>
+    <g class="kwd-resize-handle" data-id="${n.id}">
+      <circle cx="${hx.toFixed(1)}" cy="${hy.toFixed(1)}" r="7"/>
+      <path d="M ${(hx-3).toFixed(1)} ${(hy-3).toFixed(1)} L ${(hx+3).toFixed(1)} ${(hy+3).toFixed(1)} M ${(hx-3).toFixed(1)} ${(hy+3).toFixed(1)} L ${(hx+3).toFixed(1)} ${(hy-3).toFixed(1)}" stroke="#fff" stroke-width="1.4"/>
+    </g>`;
+  });
+  svgEl.innerHTML = svg;
+  bindBubbleEvents(svgEl, nodes, byId, links);
+}
+</script>
+</body>
+</html>
