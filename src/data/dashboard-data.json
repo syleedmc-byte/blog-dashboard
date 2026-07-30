@@ -1,0 +1,1286 @@
+{
+  "months": [
+    {
+      "key": "2026-04",
+      "monthNumber": 4,
+      "year": 2026,
+      "label": "4월",
+      "period": "2026.04.01 ~ 04.30",
+      "kpi": {
+        "views": {
+          "raw": 1835,
+          "value": 1835,
+          "delta": null,
+          "dir": null,
+          "hasPrev": false
+        },
+        "visitors": {
+          "raw": 1105,
+          "value": 1105,
+          "delta": null,
+          "dir": null,
+          "hasPrev": false
+        },
+        "visits": {
+          "raw": 1246,
+          "value": 1246,
+          "delta": null,
+          "dir": null,
+          "hasPrev": false
+        },
+        "revisit": {
+          "raw": 5.9,
+          "value": 5.9,
+          "delta": null,
+          "dir": null,
+          "hasPrev": false
+        },
+        "avgtime": {
+          "raw": "4m 20s",
+          "value": "4m 20s",
+          "delta": null,
+          "dir": null,
+          "hasPrev": false
+        },
+        "ai": {
+          "value": null,
+          "cumulative": null
+        }
+      },
+      "referrers": [
+        {
+          "name": "네이버 블로그_PC",
+          "pct": 30.14
+        },
+        {
+          "name": "네이버 통합검색_모바일",
+          "pct": 17.25
+        },
+        {
+          "name": "네이버 통합검색_PC",
+          "pct": 11.81
+        },
+        {
+          "name": "gw.dmcmedia.co.kr",
+          "pct": 9.59
+        },
+        {
+          "name": "네이버 블로그_모바일",
+          "pct": 9.51
+        }
+      ],
+      "keywords": [
+        {
+          "name": "디엠씨미디어",
+          "pct": 2.07
+        },
+        {
+          "name": "디엠씨미디어 블로그",
+          "pct": 1.46
+        },
+        {
+          "name": "의류 플랫폼",
+          "pct": 1.15
+        },
+        {
+          "name": "쿠팡플레이 광고",
+          "pct": 1.15
+        },
+        {
+          "name": "카톡 업데이트 프로필 광고",
+          "pct": 1.07
+        },
+        {
+          "name": "컬리n마트",
+          "pct": 1.07
+        },
+        {
+          "name": "로켓 위젯",
+          "pct": 0.61
+        },
+        {
+          "name": "디엠씨미디어 이준희",
+          "pct": 0.54
+        },
+        {
+          "name": "로켓위젯",
+          "pct": 0.46
+        },
+        {
+          "name": "옷 플랫폼",
+          "pct": 0.46
+        }
+      ],
+      "device": {
+        "mobile": 25,
+        "pc": 75
+      },
+      "posts": [
+        {
+          "rank": 1,
+          "title": "격주 DMCian l 디엠씨미디어가 라디오 프로그램이라면, 이 경력직 3인방은 고정 게스트일거야",
+          "views": null,
+          "url": "https://blog.naver.com/dmcmedia_official/224245183312"
+        },
+        {
+          "rank": 2,
+          "title": "패션 커머스 주요 3개 플랫폼의 광고상품 살펴보기",
+          "views": null,
+          "url": "https://blog.naver.com/dmcmedia_official/223858118673"
+        },
+        {
+          "rank": 3,
+          "title": "디엠씨미디어, <실무자를 위한 데이터 기반 마케팅 & AI 검색 최적화> 웨비나 개최",
+          "views": null,
+          "url": "https://blog.naver.com/dmcmedia_official/224262253859"
+        },
+        {
+          "rank": 4,
+          "title": "격주 DMCian l 인터뷰 차례 지나간 줄 알았는데 하자고 해서 또 열심히 하고 온 디엠씨미디어 뉴페이스 세사람",
+          "views": null,
+          "url": "https://blog.naver.com/dmcmedia_official/224162487056"
+        },
+        {
+          "rank": 5,
+          "title": "의류소비자 60% \"중저가 브랜드 사\" 패션시장 판도 흔드는 초저가 플랫폼 '쉬인'",
+          "views": null,
+          "url": "https://blog.naver.com/dmcmedia_official/224019812100"
+        },
+        {
+          "rank": 6,
+          "title": "요리조리 살펴보는 카카오톡 전면형 광고",
+          "views": null,
+          "url": "https://blog.naver.com/dmcmedia_official/223751460553"
+        },
+        {
+          "rank": 7,
+          "title": "영화 '왕과 사는 남자' 열풍의 숨은 공신 쇼박스, '촬영 실록' 콘텐츠를 흥행의 동력으로 전환",
+          "views": null,
+          "url": "https://blog.naver.com/dmcmedia_official/224221928550"
+        },
+        {
+          "rank": 7,
+          "title": "디엠씨미디어의 3월 모임, 월간 디톡스(D-talks) 현장 스케치",
+          "views": null,
+          "url": "https://blog.naver.com/dmcmedia_official/224235639094"
+        },
+        {
+          "rank": 9,
+          "title": "알쏭달쏭한 카카오 채널 메시지 유형 구분해보기",
+          "views": null,
+          "url": "https://blog.naver.com/dmcmedia_official/223601798828"
+        },
+        {
+          "rank": 9,
+          "title": "디엠씨미디어, 넷플릭스·티빙·쿠팡플레이까지…OTT 광고시장의 'Key Player'",
+          "views": null,
+          "url": "https://blog.naver.com/dmcmedia_official/224198353581"
+        }
+      ],
+      "categories": [
+        {
+          "name": "기타",
+          "total": 165,
+          "section": "Trend",
+          "rank": 1,
+          "keywords": [
+            {
+              "name": "카톡 업데이트 프로필 광고",
+              "count": 14
+            },
+            {
+              "name": "카톡 업데이트프로필 광고",
+              "count": 4
+            },
+            {
+              "name": "하이퍼 로컬 마케팅",
+              "count": 3
+            },
+            {
+              "name": "다이소 뷰티 브랜드",
+              "count": 2
+            },
+            {
+              "name": "아이돌 세계관",
+              "count": 2
+            },
+            {
+              "name": "스트림플레이션 뜻",
+              "count": 2
+            },
+            {
+              "name": "2030건강 보험 상품 치수",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "name": "디엠씨미디어",
+          "total": 91,
+          "section": "About",
+          "rank": 2,
+          "keywords": [
+            {
+              "name": "디엠씨미디어",
+              "count": 27
+            },
+            {
+              "name": "디엠씨미디어 블로그",
+              "count": 19
+            },
+            {
+              "name": "디엠씨미디어 이준희",
+              "count": 7
+            },
+            {
+              "name": "DMC미디어",
+              "count": 4
+            },
+            {
+              "name": "dmc미디어",
+              "count": 4
+            },
+            {
+              "name": "D.saio",
+              "count": 2
+            },
+            {
+              "name": "디엠씨미디어 공채",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "name": "의류 플랫폼",
+          "total": 35,
+          "section": "Media",
+          "rank": 3,
+          "keywords": [
+            {
+              "name": "의류 플랫폼",
+              "count": 15
+            },
+            {
+              "name": "옷 플랫폼",
+              "count": 6
+            },
+            {
+              "name": "의류플랫폼",
+              "count": 4
+            },
+            {
+              "name": "옷플랫폼",
+              "count": 2
+            },
+            {
+              "name": "옷 플렛폼",
+              "count": 2
+            },
+            {
+              "name": "의류 플렛폼",
+              "count": 2
+            },
+            {
+              "name": "옷 쇼핑앱 순위",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "컬리",
+          "total": 18,
+          "section": "Trend",
+          "rank": 4,
+          "keywords": [
+            {
+              "name": "컬리n마트",
+              "count": 14
+            },
+            {
+              "name": "컬리N마트",
+              "count": 1
+            },
+            {
+              "name": "컬리n마트 멤버십",
+              "count": 1
+            },
+            {
+              "name": "컬리N마트 거래액",
+              "count": 1
+            },
+            {
+              "name": "컬리 n",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "로켓위젯",
+          "total": 18,
+          "section": "Trend",
+          "rank": 4,
+          "keywords": [
+            {
+              "name": "로켓 위젯",
+              "count": 8
+            },
+            {
+              "name": "로켓위젯",
+              "count": 6
+            },
+            {
+              "name": "로켓위쳇",
+              "count": 1
+            },
+            {
+              "name": "rocket widget",
+              "count": 1
+            },
+            {
+              "name": "locket 광고",
+              "count": 1
+            },
+            {
+              "name": "locket widget",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "쿠팡플레이/티빙",
+          "total": 18,
+          "section": "About",
+          "rank": 4,
+          "keywords": [
+            {
+              "name": "쿠팡플레이 광고",
+              "count": 15
+            },
+            {
+              "name": "tving 광고대행사",
+              "count": 1
+            },
+            {
+              "name": "티빙 쿠팡",
+              "count": 1
+            },
+            {
+              "name": "티빙 쿠팡플레이",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "당근마켓",
+          "total": 15,
+          "section": "Media",
+          "rank": 5,
+          "keywords": [
+            {
+              "name": "당근 전문가모드 하는법",
+              "count": 3
+            },
+            {
+              "name": "당근 전문가모드광고방법",
+              "count": 2
+            },
+            {
+              "name": "당근마켓 동영상 광고",
+              "count": 1
+            },
+            {
+              "name": "무신사 당근 카탈로그 광고 기반 개인화",
+              "count": 1
+            },
+            {
+              "name": "당근 전문가모드 맞춤타겟",
+              "count": 1
+            },
+            {
+              "name": "당근 동영상",
+              "count": 1
+            },
+            {
+              "name": "당근마켓 전문가모드와 간편모드의 차이점이 궁금해요",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "카카오톡/카카오",
+          "total": 15,
+          "section": "Media",
+          "rank": 5,
+          "keywords": [
+            {
+              "name": "카카오톡 선물하기에서 성공한 브랜드 사례를 알려주세요",
+              "count": 1
+            },
+            {
+              "name": "카카오톡 플친 웰컴메시지 ★★★★★ 해당 문자 조합 알려주세요",
+              "count": 1
+            },
+            {
+              "name": "카카오t 택시 핀테마",
+              "count": 1
+            },
+            {
+              "name": "카카오 플친 유형",
+              "count": 1
+            },
+            {
+              "name": "카카오t rse광고",
+              "count": 1
+            },
+            {
+              "name": "카카오채널 메세지와 모먼트 차이",
+              "count": 1
+            },
+            {
+              "name": "카카오톡 선물하기 광고 수상작",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "왕과사는남자/촬영실록",
+          "total": 15,
+          "section": "Trend",
+          "rank": 5,
+          "keywords": [
+            {
+              "name": "촬영실록",
+              "count": 2
+            },
+            {
+              "name": "왕사남 노션",
+              "count": 2
+            },
+            {
+              "name": "쇼박스 실록",
+              "count": 1
+            },
+            {
+              "name": "왕과 사는 남자 촬영 실록",
+              "count": 1
+            },
+            {
+              "name": "왕과사는남자 촬영실록비하인드  2.70%",
+              "count": 1
+            },
+            {
+              "name": "왕과 사는 남자 소품팀",
+              "count": 1
+            },
+            {
+              "name": "촬영 실록",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "2026-05",
+      "monthNumber": 5,
+      "year": 2026,
+      "label": "5월",
+      "period": "2026.05.01 ~ 05.31",
+      "kpi": {
+        "views": {
+          "raw": 1114,
+          "value": 1114,
+          "delta": "-39.3%",
+          "dir": "down",
+          "hasPrev": true
+        },
+        "visitors": {
+          "raw": 630,
+          "value": 630,
+          "delta": "-43.0%",
+          "dir": "down",
+          "hasPrev": true
+        },
+        "visits": {
+          "raw": 760,
+          "value": 760,
+          "delta": "-39.0%",
+          "dir": "down",
+          "hasPrev": true
+        },
+        "revisit": {
+          "raw": 10.8,
+          "value": 10.8,
+          "delta": "+4.9%p",
+          "dir": "up",
+          "hasPrev": true
+        },
+        "avgtime": {
+          "raw": "4m 54s",
+          "value": "4m 54s",
+          "delta": "+34초",
+          "dir": "up",
+          "hasPrev": true
+        },
+        "ai": {
+          "value": null,
+          "cumulative": null
+        }
+      },
+      "referrers": [
+        {
+          "name": "네이버 블로그_PC",
+          "pct": 25.650000000000002
+        },
+        {
+          "name": "네이버 통합검색_PC",
+          "pct": 17.1
+        },
+        {
+          "name": "gw.dmcmedia.co.kr",
+          "pct": 16.79
+        },
+        {
+          "name": "네이버 통합검색_모바일",
+          "pct": 11.37
+        },
+        {
+          "name": "Google",
+          "pct": 7.51
+        }
+      ],
+      "keywords": [
+        {
+          "name": "디엠씨미디어",
+          "pct": 6.890000000000001
+        },
+        {
+          "name": "타불라",
+          "pct": 6.23
+        },
+        {
+          "name": "쿠팡플레이 광고",
+          "pct": 3.61
+        },
+        {
+          "name": "디지털 마케팅 suprt",
+          "pct": 2.62
+        },
+        {
+          "name": "어드민나이트",
+          "pct": 2.3
+        },
+        {
+          "name": "어드민 나이트",
+          "pct": 1.97
+        },
+        {
+          "name": "디엠씨미디어 복지",
+          "pct": 1.31
+        },
+        {
+          "name": "디엠씨미디어 이준희",
+          "pct": 1.31
+        },
+        {
+          "name": "중저가 의류 브랜드",
+          "pct": 1.31
+        },
+        {
+          "name": "타불라 광고",
+          "pct": 1.31
+        }
+      ],
+      "device": {
+        "mobile": 26.1,
+        "pc": 73.9
+      },
+      "posts": [
+        {
+          "rank": 1,
+          "title": "격주 DMCian l 스트레스 많이 받을거지만 운동 많이 될 굿파트너, 승진자 그룹인터뷰",
+          "views": 106,
+          "url": "https://blog.naver.com/dmcmedia_official/224144628479"
+        },
+        {
+          "rank": 2,
+          "title": "AI 기술로 진화한 네이티브 광고 플랫폼 '타불라' 핵심 요약",
+          "views": 47,
+          "url": "https://blog.naver.com/dmcmedia_official/224290016541"
+        },
+        {
+          "rank": 3,
+          "title": "디엠씨미디어 '디프레임', 데이터·GEO 웨비나로 마케팅 성과 극대화 전략 공유",
+          "views": 44,
+          "url": "https://blog.naver.com/dmcmedia_official/224277658917"
+        },
+        {
+          "rank": 4,
+          "title": "격주 DMCian l 디엠씨미디어가 라디오 프로그램이라면, 이 경력직 3인방은 고정 게스트일거야",
+          "views": 33,
+          "url": "https://blog.naver.com/dmcmedia_official/224245183312"
+        },
+        {
+          "rank": 4,
+          "title": "디엠씨미디어, AI 브랜드 측정 체계 'ABBE' 통한 D.SaiO 중심 GEO 전략 고도화",
+          "views": 33,
+          "url": "https://blog.naver.com/dmcmedia_official/224291569176"
+        },
+        {
+          "rank": 6,
+          "title": "알쏭달쏭한 카카오 채널 메시지 유형 구분해보기",
+          "views": 27,
+          "url": "https://blog.naver.com/dmcmedia_official/223601798828"
+        },
+        {
+          "rank": 7,
+          "title": "디엠씨미디어, 넷플릭스·티빙·쿠팡플레이까지…OTT 광고시장의 'Key Player'",
+          "views": 21,
+          "url": "https://blog.naver.com/dmcmedia_official/224198353581"
+        },
+        {
+          "rank": 7,
+          "title": "연령이 낮을수록 유용한 습관(루틴) 형성 의향 낮아 … 서로 독려하며 각자 할 일을 해내는 오프라인 모임, 어드민 나이트(Admin Night) 부상",
+          "views": 21,
+          "url": "https://blog.naver.com/dmcmedia_official/224263410268"
+        },
+        {
+          "rank": 9,
+          "title": "영화 ‘왕과 사는 남자’ 열풍의 숨은 공신 쇼박스, 관객과 소통하기 위해 공유한 ‘촬영 실록’ 콘텐츠를 흥행의 동력으로 전환",
+          "views": 19,
+          "url": "https://blog.naver.com/dmcmedia_official/224221928550"
+        },
+        {
+          "rank": 9,
+          "title": "디엠씨미디어의 4월 모임, 월간 디톡스(D-talks) 현장 스케치",
+          "views": 19,
+          "url": "https://blog.naver.com/dmcmedia_official/224268022818"
+        },
+        {
+          "rank": 9,
+          "title": "디엠씨미디어의 5월 모임, 월간 디톡스(D-talks) 현장 스케치",
+          "views": 19,
+          "url": "https://blog.naver.com/dmcmedia_official/224296806202"
+        }
+      ],
+      "categories": [
+        {
+          "name": "디엠씨미디어",
+          "total": 61,
+          "section": "About",
+          "rank": 1,
+          "keywords": [
+            {
+              "name": "디엠씨미디어",
+              "count": 21
+            },
+            {
+              "name": "디엠씨미디어 이준희",
+              "count": 4
+            },
+            {
+              "name": "디엠씨미디어 복지",
+              "count": 4
+            },
+            {
+              "name": "디엠씨미디어 블로그",
+              "count": 3
+            },
+            {
+              "name": "DMC미디어 블로그",
+              "count": 2
+            },
+            {
+              "name": "dmc미디어",
+              "count": 2
+            },
+            {
+              "name": "디엠씨미디어 면접",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "name": "타불라",
+          "total": 27,
+          "section": "Media",
+          "rank": 2,
+          "keywords": [
+            {
+              "name": "타불라",
+              "count": 19
+            },
+            {
+              "name": "타불라 광고",
+              "count": 4
+            },
+            {
+              "name": "타불라 계정 생성",
+              "count": 1
+            },
+            {
+              "name": "타불라 지면",
+              "count": 1
+            },
+            {
+              "name": "타불라 마케팅",
+              "count": 1
+            },
+            {
+              "name": "타블라 광고",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "트렌드/캠페인",
+          "total": 23,
+          "section": "Trend",
+          "rank": 3,
+          "keywords": [
+            {
+              "name": "하이네켄 캠페인",
+              "count": 2
+            },
+            {
+              "name": "아이돌 세계관",
+              "count": 1
+            },
+            {
+              "name": "콜라보 굿즈 레포트",
+              "count": 1
+            },
+            {
+              "name": "wendy’s 브랜드페르소나",
+              "count": 1
+            },
+            {
+              "name": "잡화 트렌드",
+              "count": 1
+            },
+            {
+              "name": "가전 삼신기",
+              "count": 1
+            },
+            {
+              "name": "MZ세대 대상 한정판 마케팅 효과 통계 자료 알려주세요",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "쿠팡플레이/티빙",
+          "total": 20,
+          "section": "About",
+          "rank": 4,
+          "keywords": [
+            {
+              "name": "쿠팡플레이 광고",
+              "count": 11
+            },
+            {
+              "name": "티빙 광고 대행사",
+              "count": 3
+            },
+            {
+              "name": "쿠팡 광고 리테일 미디어",
+              "count": 1
+            },
+            {
+              "name": "쿠팡플레이 티빙",
+              "count": 1
+            },
+            {
+              "name": "쿠팡콜라보클럽 협업 캐릭터 상품 목록 알려주세요",
+              "count": 1
+            },
+            {
+              "name": "쿠팡 티빙 광고",
+              "count": 1
+            },
+            {
+              "name": "쿠팡플레이 티빙 광고대행",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "어드민나이트",
+          "total": 16,
+          "section": "Trend",
+          "rank": 5,
+          "keywords": [
+            {
+              "name": "어드민나이트",
+              "count": 7
+            },
+            {
+              "name": "어드민 나이트",
+              "count": 6
+            },
+            {
+              "name": "admin night",
+              "count": 3
+            }
+          ]
+        },
+        {
+          "name": "디지털 마케팅",
+          "total": 16,
+          "section": "Trend",
+          "rank": 5,
+          "keywords": [
+            {
+              "name": "디지털 마케팅 suprt",
+              "count": 8
+            },
+            {
+              "name": "온드미디어",
+              "count": 3
+            },
+            {
+              "name": "m브랜딩 da",
+              "count": 1
+            },
+            {
+              "name": "데이터 기반 퍼포먼스 마케팅 원리",
+              "count": 1
+            },
+            {
+              "name": "AEO마케팅 제안서",
+              "count": 1
+            },
+            {
+              "name": "온드미디어 geo 15%",
+              "count": 1
+            },
+            {
+              "name": "da 광고 성과 목표",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "2026-06",
+      "monthNumber": 6,
+      "year": 2026,
+      "label": "6월",
+      "period": "2026.06.01 ~ 06.30",
+      "kpi": {
+        "views": {
+          "raw": 1686,
+          "value": 1686,
+          "delta": "+51.3%",
+          "dir": "up",
+          "hasPrev": true
+        },
+        "visitors": {
+          "raw": 799,
+          "value": 799,
+          "delta": "+26.8%",
+          "dir": "up",
+          "hasPrev": true
+        },
+        "visits": {
+          "raw": 1089,
+          "value": 1089,
+          "delta": "+43.3%",
+          "dir": "up",
+          "hasPrev": true
+        },
+        "revisit": {
+          "raw": 11.3,
+          "value": 11.3,
+          "delta": "+0.5%p",
+          "dir": "up",
+          "hasPrev": true
+        },
+        "avgtime": {
+          "raw": "4m 46s",
+          "value": "4m 46s",
+          "delta": "-8초",
+          "dir": "down",
+          "hasPrev": true
+        },
+        "ai": {
+          "value": null,
+          "cumulative": null
+        }
+      },
+      "referrers": [
+        {
+          "name": "네이버 블로그_PC",
+          "pct": 32.81
+        },
+        {
+          "name": "gw.dmcmedia.co.kr",
+          "pct": 20.51
+        },
+        {
+          "name": "네이버 통합검색_모바일",
+          "pct": 14.99
+        },
+        {
+          "name": "네이버 통합검색_PC",
+          "pct": 12.590000000000002
+        },
+        {
+          "name": "네이버 블로그_모바일",
+          "pct": 4.67
+        }
+      ],
+      "keywords": [
+        {
+          "name": "타불라",
+          "pct": 12.17
+        },
+        {
+          "name": "더마코스메틱 화장품",
+          "pct": 7.3999999999999995
+        },
+        {
+          "name": "디엠씨미디어",
+          "pct": 5.970000000000001
+        },
+        {
+          "name": "디지털 마케팅 suprt",
+          "pct": 5.01
+        },
+        {
+          "name": "타불라 광고",
+          "pct": 3.82
+        },
+        {
+          "name": "어드민나이트",
+          "pct": 2.86
+        },
+        {
+          "name": "코카콜라 월드컵",
+          "pct": 2.63
+        },
+        {
+          "name": "타블라광고",
+          "pct": 1.67
+        },
+        {
+          "name": "더마 코스메틱 브랜드",
+          "pct": 1.43
+        },
+        {
+          "name": "토스애즈",
+          "pct": 1.43
+        }
+      ],
+      "device": {
+        "mobile": 25.4,
+        "pc": 74.6
+      },
+      "posts": [
+        {
+          "rank": 1,
+          "title": "격주 DMCian l 때로는 나침반~ 때로는 버팀목~ 바쁘다바빠 디엠씨미디어 리더 사회♬",
+          "views": 135,
+          "url": "https://blog.naver.com/dmcmedia_official/224297964682"
+        },
+        {
+          "rank": 2,
+          "title": "격주 DMCian l \"성장 야호~\" 업무 적응 종료→폭풍 활약 준비가 한창인 디엠씨미디어의 루키들",
+          "views": 111,
+          "url": "https://blog.naver.com/dmcmedia_official/224313089932"
+        },
+        {
+          "rank": 3,
+          "title": "AI 기술로 진화한 네이티브 광고 플랫폼 '타불라' 핵심 요약",
+          "views": 108,
+          "url": "https://blog.naver.com/dmcmedia_official/224290016541"
+        },
+        {
+          "rank": 4,
+          "title": "디엠씨미디어의 사내 AI 활용 경진대회 'D.match 2026', 본선PT 현장 스케치",
+          "views": 90,
+          "url": "https://blog.naver.com/dmcmedia_official/224324845160"
+        },
+        {
+          "rank": 5,
+          "title": "디엠씨미디어 창립 24주년 기념행사 현장 스케치",
+          "views": 77,
+          "url": "https://blog.naver.com/dmcmedia_official/224328204507"
+        },
+        {
+          "rank": 6,
+          "title": "2040 여성 10명 중 4명이 아는 더마 코스메틱 브랜드, 라로슈포제가 그림자를 홍보대사로 발탁한 이유는?",
+          "views": 65,
+          "url": "https://blog.naver.com/dmcmedia_official/224303643372"
+        },
+        {
+          "rank": 7,
+          "title": "격주 DMCian l 디엠씨미디어가 라디오 프로그램이라면, 이 경력직 3인방은 고정 게스트일거야",
+          "views": 35,
+          "url": "https://blog.naver.com/dmcmedia_official/224245183312"
+        },
+        {
+          "rank": 7,
+          "title": "스티커 1개가 만드는 반복구매의 비밀! 2026월드컵 앞둔 코카콜라 마케팅 전략 분석",
+          "views": 35,
+          "url": "https://blog.naver.com/dmcmedia_official/224326696550"
+        },
+        {
+          "rank": 9,
+          "title": "디엠씨미디어, ‘디싸이오(D.SaiO)’ 전략 고도화… GEO 측정 체계 강화",
+          "views": 31,
+          "url": "https://blog.naver.com/dmcmedia_official/224310794560"
+        },
+        {
+          "rank": 10,
+          "title": "격주 DMCian l 스트레스 많이 받을거지만 운동 많이 될 굿파트너, 승진자 그룹인터뷰",
+          "views": 25,
+          "url": "https://blog.naver.com/dmcmedia_official/224144628479"
+        }
+      ],
+      "categories": [
+        {
+          "name": "타불라",
+          "total": 94,
+          "section": "Media",
+          "rank": 1,
+          "keywords": [
+            {
+              "name": "타불라",
+              "count": 51
+            },
+            {
+              "name": "타불라 광고",
+              "count": 16
+            },
+            {
+              "name": "타블라광고",
+              "count": 7
+            },
+            {
+              "name": "타블라 광고",
+              "count": 4
+            },
+            {
+              "name": "타불라코리아",
+              "count": 3
+            },
+            {
+              "name": "타불라 코리아",
+              "count": 2
+            },
+            {
+              "name": "타불라광고",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "디엠씨미디어",
+          "total": 66,
+          "section": "About",
+          "rank": 2,
+          "keywords": [
+            {
+              "name": "디엠씨미디어",
+              "count": 25
+            },
+            {
+              "name": "dmc미디어",
+              "count": 4
+            },
+            {
+              "name": "디엠씨미디어 이준희",
+              "count": 3
+            },
+            {
+              "name": "DMC미디어",
+              "count": 3
+            },
+            {
+              "name": "모비엠",
+              "count": 3
+            },
+            {
+              "name": "디엠씨미디어 복지",
+              "count": 2
+            },
+            {
+              "name": "abbe",
+              "count": 2
+            }
+          ]
+        },
+        {
+          "name": "더마코스메틱",
+          "total": 49,
+          "section": "Trend",
+          "rank": 3,
+          "keywords": [
+            {
+              "name": "더마코스메틱 화장품",
+              "count": 31
+            },
+            {
+              "name": "더마 코스메틱 브랜드",
+              "count": 6
+            },
+            {
+              "name": "중저가 로드샵 화장품 브랜드",
+              "count": 1
+            },
+            {
+              "name": "더마코스메틱 브랜드",
+              "count": 1
+            },
+            {
+              "name": "라로슈포제 더마코스메틱",
+              "count": 1
+            },
+            {
+              "name": "터블공식몰",
+              "count": 1
+            },
+            {
+              "name": "tubble",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "디지털 마케팅",
+          "total": 47,
+          "section": "Trend",
+          "rank": 4,
+          "keywords": [
+            {
+              "name": "디지털 마케팅 suprt",
+              "count": 21
+            },
+            {
+              "name": "온드미디어",
+              "count": 5
+            },
+            {
+              "name": "네이티브 광고",
+              "count": 3
+            },
+            {
+              "name": "리테일 미디어 뜻",
+              "count": 3
+            },
+            {
+              "name": "핀테크 디지털 마케팅 활용 사례 알려주세요",
+              "count": 2
+            },
+            {
+              "name": "ai seo aeo geo 솔루션",
+              "count": 1
+            },
+            {
+              "name": "nosp 부킹 브랜딩 DA 적용 타겟팅",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "name": "트렌드/캠페인",
+          "total": 27,
+          "section": "Trend",
+          "rank": 5,
+          "keywords": [
+            {
+              "name": "컬리n마트 보고서",
+              "count": 2
+            },
+            {
+              "name": "웬즈데이 웬디스",
+              "count": 2
+            },
+            {
+              "name": "롯데 칸초광고",
+              "count": 2
+            },
+            {
+              "name": "육아 삼신기",
+              "count": 1
+            },
+            {
+              "name": "프로스포츠 굿즈 유형별 판매량 분석",
+              "count": 1
+            },
+            {
+              "name": "케이스티파이 케릭터상품이 예전만못하고 디자인도 상품도없다",
+              "count": 1
+            },
+            {
+              "name": "중저가브랜드의류",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "trend": [
+    {
+      "year": 2025,
+      "month": 12,
+      "label": "2025.12",
+      "views": 1408,
+      "visitors": 732
+    },
+    {
+      "year": 2026,
+      "month": 1,
+      "label": "2026.01",
+      "views": 1710,
+      "visitors": 669
+    },
+    {
+      "year": 2026,
+      "month": 2,
+      "label": "2026.02",
+      "views": 1267,
+      "visitors": 577
+    },
+    {
+      "year": 2026,
+      "month": 3,
+      "label": "2026.03",
+      "views": 2216,
+      "visitors": 1448
+    },
+    {
+      "year": 2026,
+      "month": 4,
+      "label": "2026.04",
+      "views": 1835,
+      "visitors": 1105
+    },
+    {
+      "year": 2026,
+      "month": 5,
+      "label": "2026.05",
+      "views": 1114,
+      "visitors": 630
+    },
+    {
+      "year": 2026,
+      "month": 6,
+      "label": "2026.06",
+      "views": 1686,
+      "visitors": 799
+    }
+  ],
+  "sectionOrder": [
+    "About",
+    "Data",
+    "Media",
+    "People",
+    "Trend"
+  ],
+  "sourceFile": "블로그_통계(통합)_0730.xlsx",
+  "updatedAt": "2026-07-30T06:57:00.568Z"
+}
