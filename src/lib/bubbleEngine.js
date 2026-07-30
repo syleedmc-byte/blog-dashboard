@@ -615,9 +615,10 @@ function buildFreshLayout(kd, W, H, margin) {
   })
 
   ;(kd.people || []).forEach((p, i) => {
-    const { w, h } = estimateTagSize(p.name)
+    const label = `${p.name}, ${p.n}`
+    const { w, h } = estimateTagSize(label)
     const id = 'p' + i
-    nodes.push({ id, type: 'person', name: p.name, count: p.n, text: p.name, w, h, r: Math.sqrt(w * w + h * h) / 2, parent: 'b' + anchorIdx })
+    nodes.push({ id, type: 'person', name: p.name, count: p.n, text: label, w, h, r: Math.sqrt(w * w + h * h) / 2, parent: 'b' + anchorIdx })
     links.push({ source: 'b' + anchorIdx, target: id })
   })
 
