@@ -92,28 +92,31 @@ npm run preview  # 빌드 결과를 로컬에서 미리보기
 
 ---
 
-## 배포
+## 배포 (GitHub Pages, push하면 자동 배포)
 
-이 저장소를 GitHub에 올려두고, 아래 셋 중 하나로 연결하면 **`git push` 한 번으로 자동
-재빌드·재배포**됩니다.
+저장소: https://github.com/syleedmc-byte/blog-dashboard
 
-### Netlify 또는 Vercel (권장 — 설정이 가장 간단함)
+`.github/workflows/deploy.yml` 에 GitHub Actions 워크플로우가 이미 들어 있습니다.
+`main` 브랜치에 push할 때마다 자동으로 `npm run build` → GitHub Pages 배포까지
+실행됩니다 (`npm run deploy`를 따로 실행할 필요가 없습니다).
+
+**최초 1회만 저장소 설정에서 켜주면 됩니다** (그 다음부터는 push만 하면 됩니다):
+
+1. GitHub 저장소 → **Settings → Pages**
+2. **Build and deployment → Source** 를 `GitHub Actions`로 선택
+3. 이후 `main`에 push하면 Actions 탭에서 빌드/배포가 자동으로 진행되고,
+   `https://syleedmc-byte.github.io/blog-dashboard/` 주소로 반영됩니다.
+
+`vite.config.js`의 `base`는 이미 이 저장소 이름(`/blog-dashboard/`)에 맞춰져 있습니다.
+저장소 이름을 바꾸면 이 값도 함께 바꿔야 합니다.
+
+### (참고) 나중에 Netlify/Vercel로 바꾸고 싶다면
 
 1. [Netlify](https://app.netlify.com) 또는 [Vercel](https://vercel.com)에서 "Add new site /
    New Project" → 이 GitHub 저장소 선택.
-2. 빌드 명령: `npm run build`, 배포 폴더(publish/output directory): `dist`.
+2. 빌드 명령: `npm run build`, 배포 폴더(publish/output directory): `dist`,
+   환경 변수 `VITE_BASE_PATH=/` 추가 (경로 접두어 없이 루트로 서빙하기 위함).
 3. 완료 후에는 `main` 브랜치에 push할 때마다 자동으로 재빌드·재배포됩니다.
-
-### GitHub Pages
-
-1. `vite.config.js`의 `base` 값을 저장소 이름에 맞게 바꿉니다.
-   ```js
-   base: '/blog-stats-dashboard/', // 저장소 주소가 github.com/USER/blog-stats-dashboard 라면
-   ```
-2. `npm run deploy` 실행 (`gh-pages` 패키지로 `dist/`를 `gh-pages` 브랜치에 올립니다).
-3. 저장소 **Settings → Pages**에서 Source를 `gh-pages` 브랜치로 지정합니다.
-4. 이 방식은 push만으로 자동 배포되지는 않으므로(수동으로 `npm run deploy` 필요), 완전
-   자동화를 원하면 Netlify/Vercel을 권장합니다. (GitHub Actions로 자동화할 수도 있습니다.)
 
 ---
 
