@@ -16,6 +16,15 @@ export default function App() {
 
   const active = useMemo(() => months.find((m) => m.key === activeKey) ?? null, [months, activeKey])
 
+  // 트렌드 차트는 참고 디자인과 동일하게, 해당 월을 기준으로 최근 5개월치만 보여준다
+  // (트렌드 데이터 전체가 아니라 각 탭이 자기 자신을 끝점으로 하는 5개월 구간을 봐야 함)
+  const activeTrend = useMemo(() => {
+    if (!active || !trend) return trend
+    const idx = trend.findIndex((t) => t.year === active.year && t.month === active.monthNumber)
+    if (idx === -1) return trend
+    return trend.slice(Math.max(0, idx - 4), idx + 1)
+  }, [trend, active])
+
   if (error || months.length === 0) {
     return (
       <div className="app">
@@ -65,7 +74,7 @@ export default function App() {
               <div className="item"><span className="swatch" style={{ background: SERIES_VIEWS }} />조회수</div>
               <div className="item"><span className="swatch" style={{ background: SERIES_VISITORS }} />순방문자수</div>
             </div>
-            <TrendChart trend={trend} />
+            <TrendChart trend={activeTrend} />
           </div>
         </div>
         <div>
