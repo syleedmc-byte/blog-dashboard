@@ -65,7 +65,7 @@ export default function App() {
               <div className="item"><span className="swatch" style={{ background: SERIES_VIEWS }} />조회수</div>
               <div className="item"><span className="swatch" style={{ background: SERIES_VISITORS }} />순방문자수</div>
             </div>
-            <TrendChart trend={trend} activeLabel={`${active.year}.${String(active.monthNumber).padStart(2, '0')}`} />
+            <TrendChart trend={trend} />
           </div>
         </div>
         <div>
@@ -109,7 +109,7 @@ export default function App() {
         </div>
         <p className="section-sub">카테고리별 유입 키워드 빈도를 확인합니다 (원 크기는 유입 빈도에 비례, 동점 카테고리는 모두 표시)</p>
         <div className="card">
-          <CategoryBubbles categories={active.categories} people={active.people} />
+          <CategoryBubbles categories={active.categories} people={active.people} monthKey={active.key} />
         </div>
       </div>
     </div>
