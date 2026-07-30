@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { SECTION_ORDER } from '../theme.js'
-import { renderBubbleChart, addStandaloneTag, contrastTextColor } from '../lib/bubbleEngine.js'
+import { renderBubbleChart, addStandaloneTag, contrastTextColor, estimateCanvasSize } from '../lib/bubbleEngine.js'
 
 const isBrand = (name) => {
   const n = String(name).replace(/\s/g, '')
@@ -18,17 +18,13 @@ function buildKd(categories, people) {
     return { ...c, size: 110 + t * 130 }
   })
 
+  // 브랜드(디엠씨미디어)만 항상 가장 큰 원으로 고정하고, 나머지는 모두 자기 자신의 실제 횟수에
+  // 비례한 크기를 그대로 유지한다. (예전에는 브랜드와 1위 카테고리의 크기를 서로 바꿔치기했는데,
+  // 그러면 1위 카테고리가 자기 횟수와 무관하게 브랜드의 원래 크기를 떠안는 부작용이 있었다.)
   const brandIdx = sized.findIndex((c) => isBrand(c.name))
   if (brandIdx >= 0) {
-    let maxIdx = 0
-    sized.forEach((c, i) => {
-      if (c.size > sized[maxIdx].size) maxIdx = i
-    })
-    if (maxIdx !== brandIdx) {
-      const tmp = sized[brandIdx].size
-      sized[brandIdx].size = sized[maxIdx].size
-      sized[maxIdx].size = tmp
-    }
+    const maxOtherSize = Math.max(0, ...sized.filter((_, i) => i !== brandIdx).map((c) => c.size))
+    if (sized[brandIdx].size <= maxOtherSize) sized[brandIdx].size = maxOtherSize + 14
   }
 
   const bubbles = sized.map((c) => ({
@@ -62,6 +58,7 @@ export default function CategoryBubbles({ categories, people, monthKey }) {
   const [addValue, setAddValue] = useState('')
 
   const kd = useMemo(() => buildKd(categories || [], people || []), [categories, people])
+  const { W: canvasW, H: canvasH } = useMemo(() => estimateCanvasSize(kd), [kd])
 
   useEffect(() => {
     if (!svgRef.current) return
@@ -153,7 +150,7 @@ export default function CategoryBubbles({ categories, people, monthKey }) {
       </div>
 
       <div className="kwd-chart-wrap">
-        <svg ref={svgRef} viewBox="0 0 900 560" width="100%" height={560} role="img" aria-label="카테고리 마인드맵" />
+        <svg ref={svgRef} viewBox={`0 0 ${canvasW} ${canvasH}`} width="100%" height={canvasH} role="img" aria-label="카테고리 마인드맵" />
       </div>
 
       <p style={{ fontSize: 11, color: 'var(--sub)', marginTop: 12 }}>

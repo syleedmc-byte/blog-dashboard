@@ -10,37 +10,37 @@
         "views": {
           "raw": 1835,
           "value": 1835,
-          "delta": null,
-          "dir": null,
-          "hasPrev": false
+          "delta": "-17.2%",
+          "dir": "down",
+          "hasPrev": true
         },
         "visitors": {
           "raw": 1105,
           "value": 1105,
-          "delta": null,
-          "dir": null,
-          "hasPrev": false
+          "delta": "-23.7%",
+          "dir": "down",
+          "hasPrev": true
         },
         "visits": {
           "raw": 1246,
           "value": 1246,
-          "delta": null,
-          "dir": null,
-          "hasPrev": false
+          "delta": "-21.2%",
+          "dir": "down",
+          "hasPrev": true
         },
         "revisit": {
           "raw": 5.9,
           "value": 5.9,
-          "delta": null,
-          "dir": null,
-          "hasPrev": false
+          "delta": "+2.0%p",
+          "dir": "up",
+          "hasPrev": true
         },
         "avgtime": {
           "raw": "4m 20s",
           "value": "4m 20s",
-          "delta": null,
-          "dir": null,
-          "hasPrev": false
+          "delta": "-17초",
+          "dir": "down",
+          "hasPrev": true
         },
         "ai": {
           "value": null,
@@ -381,14 +381,6 @@
             {
               "name": "당근마켓 동영상 광고",
               "count": 1
-            },
-            {
-              "name": "무신사 당근 카탈로그 광고 기반 개인화",
-              "count": 1
-            },
-            {
-              "name": "당근 전문가모드 맞춤타겟",
-              "count": 1
             }
           ]
         },
@@ -418,14 +410,6 @@
             {
               "name": "카카오t 택시 핀테마",
               "count": 1
-            },
-            {
-              "name": "카카오 플친 유형",
-              "count": 1
-            },
-            {
-              "name": "카카오t rse광고",
-              "count": 1
             }
           ]
         },
@@ -450,14 +434,6 @@
             },
             {
               "name": "쇼박스 실록",
-              "count": 1
-            },
-            {
-              "name": "왕과 사는 남자 촬영 실록",
-              "count": 1
-            },
-            {
-              "name": "왕과사는남자 촬영실록비하인드  2.70%",
               "count": 1
             }
           ]
@@ -484,14 +460,6 @@
             {
               "name": "중저가 브랜드 여성의류",
               "count": 1
-            },
-            {
-              "name": "티몬 대체할 수 있는 중저가 의류 쇼핑몰 알려주세요",
-              "count": 1
-            },
-            {
-              "name": "중저가 패션 브랜드",
-              "count": 1
             }
           ]
         },
@@ -517,14 +485,6 @@
             {
               "name": "토스 CPC광고",
               "count": 1
-            },
-            {
-              "name": "토스 리드폼으로 잠재고객 모으기 방법은?",
-              "count": 1
-            },
-            {
-              "name": "토스애즈 광고 방법",
-              "count": 1
             }
           ]
         },
@@ -549,14 +509,6 @@
             },
             {
               "name": "헌혈캠페인",
-              "count": 1
-            },
-            {
-              "name": "헌혈 인식",
-              "count": 1
-            },
-            {
-              "name": "대한적십자사 헌혈캠페인",
               "count": 1
             }
           ]
@@ -1442,5 +1394,5 @@
     "Trend"
   ],
   "sourceFile": "블로그_통계(통합)_0730.xlsx",
-  "updatedAt": "2026-07-30T09:02:04.169Z"
+  "updatedAt": "2026-07-30T09:27:58.922Z"
 }

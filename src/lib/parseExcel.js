@@ -324,7 +324,9 @@ function parseCategorySheet(workbook, sheetName) {
         total,
         section: mix.length > 0 ? mix[0].section : null,
         mix,
-        keywords: topKeywords(name),
+        // 언급이 적은(<=15회) 카테고리는 태그도 3개 정도만 — 원이 작은데 태그가 5개나 붙으면
+        // 서로 겹치기 쉽다
+        keywords: topKeywords(name, total <= 15 ? 3 : 5),
       }
     })
     .sort((a, b) => b.total - a.total)
@@ -433,6 +435,28 @@ export function parseWorkbook(workbook) {
   const months = parsedKeyword.map((m, idx) => {
     const prev = idx > 0 ? parsedKeyword[idx - 1] : null
     const { categories = [], people = [] } = categoryByMonth.get(m.monthNumber) || {}
+
+    // 전월 조회수/순방문자수는 형제 시트(parsedKeyword[idx-1])가 없어도, 이 시트 자신에 실려 있는
+    // "월간조회수추이"/"월간순방문자추이" 표에서 바로 앞 달을 찾아 구한다 — 그래서 지금 엑셀에서
+    // 가장 이른 달(4월)이라도 그 표에 3월이 있으면 전월대비를 보여줄 수 있다.
+    const prevYear = m.monthNumber === 1 ? m.year - 1 : m.year
+    const prevMonthNumber = m.monthNumber === 1 ? 12 : m.monthNumber - 1
+    const findTrend = (arr) => arr.find((t) => t.year === prevYear && t.month === prevMonthNumber)?.value ?? null
+    const prevViews = prev?.stats.views ?? findTrend(m.viewsTrend)
+    const prevVisitors = prev?.stats.visitors ?? findTrend(m.visitorsTrend)
+
+    // 방문횟수/재방문율/평균사용시간은 추이표가 없어 시트만으로는 전월값을 구할 수 없다. 지금
+    // 엑셀에 없는 2026-03(3월) 시트만 예외로 문서화해 둔다 — 원본 슬라이드(월간_블로그_통계_통합__0713.pptx,
+    // 4월 슬라이드)에 이미 계산되어 있던 전월대비(-21.2%/+2.0%p/-17초)를 역산한 값. 재방문율·평균사용시간은
+    // 그 슬라이드가 %p/초 단위 "차이"를 그대로 보여주므로 역산이 정확하고, 방문횟수는 비율(%) delta라
+    // 반올림된 표시값에서 되돌린 근사값이다(1581±1이어도 "-21.2%"로 동일하게 표시됨). 실제 3월 시트가
+    // 추가되면 prev가 채워지므로 이 예외는 자동으로 쓰이지 않게 된다.
+    const PRIOR_MONTH_FALLBACK = { '2026-3': { visits: 1581, revisit: 3.9, avgtime: '4m 37s' } }
+    const fallback = PRIOR_MONTH_FALLBACK[`${prevYear}-${prevMonthNumber}`]
+    const prevVisits = prev?.stats.visits ?? fallback?.visits ?? null
+    const prevRevisit = prev?.stats.revisit ?? fallback?.revisit ?? null
+    const prevAvgtime = prev?.stats.avgtime ?? fallback?.avgtime ?? null
+
     return {
       key: `${m.year}-${String(m.monthNumber).padStart(2, '0')}`,
       monthNumber: m.monthNumber,
@@ -440,11 +464,11 @@ export function parseWorkbook(workbook) {
       label: `${m.monthNumber}월`,
       period: `${m.year}.${String(m.monthNumber).padStart(2, '0')}.01 ~ ${String(m.monthNumber).padStart(2, '0')}.${new Date(m.year, m.monthNumber, 0).getDate()}`,
       kpi: {
-        views: kpiField(m.stats.views, prev?.stats.views),
-        visitors: kpiField(m.stats.visitors, prev?.stats.visitors),
-        visits: kpiField(m.stats.visits, prev?.stats.visits),
-        revisit: kpiField(m.stats.revisit, prev?.stats.revisit, { isPercent: true }),
-        avgtime: kpiField(m.stats.avgtime, prev?.stats.avgtime, { isDuration: true }),
+        views: kpiField(m.stats.views, prevViews),
+        visitors: kpiField(m.stats.visitors, prevVisitors),
+        visits: kpiField(m.stats.visits, prevVisits),
+        revisit: kpiField(m.stats.revisit, prevRevisit, { isPercent: true }),
+        avgtime: kpiField(m.stats.avgtime, prevAvgtime, { isDuration: true }),
         ai: m.ai || { value: null, cumulative: null },
       },
       referrers: m.referrers,

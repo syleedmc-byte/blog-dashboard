@@ -113,7 +113,7 @@ function estimateTagSize(text) {
   return { w, h }
 }
 
-function resolveOverlaps(nodes, iterations, boundW, boundH, margin, keepBubblesFixed) {
+function resolveOverlaps(nodes, iterations, boundW, boundH, margin, keepBubblesFixed, gap = 10) {
   for (let iter = 0; iter < iterations; iter++) {
     let moved = false
     for (let i = 0; i < nodes.length; i++) {
@@ -123,7 +123,7 @@ function resolveOverlaps(nodes, iterations, boundW, boundH, margin, keepBubblesF
         const dx = b.x - a.x
         const dy = b.y - a.y
         let dist = Math.hypot(dx, dy)
-        const minDist = a.r + b.r + 10
+        const minDist = a.r + b.r + gap
         if (dist < minDist) {
           moved = true
           if (dist < 0.01) dist = 0.01
@@ -640,13 +640,13 @@ function buildFreshLayout(kd, W, H, margin) {
   })
 
   const sim = forceSimulation(nodes)
-    .force('charge', forceManyBody().strength(-55))
+    .force('charge', forceManyBody().strength(-90))
     .force('center', forceCenter(W / 2, H / 2))
     .force(
       'collide',
       forceCollide()
-        .radius((d) => d.r + 12)
-        .iterations(5)
+        .radius((d) => d.r + 16)
+        .iterations(8)
     )
     .force(
       'link',
@@ -663,25 +663,66 @@ function buildFreshLayout(kd, W, H, margin) {
     .force('y', forceY(H / 2).strength(0.025))
     .stop()
 
-  for (let i = 0; i < 500; i++) sim.tick()
+  for (let i = 0; i < 700; i++) sim.tick()
 
-  resolveOverlaps(nodes, 120)
+  // 브랜드 원이 항상 커지도록 강제하는 규칙(buildKd) 때문에 힘 시뮬레이션이 예상한 반경보다
+  // 실제 반경이 커지는 경우가 있어, 후처리 겹침 제거를 더 넉넉한 여유(gap)와 반복 횟수로 돌린다
+  resolveOverlaps(nodes, 700, null, null, null, false, 16)
+
+  // 그래도 태그가 (남의 원이 아니라) 자기 자신의 부모 원 안쪽에 남는 경우가 있어 — 힘 시뮬레이션은
+  // 모든 노드를 동등하게 밀어낼 뿐 "이 태그는 반드시 이 원 밖에 있어야 한다"는 관계를 모르기 때문.
+  // 부모-자식 관계는 알고 있으니, 자기 부모 원과 겹치면 그 원의 가장자리 바로 밖으로 곧장 밀어낸다.
+  const byId = Object.fromEntries(nodes.map((n) => [n.id, n]))
+  nodes.forEach((n) => {
+    const p = n.parent && byId[n.parent]
+    if (!p) return
+    let dx = n.x - p.x
+    let dy = n.y - p.y
+    let dist = Math.hypot(dx, dy)
+    const minDist = p.r + n.r + 16
+    if (dist < minDist) {
+      if (dist < 0.01) {
+        const angle = Math.random() * Math.PI * 2
+        dx = Math.cos(angle)
+        dy = Math.sin(angle)
+        dist = 1
+      }
+      const ux = dx / dist
+      const uy = dy / dist
+      n.x = p.x + ux * minDist
+      n.y = p.y + uy * minDist
+    }
+  })
+
   nodes.forEach((n) => {
     n.x = Math.max(margin + n.r, Math.min(W - margin - n.r, n.x))
     n.y = Math.max(margin + n.r, Math.min(H - margin - n.r, n.y))
   })
-  resolveOverlaps(nodes, 60, W, H, margin)
+  // 위에서 부모 밖으로 밀어낸 태그가 다른 형제 태그와 새로 겹칠 수 있으니 마지막으로 한 번 더 정리
+  resolveOverlaps(nodes, 400, W, H, margin, false, 16)
 
   const plainLinks = links.map((l) => ({ source: l.source.id || l.source, target: l.target.id || l.target }))
   return { nodes, links: plainLinks }
+}
+
+/** 원(카테고리)과 태그·인물 노드 수를 보고 캔버스 높이를 정한다 — 동점 카테고리가 많은 달(예: 4월은
+ *  10개)은 태그까지 합쳐 노드가 50개를 훌쩍 넘어가는데, 캔버스 크기가 고정이면 이런 달만 유독 원과
+ *  태그가 서로 겹친다. CategoryBubbles.jsx가 SVG viewBox를 잡을 때도 이 값을 그대로 써야
+ *  시뮬레이션이 계산한 좌표와 실제로 보이는 캔버스 크기가 어긋나지 않는다. */
+export function estimateCanvasSize(kd) {
+  const nodeCount = (kd.bubbles || []).length + (kd.bubbles || []).reduce((s, b) => s + (b.related || []).length, 0) + (kd.people || []).length + (kd.loose || []).length
+  const H = Math.max(560, Math.round(nodeCount * 22))
+  const W = Math.max(900, Math.round(nodeCount * 14))
+  return { W, H }
 }
 
 /** entry point: mounts (or loads the saved) bubble chart into svgEl.
  *  returns a cleanup function — call it from the React effect's cleanup. */
 export async function renderBubbleChart(kd, svgEl, monthKey) {
   svgEl.dataset.monthKey = monthKey || ''
-  const W = 900
-  const H = 560
+  const { W, H } = estimateCanvasSize(kd)
+  svgEl.setAttribute('viewBox', `0 0 ${W} ${H}`)
+  svgEl.setAttribute('height', H)
   const margin = 40
   let nodes = []
   let links = []
