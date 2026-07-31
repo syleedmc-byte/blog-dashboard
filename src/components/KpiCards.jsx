@@ -14,8 +14,6 @@ function fmtInt(n) {
   return typeof n === 'number' ? n.toLocaleString('ko-KR') : '-'
 }
 
-const PILL_COLORS = ['pink', 'navy', 'orange', 'purple', 'teal', 'green']
-
 export default function KpiCards({ kpi }) {
   const cards = [
     { icon: '👁', label: '조회수', value: fmtInt(kpi.views.value), field: kpi.views },
@@ -26,8 +24,8 @@ export default function KpiCards({ kpi }) {
   ]
   return (
     <div className="stats-row">
-      {cards.map((c, i) => (
-        <div className={`stat-card pill-${PILL_COLORS[i % PILL_COLORS.length]}`} key={c.label}>
+      {cards.map((c) => (
+        <div className="stat-card" key={c.label}>
           <div className="stat-icon">{c.icon}</div>
           <div className="stat-value">{c.value}</div>
           <div className="stat-label">{c.label}</div>

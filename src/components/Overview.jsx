@@ -11,10 +11,14 @@ function fmtInt(n) {
  *  보조 인사이트(overview.secondaryInsights) 2~3개, "월별 추이 비교", "역대 인기 게시물"을
  *  번호/배지 없이 자연스럽게 흐르는 순서로 배치한다. 여기서는 숫자를 새로 계산하지 않고
  *  parseExcel.js의 computeOverview 결과를 그대로 쓴다. */
+const MIX_COLORS = ['var(--pill-purple)', 'var(--pill-teal)', 'var(--pill-orange)', 'var(--pill-pink)', 'var(--pill-navy)']
+const MIX_ETC_COLOR = 'var(--line)'
+
 export default function Overview({ overview, months, trend, onSelect }) {
   if (!overview || !months || months.length === 0) return null
   const latest = months[months.length - 1]
-  const { topPosts, risingPosts, headline, secondaryInsights } = overview
+  const { topPosts, risingPosts, headline, secondaryInsights, topMover, categoryMix } = overview
+  const ai = latest.kpi.ai
 
   return (
     <div className="overview">
@@ -44,6 +48,73 @@ export default function Overview({ overview, months, trend, onSelect }) {
               <div className="secondary-note">{s.note}</div>
             </div>
           ))}
+        </div>
+      )}
+
+      {(ai || topMover) && (
+        <div className="insight-row-2">
+          <div className="stat-card ai-card">
+            <div className="stat-icon">🤖</div>
+            {ai.value != null ? (
+              <>
+                <div className="stat-value">{ai.value}</div>
+                <div className="stat-label">AI 브리핑 인용수</div>
+                <div className="ai-sub">
+                  누적 <b>{ai.cumulative ?? '-'}</b>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="stat-label">AI 브리핑 인용수</div>
+                <div className="ai-pending">📡 데이터 수집 예정</div>
+                <div className="ai-sub">AI 검색 인용(GEO) 지표</div>
+              </>
+            )}
+          </div>
+
+          {topMover && (
+            <div className="stat-card mover-card">
+              <div className="stat-icon">🚀</div>
+              <div className="mover-title">이번 달 급성장 게시물</div>
+              <div className="mover-value">{topMover.title}</div>
+              <div className="mover-trend">
+                {topMover.prevLabel} {fmtInt(topMover.prevViews)}회 → {topMover.curLabel} {fmtInt(topMover.curViews)}회{' '}
+                <b>(+{topMover.growthPct}%)</b>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {categoryMix.length > 0 && (
+        <div className="section-block">
+          <h2 className="section-title">이번 달 인기글 주제 비중 (TOP10 기준)</h2>
+          <p className="section-sub">인기 게시글 제목을 카테고리명과 대조해 자동으로 추정한 비중입니다</p>
+          <div className="card">
+            <div className="topic-mix-bar">
+              {categoryMix.map((m, i) => (
+                <div
+                  key={m.name}
+                  className="topic-mix-seg"
+                  style={{ width: `${m.pct}%`, background: m.name === '기타' ? MIX_ETC_COLOR : MIX_COLORS[i % MIX_COLORS.length] }}
+                >
+                  {m.pct >= 8 ? `${m.pct}%` : ''}
+                </div>
+              ))}
+            </div>
+            <div className="topic-mix-legend">
+              {categoryMix.map((m, i) => (
+                <div className="topic-mix-legend-item" key={m.name}>
+                  <span
+                    className="topic-mix-legend-swatch"
+                    style={{ background: m.name === '기타' ? MIX_ETC_COLOR : MIX_COLORS[i % MIX_COLORS.length] }}
+                  />
+                  {m.name} {m.pct}%
+                </div>
+              ))}
+            </div>
+            <p className="topic-mix-caption">※ 게시물과 카테고리를 직접 잇는 데이터가 없어, 제목 텍스트 기반으로 추정한 값입니다 (참고용).</p>
+          </div>
         </div>
       )}
 

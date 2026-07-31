@@ -1582,8 +1582,34 @@
         "note": "순위 상승"
       }
     ],
+    "topMover": {
+      "title": "AI 기술로 진화한 네이티브 광고 플랫폼 '타불라' 핵심 요약",
+      "prevLabel": "5월",
+      "curLabel": "6월",
+      "prevViews": 47,
+      "curViews": 108,
+      "growthPct": 130
+    },
+    "categoryMix": [
+      {
+        "name": "디엠씨미디어",
+        "pct": 67.3
+      },
+      {
+        "name": "타불라",
+        "pct": 15.2
+      },
+      {
+        "name": "더마코스메틱",
+        "pct": 9.1
+      },
+      {
+        "name": "기타",
+        "pct": 8.4
+      }
+    ],
     "latestKey": "2026-06"
   },
   "sourceFile": "블로그_통계(통합)_0730.xlsx",
-  "updatedAt": "2026-07-31T06:58:05.228Z"
+  "updatedAt": "2026-07-31T07:10:29.115Z"
 }

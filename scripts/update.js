@@ -93,6 +93,18 @@ function main() {
     } else {
       console.log(`  보조 인사이트: 없음 (비교할 전월 데이터 없음)`)
     }
+
+    if (ov.topMover) {
+      console.log(`\n[검증용] 이번 달 급성장 게시물: "${ov.topMover.title}" ${ov.topMover.prevLabel} ${formatNumber(ov.topMover.prevViews)}회 → ${ov.topMover.curLabel} ${formatNumber(ov.topMover.curViews)}회 (+${ov.topMover.growthPct}%)`)
+    } else {
+      console.log(`\n[검증용] 이번 달 급성장 게시물: 없음 (전월과 겹치면서 조회수가 늘어난 글 없음)`)
+    }
+
+    if (ov.categoryMix.length > 0) {
+      console.log(`[검증용] 이번 달 인기글 주제 비중(제목 기반 추정, 합계 100%여야 함): ${ov.categoryMix.map((m) => `${m.name} ${m.pct}%`).join(', ')}`)
+    } else {
+      console.log(`[검증용] 이번 달 인기글 주제 비중: 계산 불가 (카테고리 데이터 없음)`)
+    }
   }
 
   console.log(`\n이제 "npm run dev"로 화면을 확인하거나, git commit + push로 배포하세요.`)

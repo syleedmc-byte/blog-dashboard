@@ -641,6 +641,64 @@ function computeSecondaryInsights(months, headlineMetricKey) {
   return insights.slice(0, 3)
 }
 
+/** 이번 달 급성장 게시물: 신규 진입(risingPosts)과 달리, 전월에도 있었던 글 중 조회수가 가장
+ *  크게 늘어난 글 하나를 찾는다. 두 달 모두에 없거나 증가한 글이 하나도 없으면 null. */
+function computeTopMover(months) {
+  if (months.length < 2) return null
+  const latest = months[months.length - 1]
+  const prev = months[months.length - 2]
+
+  const candidates = latest.posts
+    .map((p) => {
+      const prevP = prev.posts.find((pp) => pp.title === p.title)
+      if (!prevP || prevP.views == null || p.views == null || prevP.views <= 0) return null
+      const growthPct = ((p.views - prevP.views) / prevP.views) * 100
+      return { title: p.title, prevViews: prevP.views, curViews: p.views, growthPct }
+    })
+    .filter((c) => c && c.growthPct > 0)
+    .sort((a, b) => b.growthPct - a.growthPct)
+
+  if (candidates.length === 0) return null
+  const best = candidates[0]
+  return {
+    title: best.title,
+    prevLabel: prev.label,
+    curLabel: latest.label,
+    prevViews: best.prevViews,
+    curViews: best.curViews,
+    growthPct: Math.round(best.growthPct),
+  }
+}
+
+/** 이번 달 인기글(TOP10) 주제 비중 — 원본 엑셀에 게시물↔카테고리 연결 필드가 없어서, 제목에
+ *  카테고리명이 포함되는지로 근사 추정하는 휴리스틱이다(정확한 분류 아님, UI에도 명시함).
+ *  총 조회수 비중이 큰 카테고리부터 매칭을 시도해, 여러 카테고리명이 겹치는 제목은 더 비중 큰
+ *  쪽으로 배정한다. 매칭되는 카테고리가 없으면 "기타"로 묶는다. */
+function computeCategoryMix(latestMonth) {
+  const posts = (latestMonth.posts || []).filter((p) => p.views != null)
+  const categories = latestMonth.categories || []
+  if (posts.length === 0 || categories.length === 0) return []
+
+  const sortedCats = [...categories].sort((a, b) => b.total - a.total)
+  const viewsByBucket = new Map()
+
+  for (const post of posts) {
+    const titleKey = normKey(post.title)
+    const match = sortedCats.find((c) => titleKey.includes(normKey(c.name)))
+    const bucket = match ? match.name : '기타'
+    viewsByBucket.set(bucket, (viewsByBucket.get(bucket) || 0) + post.views)
+  }
+
+  const totalViews = [...viewsByBucket.values()].reduce((a, b) => a + b, 0)
+  if (totalViews === 0) return []
+
+  const mix = [...viewsByBucket.entries()]
+    .map(([name, views]) => ({ name, pct: +((views / totalViews) * 100).toFixed(1) }))
+    .sort((a, b) => (a.name === '기타') - (b.name === '기타') || b.pct - a.pct)
+
+  return mix
+}
+
 /** 홈(통합 인덱스) 페이지가 쓰는, 여러 달을 하나로 합친 값 중 실제로 유의미하다고 확인된 것만
  *  남긴다 (총 조회수 합계·가중평균 재방문율·통합 유입경로 1위 같은 값은 그다지 유용하지 않다는
  *  피드백에 따라 제거함). months[]는 이미 parseWorkbook이 만든 최종 값이라 여기서 시트를 다시
@@ -670,12 +728,16 @@ function computeOverview(months, trend) {
 
   const headline = computeHeadlineInsight(months, trend)
   const secondaryInsights = computeSecondaryInsights(months, headline.metricKey)
+  const topMover = computeTopMover(months)
+  const categoryMix = computeCategoryMix(latest)
 
   return {
     topPosts,
     risingPosts,
     headline,
     secondaryInsights,
+    topMover,
+    categoryMix,
     latestKey: latest.key,
   }
 }
