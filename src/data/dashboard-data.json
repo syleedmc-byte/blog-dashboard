@@ -1528,6 +1528,62 @@
         "url": "https://blog.naver.com/dmcmedia_official/224290016541",
         "monthKey": "2026-06",
         "monthLabel": "6월"
+      },
+      {
+        "rank": 1,
+        "title": "격주 DMCian l 스트레스 많이 받을거지만 운동 많이 될 굿파트너, 승진자 그룹인터뷰",
+        "views": 106,
+        "url": "https://blog.naver.com/dmcmedia_official/224144628479",
+        "monthKey": "2026-05",
+        "monthLabel": "5월"
+      },
+      {
+        "rank": 4,
+        "title": "디엠씨미디어의 사내 AI 활용 경진대회 'D.match 2026', 본선PT 현장 스케치",
+        "views": 90,
+        "url": "https://blog.naver.com/dmcmedia_official/224324845160",
+        "monthKey": "2026-06",
+        "monthLabel": "6월"
+      },
+      {
+        "rank": 5,
+        "title": "디엠씨미디어 창립 24주년 기념행사 현장 스케치",
+        "views": 77,
+        "url": "https://blog.naver.com/dmcmedia_official/224328204507",
+        "monthKey": "2026-06",
+        "monthLabel": "6월"
+      },
+      {
+        "rank": 6,
+        "title": "2040 여성 10명 중 4명이 아는 더마 코스메틱 브랜드, 라로슈포제가 그림자를 홍보대사로 발탁한 이유는?",
+        "views": 65,
+        "url": "https://blog.naver.com/dmcmedia_official/224303643372",
+        "monthKey": "2026-06",
+        "monthLabel": "6월"
+      },
+      {
+        "rank": 2,
+        "title": "AI 기술로 진화한 네이티브 광고 플랫폼 '타불라' 핵심 요약",
+        "views": 47,
+        "url": "https://blog.naver.com/dmcmedia_official/224290016541",
+        "monthKey": "2026-05",
+        "monthLabel": "5월"
+      },
+      {
+        "rank": 3,
+        "title": "디엠씨미디어 '디프레임', 데이터·GEO 웨비나로 마케팅 성과 극대화 전략 공유",
+        "views": 44,
+        "url": "https://blog.naver.com/dmcmedia_official/224277658917",
+        "monthKey": "2026-05",
+        "monthLabel": "5월"
+      },
+      {
+        "rank": 7,
+        "title": "격주 DMCian l 디엠씨미디어가 라디오 프로그램이라면, 이 경력직 3인방은 고정 게스트일거야",
+        "views": 35,
+        "url": "https://blog.naver.com/dmcmedia_official/224245183312",
+        "monthKey": "2026-06",
+        "monthLabel": "6월"
       }
     ],
     "risingPosts": [
@@ -1584,6 +1640,7 @@
     ],
     "topMover": {
       "title": "AI 기술로 진화한 네이티브 광고 플랫폼 '타불라' 핵심 요약",
+      "url": "https://blog.naver.com/dmcmedia_official/224290016541",
       "prevLabel": "5월",
       "curLabel": "6월",
       "prevViews": 47,
@@ -1609,6 +1666,7 @@
       }
     ],
     "cumulative": {
+      "year": 2026,
       "totalViews": 4635,
       "totalVisitors": 2534,
       "viewsSparkline": [
@@ -1627,5 +1685,5 @@
     "latestKey": "2026-06"
   },
   "sourceFile": "블로그_통계(통합)_0730.xlsx",
-  "updatedAt": "2026-07-31T07:40:49.318Z"
+  "updatedAt": "2026-07-31T07:57:16.863Z"
 }

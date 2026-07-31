@@ -25,7 +25,7 @@ export default function Overview({ overview, months, trend, onSelect }) {
         <div className="stat-card cumulative-card">
           <div className="stat-icon">👁</div>
           <div className="stat-value">{fmtInt(cumulative.totalViews)}</div>
-          <div className="stat-label">누적 조회수 (전체 기간)</div>
+          <div className="stat-label">누적 조회수 ({cumulative.year}년)</div>
           <div className="cumulative-bottom">
             {cumulative.viewsSparkline.length > 1 && <Sparkline values={cumulative.viewsSparkline} color={SERIES_VIEWS} />}
             {cumulative.momViewsPct != null && (
@@ -38,7 +38,7 @@ export default function Overview({ overview, months, trend, onSelect }) {
         <div className="stat-card cumulative-card">
           <div className="stat-icon">👤</div>
           <div className="stat-value">{fmtInt(cumulative.totalVisitors)}</div>
-          <div className="stat-label">누적 순방문자수 (전체 기간)</div>
+          <div className="stat-label">누적 순방문자수 ({cumulative.year}년)</div>
           <div className="cumulative-bottom">
             {cumulative.visitorsSparkline.length > 1 && <Sparkline values={cumulative.visitorsSparkline} color={SERIES_VISITORS} />}
             {cumulative.momVisitorsPct != null && (
@@ -48,46 +48,51 @@ export default function Overview({ overview, months, trend, onSelect }) {
             )}
           </div>
         </div>
+        <div className="stat-card cumulative-card ai-card">
+          <div className="stat-icon">🤖</div>
+          {ai.value != null ? (
+            <>
+              <div className="stat-value">{ai.value}</div>
+              <div className="stat-label">AI 브리핑 인용수 (누적)</div>
+              <div className="ai-sub">
+                누적 <b>{ai.cumulative ?? '-'}</b>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="stat-value">{ai.cumulative ?? '-'}</div>
+              <div className="stat-label">AI 브리핑 인용수 (누적)</div>
+              <div className="ai-pending">📡 데이터 수집 예정</div>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="chart-side-grid">
         <div className="card">
           <p className="subcard-title"><span className="accent-dot" />월별 추이 비교</p>
-          <p className="section-sub">엑셀에 있는 전체 {trend?.length ?? 0}개월치 조회수를 월별 막대로 비교합니다</p>
+          <p className="section-sub">최근 6개월치 조회수를 월별 막대로 비교합니다</p>
           <div className="chart-legend">
             <div className="item">
               <span className="swatch" style={{ background: SERIES_VIEWS }} />
               조회수
             </div>
           </div>
-          <ViewsBarChart trend={trend} />
+          <ViewsBarChart trend={trend?.slice(-6)} />
         </div>
 
         <div className="side-stack">
-          <div className="stat-card ai-card">
-            <div className="stat-icon">🤖</div>
-            {ai.value != null ? (
-              <>
-                <div className="stat-value">{ai.value}</div>
-                <div className="stat-label">AI 브리핑 인용수</div>
-                <div className="ai-sub">
-                  누적 <b>{ai.cumulative ?? '-'}</b>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="stat-label">AI 브리핑 인용수</div>
-                <div className="ai-pending">📡 데이터 수집 예정</div>
-                <div className="ai-sub">AI 검색 인용(GEO) 지표</div>
-              </>
-            )}
-          </div>
-
           {topMover && (
             <div className="stat-card mover-card">
               <div className="stat-icon">🚀</div>
-              <div className="mover-title">이번 달 급성장 게시물</div>
-              <div className="mover-value">{topMover.title}</div>
+              <div className="mover-title">{latest.label} 급성장 게시물</div>
+              {topMover.url ? (
+                <a className="mover-value mover-link" href={topMover.url} target="_blank" rel="noopener noreferrer">
+                  {topMover.title} <span className="link-ico">🔗</span>
+                </a>
+              ) : (
+                <div className="mover-value">{topMover.title}</div>
+              )}
               <div className="mover-trend">
                 {topMover.prevLabel} {fmtInt(topMover.prevViews)}회 → {topMover.curLabel} {fmtInt(topMover.curViews)}회{' '}
                 <b>(+{topMover.growthPct}%)</b>
@@ -128,7 +133,7 @@ export default function Overview({ overview, months, trend, onSelect }) {
 
       {categoryMix.length > 0 && (
         <div className="section-block">
-          <h2 className="section-title">이번 달 인기글 주제 비중 (TOP10 기준)</h2>
+          <h2 className="section-title">{latest.label} 인기글 주제 비중 (TOP10 기준)</h2>
           <p className="section-sub">인기 게시글 제목을 카테고리명과 대조해 자동으로 추정한 비중입니다</p>
           <div className="card">
             <div className="topic-mix-bar">
@@ -159,20 +164,34 @@ export default function Overview({ overview, months, trend, onSelect }) {
       )}
 
       <div className="section-block">
-        <h2 className="section-title">역대 인기 게시물 TOP3</h2>
-        <p className="section-sub">전체 기간 통틀어 가장 많이 읽힌 글 top3입니다</p>
+        <h2 className="section-title">역대 인기 게시물 TOP10</h2>
+        <p className="section-sub">전체 기간 통틀어 가장 많이 읽힌 글 top10입니다 (클릭하면 게시물로 바로 이동합니다)</p>
         <div className="overview-post-list">
-          {topPosts.map((p, i) => (
-            <button type="button" className="overview-post-card" key={`${p.monthKey}-${p.title}`} onClick={() => onSelect(p.monthKey)}>
-              <div className="overview-post-rank">{i + 1}</div>
-              <div className="overview-post-body">
-                <div className="overview-post-title">{p.title}</div>
-                <div className="overview-post-meta">
-                  {p.monthLabel} · {fmtInt(p.views)}회
+          {topPosts.map((p, i) =>
+            p.url ? (
+              <a className="overview-post-card" key={`${p.monthKey}-${p.title}`} href={p.url} target="_blank" rel="noopener noreferrer">
+                <div className="overview-post-rank">{i + 1}</div>
+                <div className="overview-post-body">
+                  <div className="overview-post-title">
+                    {p.title} <span className="link-ico">🔗</span>
+                  </div>
+                  <div className="overview-post-meta">
+                    {p.monthLabel} · {fmtInt(p.views)}회
+                  </div>
                 </div>
-              </div>
-            </button>
-          ))}
+              </a>
+            ) : (
+              <button type="button" className="overview-post-card" key={`${p.monthKey}-${p.title}`} onClick={() => onSelect(p.monthKey)}>
+                <div className="overview-post-rank">{i + 1}</div>
+                <div className="overview-post-body">
+                  <div className="overview-post-title">{p.title}</div>
+                  <div className="overview-post-meta">
+                    {p.monthLabel} · {fmtInt(p.views)}회
+                  </div>
+                </div>
+              </button>
+            )
+          )}
         </div>
       </div>
     </div>

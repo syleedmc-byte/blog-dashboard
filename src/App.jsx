@@ -23,6 +23,7 @@ function monthKeyFromHash(months) {
 export default function App() {
   const { months, trend, sourceFile, overview, error } = dashboardData
   const [activeKey, setActiveKey] = useState(() => monthKeyFromHash(months))
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   useEffect(() => {
     const onHashChange = () => setActiveKey(monthKeyFromHash(months))
@@ -89,11 +90,13 @@ export default function App() {
   }
 
   const pageTitle = active ? `${active.label} 블로그 통계` : '홈'
-  const pageSub = active ? '블로그 운영 성과를 한눈에 확인하세요.' : '이번 달 핵심 인사이트를 한눈에 확인하세요.'
+  const pageSub = active
+    ? '블로그 운영 성과를 한눈에 확인하세요.'
+    : `${months[months.length - 1].label} 핵심 인사이트를 한눈에 확인하세요.`
 
   return (
     <div className="app-shell">
-      <Sidebar sections={navSections} />
+      <Sidebar sections={navSections} collapsed={sidebarCollapsed} onToggleCollapse={() => setSidebarCollapsed((v) => !v)} />
 
       <div className="main-area">
         <div className="topbar">

@@ -653,7 +653,7 @@ function computeTopMover(months) {
       const prevP = prev.posts.find((pp) => pp.title === p.title)
       if (!prevP || prevP.views == null || p.views == null || prevP.views <= 0) return null
       const growthPct = ((p.views - prevP.views) / prevP.views) * 100
-      return { title: p.title, prevViews: prevP.views, curViews: p.views, growthPct }
+      return { title: p.title, url: p.url, prevViews: prevP.views, curViews: p.views, growthPct }
     })
     .filter((c) => c && c.growthPct > 0)
     .sort((a, b) => b.growthPct - a.growthPct)
@@ -662,6 +662,7 @@ function computeTopMover(months) {
   const best = candidates[0]
   return {
     title: best.title,
+    url: best.url,
     prevLabel: prev.label,
     curLabel: latest.label,
     prevViews: best.prevViews,
@@ -672,8 +673,10 @@ function computeTopMover(months) {
 
 /** 이번 달 인기글(TOP10) 주제 비중 — 원본 엑셀에 게시물↔카테고리 연결 필드가 없어서, 제목에
  *  카테고리명이 포함되는지로 근사 추정하는 휴리스틱이다(정확한 분류 아님, UI에도 명시함).
- *  총 조회수 비중이 큰 카테고리부터 매칭을 시도해, 여러 카테고리명이 겹치는 제목은 더 비중 큰
- *  쪽으로 배정한다. 매칭되는 카테고리가 없으면 "기타"로 묶는다. */
+ *  카테고리명뿐 아니라 버블차트에 쓰이는 그 카테고리의 top 키워드 태그도 함께 대조해, "카테고리
+ *  이름 자체는 제목에 안 나오지만 관련 키워드는 나오는" 경우까지 잡아낸다. 총 조회수 비중이 큰
+ *  카테고리부터 매칭을 시도해, 여러 카테고리가 겹치는 제목은 더 비중 큰 쪽으로 배정한다.
+ *  매칭되는 카테고리가 없으면 "기타"로 묶는다. */
 function computeCategoryMix(latestMonth) {
   const posts = (latestMonth.posts || []).filter((p) => p.views != null)
   const categories = latestMonth.categories || []
@@ -684,7 +687,9 @@ function computeCategoryMix(latestMonth) {
 
   for (const post of posts) {
     const titleKey = normKey(post.title)
-    const match = sortedCats.find((c) => titleKey.includes(normKey(c.name)))
+    const match = sortedCats.find(
+      (c) => titleKey.includes(normKey(c.name)) || (c.keywords || []).some((k) => titleKey.includes(normKey(k.name)))
+    )
     const bucket = match ? match.name : '기타'
     viewsByBucket.set(bucket, (viewsByBucket.get(bucket) || 0) + post.views)
   }
@@ -699,14 +704,16 @@ function computeCategoryMix(latestMonth) {
   return mix
 }
 
-/** 인덱스 최상단 "누적 지표" 카드용 — 월별 상세 페이지에는 없는, 파싱된 전체 기간을 합산한
- *  값이라 겹치지 않는다. 조회수·순방문자수는 months[]에 실제로 존재하는 값만 더한다(트렌드
- *  표의 과거 달까지 포함하면 원본 게시물 데이터가 없는 달까지 섞여 다른 지표와 기준이 달라짐). */
+/** 인덱스 최상단 "누적 지표" 카드용 — 월별 상세 페이지에는 없는, 최신 달과 같은 연도에 속한
+ *  달만 합산한 "이번 연도 누적" 값이라 겹치지 않는다(연도가 바뀌면 자동으로 새로 리셋됨). */
 function computeCumulativeStats(months) {
-  const totalViews = months.reduce((sum, m) => sum + (m.kpi.views.raw || 0), 0)
-  const totalVisitors = months.reduce((sum, m) => sum + (m.kpi.visitors.raw || 0), 0)
-  const viewsSparkline = months.map((m) => m.kpi.views.raw)
-  const visitorsSparkline = months.map((m) => m.kpi.visitors.raw)
+  const year = months[months.length - 1].year
+  const yearMonths = months.filter((m) => m.year === year)
+
+  const totalViews = yearMonths.reduce((sum, m) => sum + (m.kpi.views.raw || 0), 0)
+  const totalVisitors = yearMonths.reduce((sum, m) => sum + (m.kpi.visitors.raw || 0), 0)
+  const viewsSparkline = yearMonths.map((m) => m.kpi.views.raw)
+  const visitorsSparkline = yearMonths.map((m) => m.kpi.visitors.raw)
 
   const momPct = (key) => {
     if (months.length < 2) return null
@@ -717,6 +724,7 @@ function computeCumulativeStats(months) {
   }
 
   return {
+    year,
     totalViews,
     totalVisitors,
     viewsSparkline,
@@ -733,12 +741,12 @@ function computeCumulativeStats(months) {
 function computeOverview(months, trend) {
   if (!months || months.length === 0) return null
 
-  // 전체 기간 통틀어 조회수가 가장 많았던 게시물 top3 (각 달의 인기게시물 Top10을 다시 합쳐서 비교)
+  // 전체 기간 통틀어 조회수가 가장 많았던 게시물 top10 (각 달의 인기게시물 Top10을 다시 합쳐서 비교)
   const allPosts = months.flatMap((m) => (m.posts || []).map((p) => ({ ...p, monthKey: m.key, monthLabel: m.label })))
   const topPosts = [...allPosts]
     .filter((p) => p.views != null)
     .sort((a, b) => b.views - a.views)
-    .slice(0, 3)
+    .slice(0, 10)
 
   // 이번 달 신규 진입 게시물: 이번 달 TOP10에는 있지만 전월 TOP10에는 아예 없던 글 — "지난달엔
   // 순위 밖이었는데 이번 달 갑자기 올라온 글"을 뜻한다. 제목을 그대로 키로 비교한다(같은 글이
