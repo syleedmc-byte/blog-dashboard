@@ -99,6 +99,35 @@ export default function Overview({ overview, months, trend, onSelect }) {
               </div>
             </div>
           )}
+
+          {categoryMix.length > 0 && (
+            <div className="card topic-mix-card">
+              <p className="subcard-title"><span className="accent-dot" />{latest.label} 인기글 주제 비중 (TOP10 기준)</p>
+              <div className="topic-mix-bar">
+                {categoryMix.map((m, i) => (
+                  <div
+                    key={m.name}
+                    className="topic-mix-seg"
+                    style={{ width: `${m.pct}%`, background: m.name === '기타' ? MIX_ETC_COLOR : MIX_COLORS[i % MIX_COLORS.length] }}
+                  >
+                    {m.pct >= 8 ? `${m.pct}%` : ''}
+                  </div>
+                ))}
+              </div>
+              <div className="topic-mix-legend">
+                {categoryMix.map((m, i) => (
+                  <div className="topic-mix-legend-item" key={m.name}>
+                    <span
+                      className="topic-mix-legend-swatch"
+                      style={{ background: m.name === '기타' ? MIX_ETC_COLOR : MIX_COLORS[i % MIX_COLORS.length] }}
+                    />
+                    {m.name} {m.pct}%
+                  </div>
+                ))}
+              </div>
+              <p className="topic-mix-caption">※ 게시물과 카테고리를 직접 잇는 데이터가 없어, 제목 텍스트 기반으로 추정한 값입니다 (참고용).</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -131,67 +160,36 @@ export default function Overview({ overview, months, trend, onSelect }) {
         )}
       </div>
 
-      {categoryMix.length > 0 && (
-        <div className="section-block">
-          <h2 className="section-title">{latest.label} 인기글 주제 비중 (TOP10 기준)</h2>
-          <p className="section-sub">인기 게시글 제목을 카테고리명과 대조해 자동으로 추정한 비중입니다</p>
-          <div className="card">
-            <div className="topic-mix-bar">
-              {categoryMix.map((m, i) => (
-                <div
-                  key={m.name}
-                  className="topic-mix-seg"
-                  style={{ width: `${m.pct}%`, background: m.name === '기타' ? MIX_ETC_COLOR : MIX_COLORS[i % MIX_COLORS.length] }}
-                >
-                  {m.pct >= 8 ? `${m.pct}%` : ''}
-                </div>
-              ))}
-            </div>
-            <div className="topic-mix-legend">
-              {categoryMix.map((m, i) => (
-                <div className="topic-mix-legend-item" key={m.name}>
-                  <span
-                    className="topic-mix-legend-swatch"
-                    style={{ background: m.name === '기타' ? MIX_ETC_COLOR : MIX_COLORS[i % MIX_COLORS.length] }}
-                  />
-                  {m.name} {m.pct}%
-                </div>
-              ))}
-            </div>
-            <p className="topic-mix-caption">※ 게시물과 카테고리를 직접 잇는 데이터가 없어, 제목 텍스트 기반으로 추정한 값입니다 (참고용).</p>
-          </div>
-        </div>
-      )}
-
       <div className="section-block">
         <h2 className="section-title">역대 인기 게시물 TOP10</h2>
         <p className="section-sub">전체 기간 통틀어 가장 많이 읽힌 글 top10입니다 (클릭하면 게시물로 바로 이동합니다)</p>
-        <div className="overview-post-list">
-          {topPosts.map((p, i) =>
-            p.url ? (
-              <a className="overview-post-card" key={`${p.monthKey}-${p.title}`} href={p.url} target="_blank" rel="noopener noreferrer">
-                <div className="overview-post-rank">{i + 1}</div>
-                <div className="overview-post-body">
-                  <div className="overview-post-title">
-                    {p.title} <span className="link-ico">🔗</span>
-                  </div>
-                  <div className="overview-post-meta">
-                    {p.monthLabel} · {fmtInt(p.views)}회
-                  </div>
-                </div>
-              </a>
-            ) : (
-              <button type="button" className="overview-post-card" key={`${p.monthKey}-${p.title}`} onClick={() => onSelect(p.monthKey)}>
-                <div className="overview-post-rank">{i + 1}</div>
-                <div className="overview-post-body">
-                  <div className="overview-post-title">{p.title}</div>
-                  <div className="overview-post-meta">
-                    {p.monthLabel} · {fmtInt(p.views)}회
-                  </div>
-                </div>
-              </button>
-            )
-          )}
+        <div className="ov-posts-grid">
+          {[topPosts.slice(0, 5), topPosts.slice(5, 10)].map((col, colIdx) => (
+            <div className="ov-posts-col" key={colIdx}>
+              {col.map((p, i) => {
+                const rank = colIdx * 5 + i + 1
+                const body = (
+                  <>
+                    <div className={`ov-post-rank${rank > 5 ? ' second' : ''}`}>{rank}</div>
+                    <div className="ov-post-title">
+                      {p.title}
+                      {p.url && <span className="link-ico">🔗</span>}
+                    </div>
+                    <div className="ov-post-views">{fmtInt(p.views)}회</div>
+                  </>
+                )
+                return p.url ? (
+                  <a className="ov-post-row" key={`${p.monthKey}-${p.title}`} href={p.url} target="_blank" rel="noopener noreferrer">
+                    {body}
+                  </a>
+                ) : (
+                  <button type="button" className="ov-post-row" key={`${p.monthKey}-${p.title}`} onClick={() => onSelect(p.monthKey)}>
+                    {body}
+                  </button>
+                )
+              })}
+            </div>
+          ))}
         </div>
       </div>
     </div>
