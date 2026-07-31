@@ -25,7 +25,7 @@ export default function Overview({ overview, months, trend, onSelect }) {
         <div className="stat-card cumulative-card icon-teal">
           <div className="cumulative-card-head">
             <div className="stat-icon">👁</div>
-            <div className="cumulative-card-label">누적 조회수 ({cumulative.year}년)</div>
+            <div className="cumulative-card-label">누적 조회수</div>
           </div>
           <div className="stat-value">{fmtInt(cumulative.totalViews)}건</div>
           <div className="cumulative-bottom">
@@ -40,7 +40,7 @@ export default function Overview({ overview, months, trend, onSelect }) {
         <div className="stat-card cumulative-card icon-purple">
           <div className="cumulative-card-head">
             <div className="stat-icon">👤</div>
-            <div className="cumulative-card-label">누적 순방문자수 ({cumulative.year}년)</div>
+            <div className="cumulative-card-label">누적 순방문자수</div>
           </div>
           <div className="stat-value">{fmtInt(cumulative.totalVisitors)}명</div>
           <div className="cumulative-bottom">
@@ -55,7 +55,7 @@ export default function Overview({ overview, months, trend, onSelect }) {
         <div className="stat-card cumulative-card icon-orange">
           <div className="cumulative-card-head">
             <div className="stat-icon">🤖</div>
-            <div className="cumulative-card-label">AI 브리핑 인용수 (누적)</div>
+            <div className="cumulative-card-label">AI 브리핑 인용수</div>
           </div>
           {ai.value != null ? (
             <>
