@@ -106,11 +106,11 @@ function main() {
       console.log(`[검증용] 이번 달 인기글 주제 비중: 계산 불가 (카테고리 데이터 없음)`)
     }
 
-    const yearMonths = data.months.filter((m) => m.year === ov.cumulative.year)
-    const manualTotalViews = yearMonths.reduce((s, m) => s + (m.kpi.views.raw || 0), 0)
-    const manualTotalVisitors = yearMonths.reduce((s, m) => s + (m.kpi.visitors.raw || 0), 0)
-    console.log(`[검증용] ${ov.cumulative.year}년 누적 조회수: ${formatNumber(ov.cumulative.totalViews)} (직접 합산과 일치=${ov.cumulative.totalViews === manualTotalViews})`)
-    console.log(`[검증용] ${ov.cumulative.year}년 누적 순방문자수: ${formatNumber(ov.cumulative.totalVisitors)} (직접 합산과 일치=${ov.cumulative.totalVisitors === manualTotalVisitors})`)
+    const yearTrend = data.trend.filter((t) => t.year === ov.cumulative.year)
+    const manualTotalViews = yearTrend.reduce((s, t) => s + (t.views || 0), 0)
+    const manualTotalVisitors = yearTrend.reduce((s, t) => s + (t.visitors || 0), 0)
+    console.log(`[검증용] ${ov.cumulative.year}년 누적 조회수: ${formatNumber(ov.cumulative.totalViews)} (trend 직접 합산과 일치=${ov.cumulative.totalViews === manualTotalViews}, 대상 월=${yearTrend.map((t) => t.label).join(',')})`)
+    console.log(`[검증용] ${ov.cumulative.year}년 누적 순방문자수: ${formatNumber(ov.cumulative.totalVisitors)} (trend 직접 합산과 일치=${ov.cumulative.totalVisitors === manualTotalVisitors})`)
     console.log(`[검증용] 급성장 게시물 링크: ${ov.topMover?.url ?? '(링크 없음)'}`)
     console.log(`[검증용] AI 브리핑 인용수 누적: ${formatNumber(ov.cumulative.aiCumulative)} (엑셀에 실제 값 없으면 폴백 36,000이 표시되어야 함)`)
     console.log(`[검증용] 역대 인기게시물 개수: ${ov.topPosts.length}개 (top10 기준)`)

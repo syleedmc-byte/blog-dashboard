@@ -27,12 +27,12 @@ export default function Overview({ overview, months, trend, onSelect }) {
             <div className="stat-icon">👁</div>
             <div className="cumulative-card-label">누적 조회수 ({cumulative.year}년)</div>
           </div>
-          <div className="stat-value">{fmtInt(cumulative.totalViews)}</div>
+          <div className="stat-value">{fmtInt(cumulative.totalViews)}건</div>
           <div className="cumulative-bottom">
             {cumulative.viewsSparkline.length > 1 && <Sparkline values={cumulative.viewsSparkline} color={SERIES_VIEWS} />}
             {cumulative.momViewsPct != null && (
               <span className={`stat-delta ${cumulative.momViewsPct >= 0 ? 'up' : 'down'}`}>
-                {cumulative.momViewsPct >= 0 ? '▲' : '▼'} {Math.abs(cumulative.momViewsPct)}% <span className="muted">전월 대비</span>
+                {cumulative.momViewsPct >= 0 ? '▲' : '▼'} {Math.abs(cumulative.momViewsPct)}%
               </span>
             )}
           </div>
@@ -42,12 +42,12 @@ export default function Overview({ overview, months, trend, onSelect }) {
             <div className="stat-icon">👤</div>
             <div className="cumulative-card-label">누적 순방문자수 ({cumulative.year}년)</div>
           </div>
-          <div className="stat-value">{fmtInt(cumulative.totalVisitors)}</div>
+          <div className="stat-value">{fmtInt(cumulative.totalVisitors)}명</div>
           <div className="cumulative-bottom">
             {cumulative.visitorsSparkline.length > 1 && <Sparkline values={cumulative.visitorsSparkline} color={SERIES_VISITORS} />}
             {cumulative.momVisitorsPct != null && (
               <span className={`stat-delta ${cumulative.momVisitorsPct >= 0 ? 'up' : 'down'}`}>
-                {cumulative.momVisitorsPct >= 0 ? '▲' : '▼'} {Math.abs(cumulative.momVisitorsPct)}% <span className="muted">전월 대비</span>
+                {cumulative.momVisitorsPct >= 0 ? '▲' : '▼'} {Math.abs(cumulative.momVisitorsPct)}%
               </span>
             )}
           </div>
@@ -59,16 +59,13 @@ export default function Overview({ overview, months, trend, onSelect }) {
           </div>
           {ai.value != null ? (
             <>
-              <div className="stat-value">{ai.value}</div>
+              <div className="stat-value">{ai.value}회</div>
               <div className="ai-sub">
-                누적 <b>{fmtInt(cumulative.aiCumulative)}</b>
+                누적 <b>{fmtInt(cumulative.aiCumulative)}회</b>
               </div>
             </>
           ) : (
-            <>
-              <div className="stat-value">{fmtInt(cumulative.aiCumulative)}</div>
-              <div className="ai-pending">📡 이번 달 신규 인용수는 수집 예정</div>
-            </>
+            <div className="stat-value">{fmtInt(cumulative.aiCumulative)}회</div>
           )}
         </div>
       </div>
@@ -130,7 +127,7 @@ export default function Overview({ overview, months, trend, onSelect }) {
                   </div>
                 ))}
               </div>
-              <p className="topic-mix-caption">※ 카테고리 분류 데이터(버블차트와 동일 기준) 상위 5개 카테고리의 언급 비중입니다.</p>
+              <p className="topic-mix-caption">※ {latest.label} 기준 카테고리 분류 데이터(버블차트와 동일 기준) 상위 5개 카테고리의 언급 비중입니다.</p>
             </div>
           )}
         </div>
@@ -139,7 +136,7 @@ export default function Overview({ overview, months, trend, onSelect }) {
       <div className="headline-banner">
         <button type="button" className="headline-top-row" onClick={() => onSelect(latest.key)}>
           <div className="headline-left">
-            <p className="headline-eyebrow">헤드라인 인사이트</p>
+            <p className="headline-eyebrow">통계 인사이트</p>
             <p className="headline-sentence">{headline.sentence}</p>
           </div>
           <div className="headline-right">

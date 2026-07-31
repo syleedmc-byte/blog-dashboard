@@ -1671,14 +1671,20 @@
     ],
     "cumulative": {
       "year": 2026,
-      "totalViews": 4635,
-      "totalVisitors": 2534,
+      "totalViews": 9828,
+      "totalVisitors": 5228,
       "viewsSparkline": [
+        1710,
+        1267,
+        2216,
         1835,
         1114,
         1686
       ],
       "visitorsSparkline": [
+        669,
+        577,
+        1448,
         1105,
         630,
         799
@@ -1690,5 +1696,5 @@
     "latestKey": "2026-06"
   },
   "sourceFile": "블로그_통계(통합)_0730.xlsx",
-  "updatedAt": "2026-07-31T08:51:20.067Z"
+  "updatedAt": "2026-07-31T08:59:06.719Z"
 }

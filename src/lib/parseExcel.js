@@ -686,15 +686,18 @@ function computeCategoryMix(latestMonth) {
 }
 
 /** 인덱스 최상단 "누적 지표" 카드용 — 월별 상세 페이지에는 없는, 최신 달과 같은 연도에 속한
- *  달만 합산한 "이번 연도 누적" 값이라 겹치지 않는다(연도가 바뀌면 자동으로 새로 리셋됨). */
-function computeCumulativeStats(months) {
+ *  달만 합산한 "이번 연도 누적" 값이라 겹치지 않는다(연도가 바뀌면 자동으로 새로 리셋됨).
+ *  months[]가 아니라 trend[]로 합산한다 — months[]는 키워드 시트가 있는 달(지금은 4~6월)만
+ *  들어있어서 그걸로 합치면 1~3월이 빠진 채 "연간 누적"이라고 보여주게 된다. trend[]는 각 시트에
+ *  내장된 과거 추이표를 모아 만든 값이라 1월부터의 실제 수치를 갖고 있다. */
+function computeCumulativeStats(months, trend) {
   const year = months[months.length - 1].year
-  const yearMonths = months.filter((m) => m.year === year)
+  const yearTrend = (trend || []).filter((t) => t.year === year)
 
-  const totalViews = yearMonths.reduce((sum, m) => sum + (m.kpi.views.raw || 0), 0)
-  const totalVisitors = yearMonths.reduce((sum, m) => sum + (m.kpi.visitors.raw || 0), 0)
-  const viewsSparkline = yearMonths.map((m) => m.kpi.views.raw)
-  const visitorsSparkline = yearMonths.map((m) => m.kpi.visitors.raw)
+  const totalViews = yearTrend.reduce((sum, t) => sum + (t.views || 0), 0)
+  const totalVisitors = yearTrend.reduce((sum, t) => sum + (t.visitors || 0), 0)
+  const viewsSparkline = yearTrend.map((t) => t.views)
+  const visitorsSparkline = yearTrend.map((t) => t.visitors)
 
   const momPct = (key) => {
     if (months.length < 2) return null
@@ -751,7 +754,7 @@ function computeOverview(months, trend) {
   const secondaryInsights = computeSecondaryInsights(months, headline.metricKey)
   const topMover = computeTopMover(months)
   const categoryMix = computeCategoryMix(latest)
-  const cumulative = computeCumulativeStats(months)
+  const cumulative = computeCumulativeStats(months, trend)
   cumulative.aiCumulative = latest.kpi.ai.cumulative ?? AI_CITATION_CUMULATIVE_FALLBACK
 
   return {
