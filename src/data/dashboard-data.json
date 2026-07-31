@@ -1550,8 +1550,40 @@
         "url": "https://blog.naver.com/dmcmedia_official/224324845160"
       }
     ],
+    "headline": {
+      "sentence": "재방문율, 3개월 연속 상승 — 고정 독자층이 쌓이고 있습니다",
+      "metricKey": "revisit",
+      "metricLabel": "재방문율",
+      "value": 11.3,
+      "trendText": "4월 5.9% → 6월 11.3%",
+      "sparkline": [
+        5.9,
+        10.8,
+        11.3
+      ]
+    },
+    "secondaryInsights": [
+      {
+        "type": "avgtime",
+        "title": "체류시간 감소",
+        "detail": "4m 54s → 4m 46s",
+        "note": "콘텐츠 몰입도 점검 필요"
+      },
+      {
+        "type": "keyword",
+        "title": "'타불라' 키워드 급성장",
+        "detail": "비중 6.2% → 12.2%",
+        "note": "성장 견인 요인"
+      },
+      {
+        "type": "referrer",
+        "title": "유입경로 약진",
+        "detail": "네이버 통합검색_모바일, 유입경로 3위 진입",
+        "note": "순위 상승"
+      }
+    ],
     "latestKey": "2026-06"
   },
   "sourceFile": "블로그_통계(통합)_0730.xlsx",
-  "updatedAt": "2026-07-31T06:45:02.707Z"
+  "updatedAt": "2026-07-31T06:58:05.228Z"
 }

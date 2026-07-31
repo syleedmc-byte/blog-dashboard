@@ -479,11 +479,173 @@ function kpiField(curr, prev, { isPercent = false, isDuration = false } = {}) {
   return { raw: curr, value: formattedValue, delta, dir, hasPrev: true }
 }
 
+const HEADLINE_METRICS = [
+  { key: 'views', label: '조회수', unit: 'count' },
+  { key: 'visitors', label: '순방문자수', unit: 'count' },
+  { key: 'visits', label: '방문횟수', unit: 'count' },
+  { key: 'revisit', label: '재방문율', unit: 'percent' },
+]
+
+const STREAK_PHRASE = {
+  revisit: { up: '고정 독자층이 쌓이고 있습니다', down: '재방문을 이끄는 힘이 약해지고 있어요' },
+  views: { up: '콘텐츠가 더 넓게 도달하고 있습니다', down: '노출이 줄어들고 있어 점검이 필요해요' },
+  visitors: { up: '더 많은 새 독자가 유입되고 있습니다', down: '신규 유입이 줄고 있어요' },
+  visits: { up: '방문 빈도가 꾸준히 늘고 있습니다', down: '방문 빈도가 줄어들고 있어요' },
+}
+
+function fmtMetricValue(unit, v) {
+  if (v == null) return '-'
+  return unit === 'percent' ? `${v.toFixed(1)}%` : v.toLocaleString('ko-KR')
+}
+
+// values: 시간순 숫자 배열. 마지막 값에서 끝나는 "연속 상승/하락" 길이를 구한다.
+function trailingStreak(values) {
+  if (values.length < 2) return { length: 0, dir: null }
+  let dir = null
+  let length = 1
+  for (let i = values.length - 1; i > 0; i--) {
+    const diff = values[i] - values[i - 1]
+    const curDir = diff > 0 ? 'up' : diff < 0 ? 'down' : null
+    if (curDir == null) break
+    if (dir == null) dir = curDir
+    if (curDir !== dir) break
+    length++
+  }
+  return { length, dir }
+}
+
+/** 그 지표가 헤드라인으로 뽑혔을 때 옆에 보여줄 미니 추이. 조회수·순방문자수는 각 시트에 내장된
+ *  5개월 추이표를 합친 전체 trend(현재 최대 7개월)를 쓰고, 방문횟수·재방문율은 그런 과거 추이
+ *  표 자체가 엑셀에 없어서 실제로 파싱된 달(months)의 값만큼만 쓴다 — 둘 다 실제 존재하는
+ *  값이고, 조회수·순방문자수보다 점이 적을 수 있다는 차이만 있을 뿐 지어낸 값은 아니다. */
+function sparklineFor(key, months, trend) {
+  if (key === 'views' || key === 'visitors') return (trend || []).map((t) => t[key])
+  return months.map((m) => m.kpi[key].raw)
+}
+
+/** 이번 달 헤드라인 인사이트 하나를 자동으로 뽑는다 — 매달 다시 계산되며 하드코딩된 지표/문구가
+ *  없다. 우선순위: (1) 여러 달째 같은 방향으로 이어지는 "연속 상승/하락" 지표가 있으면 그중 가장
+ *  긴 연속 구간을 헤드라인으로, (2) 그런 뚜렷한 흐름이 하나도 없으면 이번 달 전월 대비 변화폭(%)이
+ *  가장 큰 지표로 대체한다. */
+function computeHeadlineInsight(months, trend) {
+  const latest = months[months.length - 1]
+
+  if (months.length >= 2) {
+    const streaks = HEADLINE_METRICS.map((def) => {
+      const series = months.map((m) => m.kpi[def.key].raw)
+      const { length, dir } = trailingStreak(series)
+      return { def, length, dir }
+    }).filter((s) => s.dir != null && s.length >= 2)
+    streaks.sort((a, b) => b.length - a.length)
+
+    if (streaks.length > 0) {
+      const { def, length, dir } = streaks[0]
+      const startMonth = months[months.length - length]
+      const phrase = STREAK_PHRASE[def.key]?.[dir] ?? (dir === 'up' ? '뚜렷한 상승 흐름입니다' : '뚜렷한 하락 흐름입니다')
+      return {
+        sentence: `${def.label}, ${length}개월 연속 ${dir === 'up' ? '상승' : '하락'} — ${phrase}`,
+        metricKey: def.key,
+        metricLabel: def.label,
+        value: latest.kpi[def.key].value,
+        trendText: `${startMonth.label} ${fmtMetricValue(def.unit, startMonth.kpi[def.key].raw)} → ${latest.label} ${fmtMetricValue(def.unit, latest.kpi[def.key].raw)}`,
+        sparkline: sparklineFor(def.key, months, trend),
+      }
+    }
+
+    // 폴백: 뚜렷한 연속 흐름이 없으면, 이번 달 전월 대비 변화폭(%)이 가장 큰 지표를 쓴다
+    const prev = months[months.length - 2]
+    const candidates = HEADLINE_METRICS.map((def) => ({ def, field: latest.kpi[def.key] })).filter(
+      (c) => c.field.hasPrev && c.field.dir != null
+    )
+    if (candidates.length > 0) {
+      candidates.sort((a, b) => Math.abs(parseFloat(b.field.delta)) - Math.abs(parseFloat(a.field.delta)))
+      const { def, field } = candidates[0]
+      return {
+        sentence: `${def.label}, 전월 대비 ${field.delta} — 이번 달 가장 큰 변화입니다`,
+        metricKey: def.key,
+        metricLabel: def.label,
+        value: latest.kpi[def.key].value,
+        trendText: `${prev.label} ${fmtMetricValue(def.unit, prev.kpi[def.key].raw)} → ${latest.label} ${fmtMetricValue(def.unit, latest.kpi[def.key].raw)}`,
+        sparkline: sparklineFor(def.key, months, trend),
+      }
+    }
+  }
+
+  // 비교할 전월 자체가 없는 첫 달
+  return {
+    sentence: `${latest.label} 데이터가 새로 반영됐습니다`,
+    metricKey: 'views',
+    metricLabel: '조회수',
+    value: latest.kpi.views.value,
+    trendText: null,
+    sparkline: sparklineFor('views', months, trend),
+  }
+}
+
+/** 헤드라인만큼 강하진 않지만 짚어볼 만한 보조 인사이트 2~3개. 헤드라인이 이미 다룬 지표는
+ *  중복되지 않게 뺀다. 전월 데이터가 아예 없으면(첫 달) 빈 배열을 반환한다. */
+function computeSecondaryInsights(months, headlineMetricKey) {
+  if (months.length < 2) return []
+  const latest = months[months.length - 1]
+  const prev = months[months.length - 2]
+  const insights = []
+
+  if (headlineMetricKey !== 'avgtime') {
+    const f = latest.kpi.avgtime
+    if (f.hasPrev && f.dir) {
+      insights.push({
+        type: 'avgtime',
+        title: `체류시간 ${f.dir === 'up' ? '증가' : '감소'}`,
+        detail: `${prev.kpi.avgtime.value} → ${latest.kpi.avgtime.value}`,
+        note: f.dir === 'down' ? '콘텐츠 몰입도 점검 필요' : '체류 품질 개선 신호',
+      })
+    }
+  }
+
+  // 유입검색어 비중이 가장 많이 오른 키워드 (양쪽 달의 TOP5에 모두 있는 것 중에서만 비교 가능)
+  const kwGrowth = latest.keywords
+    .map((k) => {
+      const prevK = prev.keywords.find((pk) => pk.name === k.name)
+      return prevK ? { name: k.name, prevPct: prevK.pct, curPct: k.pct, diff: k.pct - prevK.pct } : null
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.diff - a.diff)[0]
+  if (kwGrowth && kwGrowth.diff > 0) {
+    insights.push({
+      type: 'keyword',
+      title: `'${kwGrowth.name}' 키워드 급성장`,
+      detail: `비중 ${kwGrowth.prevPct.toFixed(1)}% → ${kwGrowth.curPct.toFixed(1)}%`,
+      note: '성장 견인 요인',
+    })
+  }
+
+  // 이번 달 유입경로 top3 중, 전월엔 top3 밖이었거나 아예 없던 경로(가장 많이 뛰어오른 것 하나)
+  const TOP_N = 3
+  let bestRise = null
+  latest.referrers.slice(0, TOP_N).forEach((r, idx) => {
+    const prevIdx = prev.referrers.findIndex((pr) => pr.name === r.name)
+    const wasInTopN = prevIdx >= 0 && prevIdx < TOP_N
+    if (wasInTopN) return
+    const riseAmount = prevIdx === -1 ? 999 : prevIdx - idx
+    if (!bestRise || riseAmount > bestRise.riseAmount) bestRise = { name: r.name, rank: idx + 1, isNew: prevIdx === -1, riseAmount }
+  })
+  if (bestRise) {
+    insights.push({
+      type: 'referrer',
+      title: bestRise.isNew ? '신규 채널 등장' : '유입경로 약진',
+      detail: `${bestRise.name}, 유입경로 ${bestRise.rank}위 진입`,
+      note: bestRise.isNew ? '새로운 유입 채널 확보' : '순위 상승',
+    })
+  }
+
+  return insights.slice(0, 3)
+}
+
 /** 홈(통합 인덱스) 페이지가 쓰는, 여러 달을 하나로 합친 값 중 실제로 유의미하다고 확인된 것만
  *  남긴다 (총 조회수 합계·가중평균 재방문율·통합 유입경로 1위 같은 값은 그다지 유용하지 않다는
  *  피드백에 따라 제거함). months[]는 이미 parseWorkbook이 만든 최종 값이라 여기서 시트를 다시
  *  읽지 않는다 — 엑셀에 월이 늘어나면(7월, 8월 …) 이 함수는 코드 수정 없이 자동으로 반영한다. */
-function computeOverview(months) {
+function computeOverview(months, trend) {
   if (!months || months.length === 0) return null
 
   // 전체 기간 통틀어 조회수가 가장 많았던 게시물 top3 (각 달의 인기게시물 Top10을 다시 합쳐서 비교)
@@ -506,9 +668,14 @@ function computeOverview(months) {
         .slice(0, 3)
     : []
 
+  const headline = computeHeadlineInsight(months, trend)
+  const secondaryInsights = computeSecondaryInsights(months, headline.metricKey)
+
   return {
     topPosts,
     risingPosts,
+    headline,
+    secondaryInsights,
     latestKey: latest.key,
   }
 }
@@ -603,7 +770,7 @@ export function parseWorkbook(workbook) {
     months,
     trend,
     sectionOrder: SECTION_ORDER,
-    overview: computeOverview(months),
+    overview: computeOverview(months, trend),
   }
 }
 

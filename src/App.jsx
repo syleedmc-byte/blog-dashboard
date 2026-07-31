@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import dashboardData from './data/dashboard-data.json'
-import Sidebar from './components/Sidebar.jsx'
+import TopNav from './components/TopNav.jsx'
 import Overview from './components/Overview.jsx'
 import KpiCards from './components/KpiCards.jsx'
 import TrendChart from './components/TrendChart.jsx'
@@ -42,28 +42,26 @@ export default function App() {
 
   const active = useMemo(() => months.find((m) => m.key === activeKey) ?? null, [months, activeKey])
 
-  // 사이드바에 넘길 섹션 목록. "월별 리포트" 말고 다른 메뉴/카테고리가 나중에 생기면, Sidebar.jsx는
-  // 그대로 두고 여기(또는 이 배열을 만드는 로직)에 섹션을 하나 더 추가하면 된다.
-  const sidebarSections = useMemo(() => {
-    const years = [...new Set(months.map((m) => m.year))].sort((a, b) => b - a)
-    return [
-      { items: [{ key: 'home', label: '홈', icon: '🏠', active: activeKey == null, onClick: goHome }] },
-      ...years.map((year) => ({
-        label: `${year}년`,
-        items: [...months]
-          .filter((m) => m.year === year)
-          .reverse()
-          .map((m) => ({
+  // 상단 내비게이션에 넘길 섹션 목록. "월별 리포트" 말고 다른 메뉴/카테고리가 나중에 생기면,
+  // TopNav.jsx는 그대로 두고 여기(또는 이 배열을 만드는 로직)에 섹션을 하나 더 추가하면 된다.
+  const navSections = useMemo(
+    () => [
+      {
+        items: [
+          { key: 'index', label: '인덱스', icon: '📊', active: activeKey == null, onClick: goHome },
+          ...[...months].reverse().map((m) => ({
             key: m.key,
             label: `${m.monthNumber}월`,
             icon: '🗓️',
             active: activeKey === m.key,
             onClick: () => selectMonth(m.key),
           })),
-      })),
-    ]
+        ],
+      },
+    ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [months, activeKey])
+    [months, activeKey]
+  )
 
   // 트렌드 차트는 참고 디자인과 동일하게, 해당 월을 기준으로 최근 5개월치만 보여준다
   // (트렌드 데이터 전체가 아니라 각 탭이 자기 자신을 끝점으로 하는 5개월 구간을 봐야 함)
@@ -77,43 +75,40 @@ export default function App() {
   if (error || months.length === 0) {
     return (
       <div className="app-shell">
-        <div className="main-area">
-          <div className="main-content">
-            <div className="data-error">
-              <p>{error ?? '표시할 데이터가 없습니다.'}</p>
-              <p>
-                프로젝트의 <code>data/</code> 폴더에 블로그 통계 엑셀(.xlsx) 파일을 넣고 개발 서버를
-                다시 시작하거나 새로고침 해주세요.
-              </p>
-            </div>
+        <div className="main-content">
+          <div className="data-error">
+            <p>{error ?? '표시할 데이터가 없습니다.'}</p>
+            <p>
+              프로젝트의 <code>data/</code> 폴더에 블로그 통계 엑셀(.xlsx) 파일을 넣고 개발 서버를
+              다시 시작하거나 새로고침 해주세요.
+            </p>
           </div>
         </div>
       </div>
     )
   }
 
-  const pageTitle = active ? `${active.label} 블로그 통계` : '홈'
-  const pageSub = active ? '블로그 운영 성과를 한눈에 확인하세요.' : '보고 싶은 달을 선택하세요.'
+  const pageTitle = active ? `${active.label} 블로그 통계` : '인덱스'
+  const pageSub = active ? '블로그 운영 성과를 한눈에 확인하세요.' : '이번 달 핵심 인사이트를 한눈에 확인하세요.'
 
   return (
     <div className="app-shell">
-      <Sidebar sections={sidebarSections} />
+      <TopNav sections={navSections} />
 
-      <div className="main-area">
-        <div className="topbar">
-          <div>
-            <h1>{pageTitle}</h1>
-            <p>{pageSub}</p>
-          </div>
-          {active && <div className="year-pill">📅 {active.year}.{String(active.monthNumber).padStart(2, '0')}</div>}
+      <div className="topbar">
+        <div>
+          <h1>{pageTitle}</h1>
+          <p>{pageSub}</p>
         </div>
+        {active && <div className="year-pill">📅 {active.year}.{String(active.monthNumber).padStart(2, '0')}</div>}
+      </div>
 
-        <div className="main-content">
-          <p className="top-note">데이터 출처: {sourceFile} (data/ 폴더에서 자동으로 읽어옵니다)</p>
+      <div className="main-content">
+        <p className="top-note">데이터 출처: {sourceFile} (data/ 폴더에서 자동으로 읽어옵니다)</p>
 
-          {!active && <Overview overview={overview} months={months} trend={trend} onSelect={selectMonth} />}
+        {!active && <Overview overview={overview} months={months} trend={trend} onSelect={selectMonth} />}
 
-          {active && (
+        {active && (
             <>
               <div className="section-block">
                 <div className="section-head">
@@ -186,7 +181,6 @@ export default function App() {
               </div>
             </>
           )}
-        </div>
       </div>
     </div>
   )

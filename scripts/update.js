@@ -84,6 +84,15 @@ function main() {
     const manualMax = Math.max(...data.months.flatMap((m) => (m.posts || []).map((p) => p.views || 0)))
     console.log(`\n[검증용] 홈 페이지 역대 인기게시물 1위: ${ov.topPosts[0]?.title} (${ov.topPosts[0]?.monthLabel}, ${formatNumber(ov.topPosts[0]?.views)}회, 각 달 TOP10 전체 중 최댓값과 일치=${ov.topPosts[0]?.views === manualMax})`)
     console.log(`  전체 추이 그래프 대상 달: ${data.trend.map((t) => t.label).join(', ')} (${data.trend.length}개월)`)
+    console.log(`\n[검증용] 홈 페이지 헤드라인 인사이트 — 엑셀 원본 수치와 대조해 보세요:`)
+    console.log(`  "${ov.headline.sentence}"`)
+    console.log(`  지표: ${ov.headline.metricLabel} ${ov.headline.value} (${ov.headline.trendText ?? '전월 비교 없음'})`)
+    if (ov.secondaryInsights.length > 0) {
+      console.log(`  보조 인사이트 ${ov.secondaryInsights.length}개:`)
+      ov.secondaryInsights.forEach((s) => console.log(`    - ${s.title}: ${s.detail} (${s.note})`))
+    } else {
+      console.log(`  보조 인사이트: 없음 (비교할 전월 데이터 없음)`)
+    }
   }
 
   console.log(`\n이제 "npm run dev"로 화면을 확인하거나, git commit + push로 배포하세요.`)
