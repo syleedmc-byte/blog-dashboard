@@ -77,6 +77,25 @@ function main() {
   console.log(`  유입경로 1위: ${latest.referrers[0]?.name} (${latest.referrers[0]?.pct}%)`)
   console.log(`  유입검색어 1위: ${latest.keywords[0]?.name} (${latest.keywords[0]?.pct}%)`)
   console.log(`  인기게시글 1위: ${latest.posts[0]?.title}`)
+
+  // [검증용] 홈(통합 인덱스) 페이지가 쓰는 합산치 — 각 달 숫자를 직접 더해서 나온 값과 같은지
+  // 눈으로 대조해 보세요. (재방문율/평균사용시간은 방문횟수 가중평균이라 단순 합산과는 다릅니다.)
+  const ov = data.overview
+  if (ov) {
+    const manualViewsSum = data.months.reduce((s, m) => s + (m.kpi.views.raw || 0), 0)
+    const manualVisitorsSum = data.months.reduce((s, m) => s + (m.kpi.visitors.raw || 0), 0)
+    console.log(`\n[검증용] 홈 페이지 통합 요약 (${ov.monthCount}개월: ${data.months.map((m) => m.label).join(', ')}):`)
+    console.log(`  총 조회수: ${formatNumber(ov.totalViews)} (직접 합산: ${formatNumber(manualViewsSum)}, 일치=${ov.totalViews === manualViewsSum})`)
+    console.log(`  총 순방문자수: ${formatNumber(ov.totalVisitors)} (직접 합산: ${formatNumber(manualVisitorsSum)}, 일치=${ov.totalVisitors === manualVisitorsSum})`)
+    console.log(`  방문횟수 가중평균 재방문율: ${ov.avgRevisit}%`)
+    console.log(`  방문횟수 가중평균 평균사용시간: ${ov.avgAvgtime}`)
+    console.log(`  가장 크게 성장한 지표: ${ov.bestGrowth ? `${ov.bestGrowth.label} ${ov.bestGrowth.delta} (${ov.bestGrowth.monthLabel})` : '없음'}`)
+    console.log(`  가장 방문자 많았던 달: ${ov.topVisitorMonth?.label} (${formatNumber(ov.topVisitorMonth?.value)})`)
+    console.log(`  역대 인기게시물 1위: ${ov.topPosts[0]?.title} (${ov.topPosts[0]?.monthLabel}, ${formatNumber(ov.topPosts[0]?.views)}회)`)
+    console.log(`  통합 유입경로 1위: ${ov.topReferrer?.name} (평균 ${ov.topReferrer?.avgPct}%)`)
+    console.log(`  통합 유입검색어 1위: ${ov.topKeyword?.name} (평균 ${ov.topKeyword?.avgPct}%)`)
+  }
+
   console.log(`\n이제 "npm run dev"로 화면을 확인하거나, git commit + push로 배포하세요.`)
 }
 

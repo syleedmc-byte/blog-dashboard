@@ -14,43 +14,30 @@ function fmtInt(n) {
   return typeof n === 'number' ? n.toLocaleString('ko-KR') : '-'
 }
 
+const PILL_COLORS = ['pink', 'navy', 'orange', 'purple', 'teal', 'green']
+
 export default function KpiCards({ kpi }) {
+  const cards = [
+    { icon: '👁', label: '조회수', value: fmtInt(kpi.views.value), field: kpi.views },
+    { icon: '👤', label: '순방문자수', value: fmtInt(kpi.visitors.value), field: kpi.visitors },
+    { icon: '🔁', label: '방문횟수', value: fmtInt(kpi.visits.value), field: kpi.visits },
+    { icon: '⟳', label: '재방문율', value: kpi.revisit.value != null ? `${kpi.revisit.value.toFixed(2)}%` : '-', field: kpi.revisit },
+    { icon: '⏱', label: '평균 사용시간', value: kpi.avgtime.value ?? '-', field: kpi.avgtime },
+  ]
   return (
     <div className="stats-row">
-      <div className="stat-card">
-        <div className="stat-icon">👁</div>
-        <div className="stat-label">조회수</div>
-        <div className="stat-value">{fmtInt(kpi.views.value)}</div>
-        <DeltaLine field={kpi.views} />
-      </div>
-      <div className="stat-card">
-        <div className="stat-icon">👤</div>
-        <div className="stat-label">순방문자수</div>
-        <div className="stat-value">{fmtInt(kpi.visitors.value)}</div>
-        <DeltaLine field={kpi.visitors} />
-      </div>
-      <div className="stat-card">
-        <div className="stat-icon">🔁</div>
-        <div className="stat-label">방문횟수</div>
-        <div className="stat-value">{fmtInt(kpi.visits.value)}</div>
-        <DeltaLine field={kpi.visits} />
-      </div>
-      <div className="stat-card">
-        <div className="stat-icon">⟳</div>
-        <div className="stat-label">재방문율</div>
-        <div className="stat-value">{kpi.revisit.value != null ? `${kpi.revisit.value.toFixed(2)}%` : '-'}</div>
-        <DeltaLine field={kpi.revisit} />
-      </div>
-      <div className="stat-card">
-        <div className="stat-icon">⏱</div>
-        <div className="stat-label">평균 사용시간</div>
-        <div className="stat-value">{kpi.avgtime.value ?? '-'}</div>
-        <DeltaLine field={kpi.avgtime} />
-      </div>
+      {cards.map((c, i) => (
+        <div className={`stat-card pill-${PILL_COLORS[i % PILL_COLORS.length]}`} key={c.label}>
+          <div className="stat-icon">{c.icon}</div>
+          <div className="stat-value">{c.value}</div>
+          <div className="stat-label">{c.label}</div>
+          <DeltaLine field={c.field} />
+        </div>
+      ))}
       <div className="stat-card ai-card">
         <div className="stat-icon">🤖</div>
-        <div className="stat-label">AI 브리핑 인용수</div>
         <div className="stat-value">{kpi.ai.value ?? '-'}</div>
+        <div className="stat-label">AI 브리핑 인용수</div>
         <div className="ai-sub">누적 <b>{kpi.ai.cumulative ?? '-'}</b></div>
       </div>
     </div>

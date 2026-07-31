@@ -433,6 +433,13 @@ function formatDuration(str) {
   return minutes * 60 + seconds
 }
 
+function secondsToDuration(sec) {
+  if (sec == null || Number.isNaN(sec)) return null
+  const m = Math.floor(sec / 60)
+  const s = Math.round(sec % 60)
+  return `${m}m ${s}s`
+}
+
 function formatDurationDelta(deltaSeconds) {
   const sign = deltaSeconds > 0 ? '+' : deltaSeconds < 0 ? '-' : ''
   const abs = Math.abs(deltaSeconds)
@@ -470,6 +477,93 @@ function kpiField(curr, prev, { isPercent = false, isDuration = false } = {}) {
     dir = diff > 0 ? 'up' : diff < 0 ? 'down' : null
   }
   return { raw: curr, value: formattedValue, delta, dir, hasPrev: true }
+}
+
+/** 여러 달을 하나로 합친 "홈(통합 인덱스)" 요약. months[]는 이미 parseWorkbook이 만든 최종
+ *  값이라 여기서 시트를 다시 읽지 않는다 — 엑셀에 월이 늘어나면(7월, 8월 …) 이 함수는 코드
+ *  수정 없이 그 달들도 자동으로 합산 대상에 포함한다. */
+function computeOverview(months) {
+  if (!months || months.length === 0) return null
+
+  const sumBy = (fn) => months.reduce((s, m) => s + (fn(m) || 0), 0)
+  const totalViews = sumBy((m) => m.kpi.views.value)
+  const totalVisitors = sumBy((m) => m.kpi.visitors.value)
+  const totalVisits = sumBy((m) => m.kpi.visits.value)
+
+  // 재방문율(%)·평균사용시간(초)은 달마다 단순 합산이 의미가 없는 "비율/평균" 지표라, 그 달의
+  // 방문횟수를 가중치로 삼아 가중평균한다 — 방문횟수가 많았던 달의 값이 더 크게 반영된다.
+  const weightSum = sumBy((m) => m.kpi.visits.value) || 1
+  const avgRevisit = sumBy((m) => (m.kpi.revisit.value ?? 0) * (m.kpi.visits.value || 0)) / weightSum
+  const avgAvgtimeSec =
+    sumBy((m) => (formatDuration(m.kpi.avgtime.value) ?? 0) * (m.kpi.visits.value || 0)) / weightSum
+
+  // "가장 크게 성장한 지표": 조회수·순방문자수·방문횟수는 전부 "%" 단위 증감이라 서로 비교할 수
+  // 있지만, 재방문율(%p)과 평균사용시간(초)은 단위 자체가 달라 같은 비교에 넣지 않는다.
+  // 비교 기준은 가장 최근 달의 전월 대비 값.
+  const latest = months[months.length - 1]
+  const growthCandidates = [
+    { label: '조회수', field: latest.kpi.views },
+    { label: '순방문자수', field: latest.kpi.visitors },
+    { label: '방문횟수', field: latest.kpi.visits },
+  ].filter((c) => c.field.hasPrev && c.field.dir === 'up')
+  const bestGrowth = growthCandidates.length
+    ? growthCandidates.reduce((best, c) => (parseFloat(c.field.delta) > parseFloat(best.field.delta) ? c : best))
+    : null
+
+  const topVisitorMonth = months.reduce((best, m) => (m.kpi.visitors.value > (best?.kpi.visitors.value ?? -1) ? m : best), null)
+  const topViewsMonth = months.reduce((best, m) => (m.kpi.views.value > (best?.kpi.views.value ?? -1) ? m : best), null)
+
+  // 전체 기간 통틀어 조회수가 가장 많았던 게시물 top3 (각 달의 인기게시물 Top10을 다시 합쳐서 비교)
+  const allPosts = months.flatMap((m) => (m.posts || []).map((p) => ({ ...p, monthKey: m.key, monthLabel: m.label })))
+  const topPosts = [...allPosts]
+    .filter((p) => p.views != null)
+    .sort((a, b) => b.views - a.views)
+    .slice(0, 3)
+
+  // 유입경로/유입검색어 통합 1위: 이름이 같으면 달을 넘나들며 합치고, 각 달의 비중(%)을 그 달의
+  // 방문횟수로 가중평균해서 1위를 뽑는다. 원본이 달마다 top5까지만 주기 때문에, top5 밖으로
+  // 밀린 달의 기여분은 반영되지 못하는 한계가 있다.
+  function weightedTopName(field) {
+    const weightedSum = new Map()
+    const weightTotal = new Map()
+    months.forEach((m) => {
+      const w = m.kpi.visits.value || 0
+      ;(m[field] || []).forEach((item) => {
+        weightedSum.set(item.name, (weightedSum.get(item.name) || 0) + item.pct * w)
+        weightTotal.set(item.name, (weightTotal.get(item.name) || 0) + w)
+      })
+    })
+    let best = null
+    for (const [name, sum] of weightedSum) {
+      const avgPct = sum / (weightTotal.get(name) || 1)
+      if (!best || avgPct > best.avgPct) best = { name, avgPct: +avgPct.toFixed(2) }
+    }
+    return best
+  }
+
+  return {
+    monthCount: months.length,
+    totalViews,
+    totalVisitors,
+    totalVisits,
+    avgRevisit: +avgRevisit.toFixed(2),
+    avgAvgtime: secondsToDuration(avgAvgtimeSec),
+    bestGrowth: bestGrowth ? { label: bestGrowth.label, delta: bestGrowth.field.delta, monthKey: latest.key, monthLabel: latest.label } : null,
+    topVisitorMonth: topVisitorMonth && { key: topVisitorMonth.key, label: topVisitorMonth.label, value: topVisitorMonth.kpi.visitors.value },
+    topViewsMonth: topViewsMonth && { key: topViewsMonth.key, label: topViewsMonth.label, value: topViewsMonth.kpi.views.value },
+    topPosts,
+    topReferrer: weightedTopName('referrers'),
+    topKeyword: weightedTopName('keywords'),
+    // label은 "2026.06" 형식 — TrendChart가 그 형식을 기대하고 축 눈금에서 뒤 2글자(월)만 잘라 쓴다
+    trend: months.map((m) => ({
+      key: m.key,
+      label: `${m.year}.${String(m.monthNumber).padStart(2, '0')}`,
+      monthLabel: m.label,
+      views: m.kpi.views.value,
+      visitors: m.kpi.visitors.value,
+    })),
+    latestKey: latest.key,
+  }
 }
 
 /** 워크북 전체를 파싱해 대시보드가 바로 쓸 수 있는 구조로 변환 */
@@ -562,6 +656,7 @@ export function parseWorkbook(workbook) {
     months,
     trend,
     sectionOrder: SECTION_ORDER,
+    overview: computeOverview(months),
   }
 }
 
