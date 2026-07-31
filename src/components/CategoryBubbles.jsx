@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { SECTION_ORDER } from '../theme.js'
+import { SECTION_ORDER, sectionColorVar } from '../theme.js'
 import { renderBubbleChart, addStandaloneTag, contrastTextColor, estimateCanvasSize } from '../lib/bubbleEngine.js'
 
 const isBrand = (name) => {
@@ -60,6 +60,13 @@ export default function CategoryBubbles({ categories, people, misc, monthKey }) 
 
   const kd = useMemo(() => buildKd(categories || [], people || [], misc || []), [categories, people, misc])
   const { W: canvasW, H: canvasH } = useMemo(() => estimateCanvasSize(kd), [kd])
+
+  // 모바일(700px 이하)용 세로 목록: 디엠씨미디어를 항상 맨 위로, 그다음은 언급 많은 순
+  // (categories는 이미 parseExcel에서 총 횟수 내림차순으로 정렬돼 오므로, 브랜드만 앞으로 빼면 됨)
+  const mobileCategories = useMemo(() => {
+    const cats = categories || []
+    return [...cats.filter((c) => isBrand(c.name)), ...cats.filter((c) => !isBrand(c.name))]
+  }, [categories])
 
   useEffect(() => {
     if (!svgRef.current) return
@@ -154,7 +161,55 @@ export default function CategoryBubbles({ categories, people, misc, monthKey }) 
         <svg ref={svgRef} viewBox={`0 0 ${canvasW} ${canvasH}`} width="100%" height={canvasH} role="img" aria-label="카테고리 마인드맵" />
       </div>
 
-      <p style={{ fontSize: 11, color: 'var(--sub)', marginTop: 12 }}>
+      <div className="bubble-mobile-list">
+        {mobileCategories.map((c, i) => (
+          <div className="bubble-mobile-card" key={c.name}>
+            <div className="bubble-mobile-head">
+              <span className="bubble-mobile-name">{c.name}</span>
+              <span className="bubble-mobile-count">총 {c.total}회</span>
+            </div>
+            <div className="bubble-mobile-mix">
+              {(c.mix || []).map((m) => (
+                <span
+                  key={m.section}
+                  className="bubble-mobile-mix-seg"
+                  style={{ width: `${m.pct}%`, background: sectionColorVar(m.section) }}
+                  title={`${m.section} ${m.pct}%`}
+                />
+              ))}
+            </div>
+            <div className="bubble-mobile-tags">
+              {(c.keywords || []).map((k) => (
+                <span className="bubble-mobile-tag" key={k.name} style={{ borderColor: sectionColorVar(k.section) }}>
+                  {k.name}
+                </span>
+              ))}
+              {i === 0 &&
+                (people || []).map((p) => (
+                  <span className="bubble-mobile-tag person" key={p.name}>
+                    {p.name}, {p.count}
+                  </span>
+                ))}
+            </div>
+          </div>
+        ))}
+        {(misc || []).length > 0 && (
+          <div className="bubble-mobile-card standalone">
+            <div className="bubble-mobile-head">
+              <span className="bubble-mobile-name">독립 키워드</span>
+            </div>
+            <div className="bubble-mobile-tags">
+              {misc.map((txt) => (
+                <span className="bubble-mobile-tag standalone" key={txt}>
+                  {txt}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <p className="kwd-desktop-note" style={{ fontSize: 11, color: 'var(--sub)', marginTop: 12 }}>
         ※ 원과 태그 크기는 유입 빈도에 비례합니다. <b>원/태그 드래그</b>로 위치 이동, <b>원 우측 하단 ✕ 핸들 드래그</b>로 크기 조절,{' '}
         <b>원이나 태그를 더블클릭하면 그 자리에서 바로 글씨를 입력·수정</b>할 수 있습니다 (Enter로 확정, Esc로 취소),{' '}
         <b>원 안의 &quot;총 N회&quot; 숫자를 더블클릭하면 횟수만 따로 수정</b>할 수 있습니다, <b>태그 좌측 상단 🎨를 클릭하면 색상 변경</b>,{' '}

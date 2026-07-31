@@ -253,6 +253,20 @@ body {
   pointer-events: none; opacity: 0; transition: opacity .1s; z-index: 50; white-space: nowrap;
 }
 
+/* 모바일 전용 세로 목록 (700px 이하에서만 보임, 데스크탑 SVG 마인드맵 대신) */
+.bubble-mobile-list { display: none; }
+.bubble-mobile-card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
+.bubble-mobile-card.standalone { background: transparent; border-style: dashed; }
+.bubble-mobile-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 7px; }
+.bubble-mobile-name { font-weight: 800; font-size: 14px; }
+.bubble-mobile-count { font-size: 12px; color: var(--sub); flex-shrink: 0; }
+.bubble-mobile-mix { display: flex; height: 5px; border-radius: 3px; overflow: hidden; margin-bottom: 9px; }
+.bubble-mobile-mix-seg { height: 100%; }
+.bubble-mobile-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.bubble-mobile-tag { font-size: 11.5px; padding: 4px 9px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--bg); }
+.bubble-mobile-tag.person { background: #FFE9C8; border-color: #F0C888; color: #8A5A17; font-weight: 700; }
+.bubble-mobile-tag.standalone { background: #E3F6FD; border-color: #A9DFF0; color: #1E6E8C; }
+
 @media (max-width: 1100px) {
   .stats-row { grid-template-columns: repeat(3, 1fr); }
   .top-grid { grid-template-columns: 1fr; }
@@ -260,4 +274,6 @@ body {
 }
 @media (max-width: 700px) {
   .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .kwd-chart-wrap, .kwd-add-row, .kwd-desktop-note { display: none; }
+  .bubble-mobile-list { display: block; }
 }
