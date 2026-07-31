@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import dashboardData from './data/dashboard-data.json'
 import MonthTabs from './components/MonthTabs.jsx'
+import MonthIndex from './components/MonthIndex.jsx'
 import KpiCards from './components/KpiCards.jsx'
 import TrendChart from './components/TrendChart.jsx'
 import TopPosts from './components/TopPosts.jsx'
@@ -12,24 +13,22 @@ import { SERIES_VIEWS, SERIES_VISITORS } from './theme.js'
 
 // URL 해시(#2026-06)로 달을 지정할 수 있게 한다. 경로 방식(/blog-dashboard/2026-06)은 GitHub
 // Pages가 정적 호스팅이라 새로고침 시 404가 나기 쉬운데, 해시는 서버에 요청을 보내지 않으므로
-// 항상 안전하게 동작한다.
+// 항상 안전하게 동작한다. 해시가 없거나(=처음 들어왔을 때) 알 수 없는 값이면 특정 달로 바로
+// 들어가지 않고 홈(전체 달 목록) 화면을 보여준다.
 function monthKeyFromHash(months) {
   const raw = decodeURIComponent(window.location.hash.replace(/^#\/?/, ''))
+  if (!raw) return null
   return months.find((m) => m.key === raw)?.key ?? null
 }
 
 export default function App() {
   const { months, trend, sourceFile, error } = dashboardData
-  const [activeKey, setActiveKey] = useState(
-    () => monthKeyFromHash(months) ?? (months.length > 0 ? months[months.length - 1].key : null)
-  )
+  const [activeKey, setActiveKey] = useState(() => monthKeyFromHash(months))
 
-  // 브라우저 뒤로/앞으로 가기나, 사용자가 주소창에서 해시를 직접 바꾼 경우도 반영한다.
+  // 브라우저 뒤로/앞으로 가기나, 사용자가 주소창에서 해시를 직접 바꾼 경우도 반영한다
+  // (해시가 없어지면 홈으로도 돌아간다).
   useEffect(() => {
-    const onHashChange = () => {
-      const key = monthKeyFromHash(months)
-      if (key) setActiveKey(key)
-    }
+    const onHashChange = () => setActiveKey(monthKeyFromHash(months))
     window.addEventListener('hashchange', onHashChange)
     return () => window.removeEventListener('hashchange', onHashChange)
   }, [months])
@@ -39,12 +38,10 @@ export default function App() {
     window.history.replaceState(null, '', `#${key}`)
   }
 
-  // 처음 열었을 때 해시가 비어 있으면(=인덱스 없이 접속), 지금 보고 있는 달의 링크를 주소창에
-  // 채워 넣어서 그 상태로 바로 공유할 수 있게 한다.
-  useEffect(() => {
-    if (activeKey && !window.location.hash) window.history.replaceState(null, '', `#${activeKey}`)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  function goHome() {
+    setActiveKey(null)
+    window.history.replaceState(null, '', window.location.pathname + window.location.search)
+  }
 
   const active = useMemo(() => months.find((m) => m.key === activeKey) ?? null, [months, activeKey])
 
@@ -71,6 +68,14 @@ export default function App() {
     )
   }
 
+  if (!active) {
+    return (
+      <div className="app">
+        <MonthIndex months={months} onSelect={selectMonth} sourceFile={sourceFile} />
+      </div>
+    )
+  }
+
   return (
     <div className="app">
       <p className="top-note">데이터 출처: {sourceFile} (data/ 폴더에서 자동으로 읽어옵니다)</p>
@@ -78,6 +83,9 @@ export default function App() {
 
       <div className="header">
         <div>
+          <button type="button" className="back-home-link" onClick={goHome}>
+            ← 전체 달 보기
+          </button>
           <h1>{active.label} 블로그 통계</h1>
           <p>블로그 운영 성과를 한눈에 확인하세요.</p>
         </div>
