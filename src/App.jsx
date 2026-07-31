@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import dashboardData from './data/dashboard-data.json'
 import MonthTabs from './components/MonthTabs.jsx'
 import KpiCards from './components/KpiCards.jsx'
@@ -10,9 +10,41 @@ import DeviceDonut from './components/DeviceDonut.jsx'
 import CategoryBubbles from './components/CategoryBubbles.jsx'
 import { SERIES_VIEWS, SERIES_VISITORS } from './theme.js'
 
+// URL 해시(#2026-06)로 달을 지정할 수 있게 한다. 경로 방식(/blog-dashboard/2026-06)은 GitHub
+// Pages가 정적 호스팅이라 새로고침 시 404가 나기 쉬운데, 해시는 서버에 요청을 보내지 않으므로
+// 항상 안전하게 동작한다.
+function monthKeyFromHash(months) {
+  const raw = decodeURIComponent(window.location.hash.replace(/^#\/?/, ''))
+  return months.find((m) => m.key === raw)?.key ?? null
+}
+
 export default function App() {
   const { months, trend, sourceFile, error } = dashboardData
-  const [activeKey, setActiveKey] = useState(months.length > 0 ? months[months.length - 1].key : null)
+  const [activeKey, setActiveKey] = useState(
+    () => monthKeyFromHash(months) ?? (months.length > 0 ? months[months.length - 1].key : null)
+  )
+
+  // 브라우저 뒤로/앞으로 가기나, 사용자가 주소창에서 해시를 직접 바꾼 경우도 반영한다.
+  useEffect(() => {
+    const onHashChange = () => {
+      const key = monthKeyFromHash(months)
+      if (key) setActiveKey(key)
+    }
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [months])
+
+  function selectMonth(key) {
+    setActiveKey(key)
+    window.history.replaceState(null, '', `#${key}`)
+  }
+
+  // 처음 열었을 때 해시가 비어 있으면(=인덱스 없이 접속), 지금 보고 있는 달의 링크를 주소창에
+  // 채워 넣어서 그 상태로 바로 공유할 수 있게 한다.
+  useEffect(() => {
+    if (activeKey && !window.location.hash) window.history.replaceState(null, '', `#${activeKey}`)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const active = useMemo(() => months.find((m) => m.key === activeKey) ?? null, [months, activeKey])
 
@@ -42,7 +74,7 @@ export default function App() {
   return (
     <div className="app">
       <p className="top-note">데이터 출처: {sourceFile} (data/ 폴더에서 자동으로 읽어옵니다)</p>
-      <MonthTabs months={months} active={activeKey} onSelect={setActiveKey} />
+      <MonthTabs months={months} active={activeKey} onSelect={selectMonth} />
 
       <div className="header">
         <div>
