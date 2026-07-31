@@ -114,27 +114,6 @@ body {
 .header p { margin: 0; color: var(--sub); font-size: 13.5px; }
 .year-pill { display: flex; align-items: center; gap: 8px; background: var(--navy); color: #fff; padding: 8px 15px; border-radius: 10px; font-size: 13.5px; font-weight: 600; height: fit-content; }
 
-.back-home-link {
-  background: none; border: none; padding: 0; margin: 0 0 8px; display: block;
-  font-size: 12.5px; font-weight: 700; color: var(--accent); cursor: pointer;
-}
-.back-home-link:hover { text-decoration: underline; }
-
-/* 홈(전체 달 목록) 페이지 */
-.month-index-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; margin-top: 20px; }
-.month-index-card {
-  text-align: left; background: var(--card); border: 1px solid var(--card-border); border-radius: 14px;
-  padding: 18px; cursor: pointer; box-shadow: 0 1px 2px rgba(20,20,40,.04); transition: border-color .12s, transform .12s;
-  font-family: inherit;
-}
-.month-index-card:hover { border-color: var(--accent); transform: translateY(-2px); }
-.month-index-card-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; }
-.month-index-card-label { font-size: 19px; font-weight: 800; }
-.month-index-card-period { font-size: 11.5px; color: var(--sub); }
-.month-index-card-kpis { display: flex; gap: 18px; }
-.month-index-kpi-label { display: block; font-size: 11.5px; color: var(--sub); margin-bottom: 3px; }
-.month-index-kpi-value { display: block; font-size: 16px; font-weight: 800; }
-
 .section-block { margin-bottom: 28px; }
 .section-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
 .badge { background: var(--accent-soft); color: var(--accent); font-size: 12px; font-weight: 800; padding: 3px 9px; border-radius: 6px; }
