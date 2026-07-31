@@ -22,7 +22,7 @@ function DeltaChip({ field }) {
 export default function Overview({ overview, months, trend, onSelect }) {
   if (!overview || !months || months.length === 0) return null
   const latest = months[months.length - 1]
-  const { topPosts } = overview
+  const { topPosts, risingPosts } = overview
 
   // 스파크라인은 실제로 과거 추이가 존재하는 조회수·순방문자수에만 붙인다 (방문횟수·재방문율·
   // 평균사용시간은 엑셀에 과거 추이 자체가 없어서 만들 수 없음).
@@ -83,24 +83,49 @@ export default function Overview({ overview, months, trend, onSelect }) {
         </div>
       </div>
 
-      <div className="section-block">
-        <div className="section-head">
-          <span className="badge">★</span>
-          <h2 className="section-title">역대 인기 게시물</h2>
-        </div>
-        <p className="section-sub">전체 기간 통틀어 가장 많이 읽힌 글 top3입니다</p>
-        <div className="overview-post-list">
-          {topPosts.map((p, i) => (
-            <button type="button" className="overview-post-card" key={`${p.monthKey}-${p.title}`} onClick={() => onSelect(p.monthKey)}>
-              <div className="overview-post-rank">{i + 1}</div>
-              <div className="overview-post-body">
-                <div className="overview-post-title">{p.title}</div>
-                <div className="overview-post-meta">
-                  {p.monthLabel} · {fmtInt(p.views)}회
+      <div className="top-grid">
+        <div>
+          <div className="section-head">
+            <span className="badge">★</span>
+            <h2 className="section-title">역대 인기 게시물</h2>
+          </div>
+          <p className="section-sub">전체 기간 통틀어 가장 많이 읽힌 글 top3입니다</p>
+          <div className="overview-post-list">
+            {topPosts.map((p, i) => (
+              <button type="button" className="overview-post-card" key={`${p.monthKey}-${p.title}`} onClick={() => onSelect(p.monthKey)}>
+                <div className="overview-post-rank">{i + 1}</div>
+                <div className="overview-post-body">
+                  <div className="overview-post-title">{p.title}</div>
+                  <div className="overview-post-meta">
+                    {p.monthLabel} · {fmtInt(p.views)}회
+                  </div>
                 </div>
-              </div>
-            </button>
-          ))}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <div className="section-head">
+            <span className="badge">🔥</span>
+            <h2 className="section-title">이번 달 신규 진입 게시물</h2>
+          </div>
+          <p className="section-sub">전월 TOP10에는 없다가 {latest.label}에 새로 올라온 글입니다</p>
+          {risingPosts.length > 0 ? (
+            <div className="overview-post-list">
+              {risingPosts.map((p) => (
+                <button type="button" className="overview-post-card rising" key={p.title} onClick={() => onSelect(latest.key)}>
+                  <div className="overview-post-rank rising">NEW</div>
+                  <div className="overview-post-body">
+                    <div className="overview-post-title">{p.title}</div>
+                    <div className="overview-post-meta">{fmtInt(p.views)}회</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="overview-empty-note">전월 대비 새로 진입한 게시물이 없습니다.</p>
+          )}
         </div>
       </div>
     </div>

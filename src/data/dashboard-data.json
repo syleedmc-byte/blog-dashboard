@@ -1530,8 +1530,28 @@
         "monthLabel": "6월"
       }
     ],
+    "risingPosts": [
+      {
+        "rank": 1,
+        "title": "격주 DMCian l 때로는 나침반~ 때로는 버팀목~ 바쁘다바빠 디엠씨미디어 리더 사회♬",
+        "views": 135,
+        "url": "https://blog.naver.com/dmcmedia_official/224297964682"
+      },
+      {
+        "rank": 2,
+        "title": "격주 DMCian l \"성장 야호~\" 업무 적응 종료→폭풍 활약 준비가 한창인 디엠씨미디어의 루키들",
+        "views": 111,
+        "url": "https://blog.naver.com/dmcmedia_official/224313089932"
+      },
+      {
+        "rank": 4,
+        "title": "디엠씨미디어의 사내 AI 활용 경진대회 'D.match 2026', 본선PT 현장 스케치",
+        "views": 90,
+        "url": "https://blog.naver.com/dmcmedia_official/224324845160"
+      }
+    ],
     "latestKey": "2026-06"
   },
   "sourceFile": "블로그_통계(통합)_0730.xlsx",
-  "updatedAt": "2026-07-31T06:38:02.832Z"
+  "updatedAt": "2026-07-31T06:45:02.707Z"
 }

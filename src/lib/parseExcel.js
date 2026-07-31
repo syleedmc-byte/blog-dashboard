@@ -493,9 +493,23 @@ function computeOverview(months) {
     .sort((a, b) => b.views - a.views)
     .slice(0, 3)
 
+  // 이번 달 신규 진입 게시물: 이번 달 TOP10에는 있지만 전월 TOP10에는 아예 없던 글 — "지난달엔
+  // 순위 밖이었는데 이번 달 갑자기 올라온 글"을 뜻한다. 제목을 그대로 키로 비교한다(같은 글이
+  // 재작성/링크만 바뀌는 경우까지는 구분하지 못하는 한계가 있음). 첫 달(비교할 전월이 없음)은 빈
+  // 배열을 준다.
+  const latest = months[months.length - 1]
+  const prevMonth = months.length > 1 ? months[months.length - 2] : null
+  const risingPosts = prevMonth
+    ? [...latest.posts]
+        .filter((p) => p.views != null && !prevMonth.posts.some((pp) => pp.title === p.title))
+        .sort((a, b) => b.views - a.views)
+        .slice(0, 3)
+    : []
+
   return {
     topPosts,
-    latestKey: months[months.length - 1].key,
+    risingPosts,
+    latestKey: latest.key,
   }
 }
 

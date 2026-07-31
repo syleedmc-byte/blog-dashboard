@@ -36,9 +36,23 @@ export default function KpiCards({ kpi }) {
       ))}
       <div className="stat-card ai-card">
         <div className="stat-icon">🤖</div>
-        <div className="stat-value">{kpi.ai.value ?? '-'}</div>
-        <div className="stat-label">AI 브리핑 인용수</div>
-        <div className="ai-sub">누적 <b>{kpi.ai.cumulative ?? '-'}</b></div>
+        {kpi.ai.value != null ? (
+          <>
+            <div className="stat-value">{kpi.ai.value}</div>
+            <div className="stat-label">AI 브리핑 인용수</div>
+            <div className="ai-sub">
+              누적 <b>{kpi.ai.cumulative ?? '-'}</b>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="stat-label">AI 브리핑 인용수</div>
+            {/* 아직 수집 전인 지표라, 빈 값을 그냥 "-"로만 보여주면 고장난 것처럼 보인다.
+                자리를 미리 만들어 두고 "수집 예정" 상태임을 명시해 둔다. */}
+            <div className="ai-pending">📡 데이터 수집 예정</div>
+            <div className="ai-sub">AI 검색 인용(GEO) 지표</div>
+          </>
+        )}
       </div>
     </div>
   )

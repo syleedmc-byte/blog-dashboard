@@ -94,22 +94,22 @@ body {
 
 /* 사이드바 — 라이트/다크 모드와 무관하게 항상 짙은 남색으로 고정, 콘텐츠 영역과 대비를 준다 */
 .sidebar {
-  width: 220px; flex-shrink: 0; background: #1B1E3C; border-right: 1px solid rgba(255,255,255,.06);
+  width: 220px; flex-shrink: 0; background: var(--card); border-right: 1px solid var(--card-border);
   padding: 22px 14px; display: flex; flex-direction: column; gap: 6px;
 }
 .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 0 10px; margin-bottom: 26px; }
 .sidebar-brand-icon { font-size: 20px; }
-.sidebar-brand-text { font-size: 15px; font-weight: 800; letter-spacing: -0.3px; color: #fff; }
+.sidebar-brand-text { font-size: 15px; font-weight: 800; letter-spacing: -0.3px; color: var(--ink); }
 .sidebar-nav { display: flex; flex-direction: column; gap: 3px; overflow-y: auto; }
 .sidebar-section { display: flex; flex-direction: column; gap: 3px; }
-.sidebar-nav-label { font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,.38); text-transform: uppercase; letter-spacing: .06em; padding: 16px 12px 6px; }
+.sidebar-nav-label { font-size: 10.5px; font-weight: 700; color: var(--sub); text-transform: uppercase; letter-spacing: .06em; padding: 16px 12px 6px; }
 .sidebar-nav-item {
   display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
   padding: 10px 12px; border-radius: 10px; border: none; background: none; cursor: pointer;
-  font-family: inherit; font-size: 13.5px; font-weight: 600; color: rgba(255,255,255,.62); transition: background .12s, color .12s;
+  font-family: inherit; font-size: 13.5px; font-weight: 600; color: var(--sub); transition: background .12s, color .12s;
 }
-.sidebar-nav-item:hover { background: rgba(255,255,255,.08); color: #fff; }
-.sidebar-nav-item.active { background: var(--accent); color: #fff; }
+.sidebar-nav-item:hover { background: var(--accent-soft); color: var(--accent); }
+.sidebar-nav-item.active { background: var(--accent-soft); color: var(--accent); font-weight: 800; }
 .sidebar-nav-icon { font-size: 14px; opacity: .9; }
 
 /* 상단바 */
@@ -158,6 +158,7 @@ body {
 .stat-card.ai-card { background: linear-gradient(160deg, #F3F1FF, var(--card)); border: 1px solid #E4DFFF; }
 .ai-sub { font-size: 12px; color: var(--sub); margin-top: 7px; }
 .ai-sub b { color: var(--ink); }
+.ai-pending { font-size: 13.5px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
 
 /* 컬러 KPI 카드 (참고 디자인 이미지 스타일) */
 .stat-card.pill-pink { background: var(--pill-pink); border-color: var(--pill-pink); }
@@ -341,6 +342,9 @@ body {
 .overview-post-body { min-width: 0; }
 .overview-post-title { font-size: 13px; font-weight: 700; color: var(--ink); line-height: 1.4; word-break: break-word; }
 .overview-post-meta { font-size: 11.5px; color: var(--sub); margin-top: 4px; }
+.overview-post-card.rising { border-color: #F5D9B8; background: #FFF8F0; }
+.overview-post-rank.rising { width: auto; height: auto; padding: 3px 8px; border-radius: 999px; background: var(--pill-orange); font-size: 10px; }
+.overview-empty-note { font-size: 12.5px; color: var(--sub); padding: 12px 4px; }
 
 @media (max-width: 1100px) {
   .stats-row { grid-template-columns: repeat(3, 1fr); }
