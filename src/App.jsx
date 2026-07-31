@@ -42,6 +42,29 @@ export default function App() {
 
   const active = useMemo(() => months.find((m) => m.key === activeKey) ?? null, [months, activeKey])
 
+  // 사이드바에 넘길 섹션 목록. "월별 리포트" 말고 다른 메뉴/카테고리가 나중에 생기면, Sidebar.jsx는
+  // 그대로 두고 여기(또는 이 배열을 만드는 로직)에 섹션을 하나 더 추가하면 된다.
+  const sidebarSections = useMemo(() => {
+    const years = [...new Set(months.map((m) => m.year))].sort((a, b) => b - a)
+    return [
+      { items: [{ key: 'home', label: '홈', icon: '🏠', active: activeKey == null, onClick: goHome }] },
+      ...years.map((year) => ({
+        label: `${year}년`,
+        items: [...months]
+          .filter((m) => m.year === year)
+          .reverse()
+          .map((m) => ({
+            key: m.key,
+            label: `${m.monthNumber}월`,
+            icon: '🗓️',
+            active: activeKey === m.key,
+            onClick: () => selectMonth(m.key),
+          })),
+      })),
+    ]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [months, activeKey])
+
   // 트렌드 차트는 참고 디자인과 동일하게, 해당 월을 기준으로 최근 5개월치만 보여준다
   // (트렌드 데이터 전체가 아니라 각 탭이 자기 자신을 끝점으로 하는 5개월 구간을 봐야 함)
   const activeTrend = useMemo(() => {
@@ -74,7 +97,7 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <Sidebar months={months} activeKey={activeKey} onSelectHome={goHome} onSelectMonth={selectMonth} />
+      <Sidebar sections={sidebarSections} />
 
       <div className="main-area">
         <div className="topbar">
@@ -88,7 +111,7 @@ export default function App() {
         <div className="main-content">
           <p className="top-note">데이터 출처: {sourceFile} (data/ 폴더에서 자동으로 읽어옵니다)</p>
 
-          {!active && <Overview overview={overview} onSelect={selectMonth} />}
+          {!active && <Overview overview={overview} months={months} trend={trend} onSelect={selectMonth} />}
 
           {active && (
             <>

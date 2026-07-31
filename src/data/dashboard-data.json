@@ -1504,28 +1504,6 @@
     "Trend"
   ],
   "overview": {
-    "monthCount": 3,
-    "totalViews": 4635,
-    "totalVisitors": 2534,
-    "totalVisits": 3095,
-    "avgRevisit": 9,
-    "avgAvgtime": "4m 37s",
-    "bestGrowth": {
-      "label": "조회수",
-      "delta": "+51.3%",
-      "monthKey": "2026-06",
-      "monthLabel": "6월"
-    },
-    "topVisitorMonth": {
-      "key": "2026-04",
-      "label": "4월",
-      "value": 1105
-    },
-    "topViewsMonth": {
-      "key": "2026-04",
-      "label": "4월",
-      "value": 1835
-    },
     "topPosts": [
       {
         "rank": 1,
@@ -1552,39 +1530,8 @@
         "monthLabel": "6월"
       }
     ],
-    "topReferrer": {
-      "name": "네이버 블로그_PC",
-      "avgPct": 29.98
-    },
-    "topKeyword": {
-      "name": "타불라",
-      "avgPct": 9.73
-    },
-    "trend": [
-      {
-        "key": "2026-04",
-        "label": "2026.04",
-        "monthLabel": "4월",
-        "views": 1835,
-        "visitors": 1105
-      },
-      {
-        "key": "2026-05",
-        "label": "2026.05",
-        "monthLabel": "5월",
-        "views": 1114,
-        "visitors": 630
-      },
-      {
-        "key": "2026-06",
-        "label": "2026.06",
-        "monthLabel": "6월",
-        "views": 1686,
-        "visitors": 799
-      }
-    ],
     "latestKey": "2026-06"
   },
   "sourceFile": "블로그_통계(통합)_0730.xlsx",
-  "updatedAt": "2026-07-31T06:10:34.396Z"
+  "updatedAt": "2026-07-31T06:38:02.832Z"
 }
