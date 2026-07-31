@@ -48,7 +48,7 @@ export default function App() {
     () => [
       {
         items: [
-          { key: 'index', label: '인덱스', icon: '📊', active: activeKey == null, onClick: goHome },
+          { key: 'index', label: '홈', icon: '🏠', active: activeKey == null, onClick: goHome },
           ...[...months].reverse().map((m) => ({
             key: m.key,
             label: `${m.monthNumber}월`,
@@ -88,7 +88,7 @@ export default function App() {
     )
   }
 
-  const pageTitle = active ? `${active.label} 블로그 통계` : '인덱스'
+  const pageTitle = active ? `${active.label} 블로그 통계` : '홈'
   const pageSub = active ? '블로그 운영 성과를 한눈에 확인하세요.' : '이번 달 핵심 인사이트를 한눈에 확인하세요.'
 
   return (

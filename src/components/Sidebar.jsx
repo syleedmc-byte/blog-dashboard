@@ -5,7 +5,11 @@ export default function Sidebar({ sections }) {
     <aside className="sidebar">
       <div className="sidebar-brand">
         <span className="sidebar-brand-icon">📊</span>
-        <span className="sidebar-brand-text">디엠씨미디어 블로그 통계</span>
+        <span className="sidebar-brand-text">
+          디엠씨미디어
+          <br />
+          블로그 통계
+        </span>
       </div>
       <nav className="sidebar-nav">
         {sections.map((section, i) => (
