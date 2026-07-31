@@ -49,11 +49,19 @@ export default function App() {
     () => [
       {
         items: [
-          { key: 'index', label: '홈', icon: '🏠', active: activeKey == null, onClick: goHome },
+          {
+            key: 'index',
+            label: '네이버 블로그 통계',
+            icon: '🏠',
+            active: activeKey == null,
+            onClick: goHome,
+            externalHref: 'https://blog.naver.com/dmcmedia_official',
+          },
           ...[...months].reverse().map((m) => ({
             key: m.key,
             label: `${m.monthNumber}월`,
             icon: '🗓️',
+            badge: m.monthNumber,
             active: activeKey === m.key,
             onClick: () => selectMonth(m.key),
           })),
