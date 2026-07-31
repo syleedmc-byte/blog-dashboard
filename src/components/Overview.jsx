@@ -23,9 +23,11 @@ export default function Overview({ overview, months, trend, onSelect }) {
     <div className="overview">
       <div className="cumulative-row">
         <div className="stat-card cumulative-card icon-teal">
-          <div className="stat-icon">👁</div>
+          <div className="cumulative-card-head">
+            <div className="stat-icon">👁</div>
+            <div className="cumulative-card-label">누적 조회수 ({cumulative.year}년)</div>
+          </div>
           <div className="stat-value">{fmtInt(cumulative.totalViews)}</div>
-          <div className="stat-label">누적 조회수 ({cumulative.year}년)</div>
           <div className="cumulative-bottom">
             {cumulative.viewsSparkline.length > 1 && <Sparkline values={cumulative.viewsSparkline} color={SERIES_VIEWS} />}
             {cumulative.momViewsPct != null && (
@@ -36,9 +38,11 @@ export default function Overview({ overview, months, trend, onSelect }) {
           </div>
         </div>
         <div className="stat-card cumulative-card icon-purple">
-          <div className="stat-icon">👤</div>
+          <div className="cumulative-card-head">
+            <div className="stat-icon">👤</div>
+            <div className="cumulative-card-label">누적 순방문자수 ({cumulative.year}년)</div>
+          </div>
           <div className="stat-value">{fmtInt(cumulative.totalVisitors)}</div>
-          <div className="stat-label">누적 순방문자수 ({cumulative.year}년)</div>
           <div className="cumulative-bottom">
             {cumulative.visitorsSparkline.length > 1 && <Sparkline values={cumulative.visitorsSparkline} color={SERIES_VISITORS} />}
             {cumulative.momVisitorsPct != null && (
@@ -49,11 +53,13 @@ export default function Overview({ overview, months, trend, onSelect }) {
           </div>
         </div>
         <div className="stat-card cumulative-card icon-orange">
-          <div className="stat-icon">🤖</div>
+          <div className="cumulative-card-head">
+            <div className="stat-icon">🤖</div>
+            <div className="cumulative-card-label">AI 브리핑 인용수 (누적)</div>
+          </div>
           {ai.value != null ? (
             <>
               <div className="stat-value">{ai.value}</div>
-              <div className="stat-label">AI 브리핑 인용수 (누적)</div>
               <div className="ai-sub">
                 누적 <b>{fmtInt(cumulative.aiCumulative)}</b>
               </div>
@@ -61,7 +67,6 @@ export default function Overview({ overview, months, trend, onSelect }) {
           ) : (
             <>
               <div className="stat-value">{fmtInt(cumulative.aiCumulative)}</div>
-              <div className="stat-label">AI 브리핑 인용수 (누적)</div>
               <div className="ai-pending">📡 이번 달 신규 인용수는 수집 예정</div>
             </>
           )}

@@ -143,6 +143,21 @@ body {
 .topbar p { margin: 0; color: var(--sub); font-size: 13px; }
 .year-pill { display: flex; align-items: center; gap: 8px; background: var(--navy); color: #fff; padding: 8px 15px; border-radius: 10px; font-size: 13.5px; font-weight: 600; height: fit-content; }
 
+/* 홈 화면 전용 상단 배너 — 밋밋한 흰 배경 대신 은은한 그라디언트로 페이지 시작점을 강조 */
+.topbar-hero {
+  padding: 24px 28px; border-radius: 20px; margin: 22px auto 0;
+  background: linear-gradient(120deg, var(--accent-soft), #E3F6FD 55%, var(--card));
+  border: 1px solid var(--card-border);
+}
+
+/* 네이버 블로그 바로가기 — 네이버 공식 브랜드 컬러(#03C75A)의 N 배지 */
+.naver-badge {
+  flex-shrink: 0; width: 34px; height: 34px; border-radius: 9px; background: #03C75A; color: #fff;
+  display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 800;
+  text-decoration: none; box-shadow: 0 2px 6px rgba(3, 199, 90, .35); transition: transform .12s, box-shadow .12s;
+}
+.naver-badge:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(3, 199, 90, .45); }
+
 .data-error {
   background: var(--card);
   border: 1px dashed var(--sub);
@@ -321,6 +336,9 @@ body {
    따라간 자동 계산 인사이트 중심 구성 */
 .cumulative-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
 .cumulative-row > * { min-width: 0; }
+.cumulative-card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.cumulative-card-head .stat-icon { margin-bottom: 0; flex-shrink: 0; }
+.cumulative-card-label { font-size: 14.5px; font-weight: 700; color: var(--ink); }
 .cumulative-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px; }
 
 /* 카드 배경은 흰색으로 중립적으로 유지하되(진한 단색 카드는 이전 피드백으로 지양), 아이콘
