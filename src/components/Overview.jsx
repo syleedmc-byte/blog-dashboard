@@ -90,7 +90,7 @@ export default function Overview({ overview, months, trend, onSelect }) {
           {topMover && (
             <div className="stat-card mover-card">
               <div className="stat-icon">🚀</div>
-              <div className="mover-title">{latest.label} 급성장 게시물</div>
+              <div className="mover-title">급성장 게시물</div>
               {topMover.url ? (
                 <a className="mover-value mover-link" href={topMover.url} target="_blank" rel="noopener noreferrer">
                   {topMover.title} <span className="link-ico">🔗</span>
@@ -107,7 +107,7 @@ export default function Overview({ overview, months, trend, onSelect }) {
 
           {categoryMix.length > 0 && (
             <div className="card topic-mix-card">
-              <p className="subcard-title"><span className="accent-dot" />{latest.label} 인기글 주제 비중</p>
+              <p className="subcard-title"><span className="accent-dot" />인기글 주제 비중</p>
               <div className="topic-mix-bar">
                 {categoryMix.map((m, i) => (
                   <div
@@ -139,7 +139,7 @@ export default function Overview({ overview, months, trend, onSelect }) {
       <div className="headline-banner">
         <button type="button" className="headline-top-row" onClick={() => onSelect(latest.key)}>
           <div className="headline-left">
-            <p className="headline-eyebrow">{latest.label} 헤드라인 인사이트</p>
+            <p className="headline-eyebrow">헤드라인 인사이트</p>
             <p className="headline-sentence">{headline.sentence}</p>
           </div>
           <div className="headline-right">

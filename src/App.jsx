@@ -97,9 +97,7 @@ export default function App() {
   }
 
   const pageTitle = active ? `${active.label} 블로그 통계` : '블로그 통계 보고서'
-  const pageSub = active
-    ? '블로그 운영 성과를 한눈에 확인하세요.'
-    : `블로그 운영 성과와 ${months[months.length - 1].label} 핵심 인사이트를 한눈에 확인하세요.`
+  const pageSub = active ? '블로그 운영 성과를 한눈에 확인하세요.' : ''
 
   return (
     <div className="app-shell">
@@ -109,7 +107,7 @@ export default function App() {
         <div className={`topbar${!active ? ' topbar-hero' : ''}`}>
           <div>
             <h1>{pageTitle}</h1>
-            <p>{pageSub}</p>
+            {pageSub && <p>{pageSub}</p>}
           </div>
           {active && <div className="year-pill">📅 {active.year}.{String(active.monthNumber).padStart(2, '0')}</div>}
           {!active && (
