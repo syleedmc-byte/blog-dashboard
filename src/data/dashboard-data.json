@@ -1680,10 +1680,11 @@
         799
       ],
       "momViewsPct": 51.3,
-      "momVisitorsPct": 26.8
+      "momVisitorsPct": 26.8,
+      "aiCumulative": 36000
     },
     "latestKey": "2026-06"
   },
   "sourceFile": "블로그_통계(통합)_0730.xlsx",
-  "updatedAt": "2026-07-31T08:08:41.769Z"
+  "updatedAt": "2026-07-31T08:18:04.447Z"
 }

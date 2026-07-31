@@ -311,6 +311,16 @@ body {
 .cumulative-row > * { min-width: 0; }
 .cumulative-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px; }
 
+/* 카드 배경은 흰색으로 중립적으로 유지하되(진한 단색 카드는 이전 피드백으로 지양), 아이콘
+   원과 카드 상단에 지표별 포인트 컬러만 살짝 얹어 구분한다 */
+.cumulative-card { border-top: 3px solid transparent; }
+.cumulative-card.icon-teal { border-top-color: var(--series-views); }
+.cumulative-card.icon-teal .stat-icon { background: rgba(23, 184, 166, 0.15); color: var(--series-views); }
+.cumulative-card.icon-purple { border-top-color: var(--accent); }
+.cumulative-card.icon-purple .stat-icon { background: var(--accent-soft); color: var(--accent); }
+.cumulative-card.icon-orange { border-top-color: var(--pill-orange); }
+.cumulative-card.icon-orange .stat-icon { background: rgba(242, 169, 59, 0.18); color: #B9791F; }
+
 .chart-side-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 18px; align-items: start; margin-bottom: 28px; }
 .chart-side-grid > * { min-width: 0; }
 .side-stack { display: flex; flex-direction: column; gap: 14px; }

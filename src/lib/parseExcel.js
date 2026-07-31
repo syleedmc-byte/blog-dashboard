@@ -734,6 +734,11 @@ function computeCumulativeStats(months) {
   }
 }
 
+// 엑셀에는 아직 AI브리핑인용수 시트/누적 합계 행이 없어서(계속 비어있는 상태), 사용자가 직접
+// 확인해 알려준 현재 누적 인용수를 임시로 사용한다. 엑셀에 실제 "합계" 행이 채워지면 parseAi가
+// 그 값을 반환하게 되고, 아래 ?? 폴백은 자동으로 무시된다.
+const AI_CITATION_CUMULATIVE_FALLBACK = 36000
+
 /** 홈(통합 인덱스) 페이지가 쓰는, 여러 달을 하나로 합친 값 중 실제로 유의미하다고 확인된 것만
  *  남긴다 (총 조회수 합계·가중평균 재방문율·통합 유입경로 1위 같은 값은 그다지 유용하지 않다는
  *  피드백에 따라 제거함). months[]는 이미 parseWorkbook이 만든 최종 값이라 여기서 시트를 다시
@@ -766,6 +771,7 @@ function computeOverview(months, trend) {
   const topMover = computeTopMover(months)
   const categoryMix = computeCategoryMix(latest)
   const cumulative = computeCumulativeStats(months)
+  cumulative.aiCumulative = latest.kpi.ai.cumulative ?? AI_CITATION_CUMULATIVE_FALLBACK
 
   return {
     topPosts,

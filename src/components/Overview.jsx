@@ -22,7 +22,7 @@ export default function Overview({ overview, months, trend, onSelect }) {
   return (
     <div className="overview">
       <div className="cumulative-row">
-        <div className="stat-card cumulative-card">
+        <div className="stat-card cumulative-card icon-teal">
           <div className="stat-icon">👁</div>
           <div className="stat-value">{fmtInt(cumulative.totalViews)}</div>
           <div className="stat-label">누적 조회수 ({cumulative.year}년)</div>
@@ -35,7 +35,7 @@ export default function Overview({ overview, months, trend, onSelect }) {
             )}
           </div>
         </div>
-        <div className="stat-card cumulative-card">
+        <div className="stat-card cumulative-card icon-purple">
           <div className="stat-icon">👤</div>
           <div className="stat-value">{fmtInt(cumulative.totalVisitors)}</div>
           <div className="stat-label">누적 순방문자수 ({cumulative.year}년)</div>
@@ -48,21 +48,21 @@ export default function Overview({ overview, months, trend, onSelect }) {
             )}
           </div>
         </div>
-        <div className="stat-card cumulative-card ai-card">
+        <div className="stat-card cumulative-card icon-orange">
           <div className="stat-icon">🤖</div>
           {ai.value != null ? (
             <>
               <div className="stat-value">{ai.value}</div>
               <div className="stat-label">AI 브리핑 인용수 (누적)</div>
               <div className="ai-sub">
-                누적 <b>{ai.cumulative ?? '-'}</b>
+                누적 <b>{fmtInt(cumulative.aiCumulative)}</b>
               </div>
             </>
           ) : (
             <>
-              <div className="stat-value">{ai.cumulative ?? '-'}</div>
+              <div className="stat-value">{fmtInt(cumulative.aiCumulative)}</div>
               <div className="stat-label">AI 브리핑 인용수 (누적)</div>
-              <div className="ai-pending">📡 데이터 수집 예정</div>
+              <div className="ai-pending">📡 이번 달 신규 인용수는 수집 예정</div>
             </>
           )}
         </div>
@@ -163,33 +163,35 @@ export default function Overview({ overview, months, trend, onSelect }) {
       <div className="section-block">
         <h2 className="section-title">역대 인기 게시물 TOP10</h2>
         <p className="section-sub">전체 기간 통틀어 가장 많이 읽힌 글 top10입니다 (클릭하면 게시물로 바로 이동합니다)</p>
-        <div className="ov-posts-grid">
-          {[topPosts.slice(0, 5), topPosts.slice(5, 10)].map((col, colIdx) => (
-            <div className="ov-posts-col" key={colIdx}>
-              {col.map((p, i) => {
-                const rank = colIdx * 5 + i + 1
-                const body = (
-                  <>
-                    <div className={`ov-post-rank${rank > 5 ? ' second' : ''}`}>{rank}</div>
-                    <div className="ov-post-title">
-                      {p.title}
-                      {p.url && <span className="link-ico">🔗</span>}
-                    </div>
-                    <div className="ov-post-views">{fmtInt(p.views)}회</div>
-                  </>
-                )
-                return p.url ? (
-                  <a className="ov-post-row" key={`${p.monthKey}-${p.title}`} href={p.url} target="_blank" rel="noopener noreferrer">
-                    {body}
-                  </a>
-                ) : (
-                  <button type="button" className="ov-post-row" key={`${p.monthKey}-${p.title}`} onClick={() => onSelect(p.monthKey)}>
-                    {body}
-                  </button>
-                )
-              })}
-            </div>
-          ))}
+        <div className="card">
+          <div className="ov-posts-grid">
+            {[topPosts.slice(0, 5), topPosts.slice(5, 10)].map((col, colIdx) => (
+              <div className="ov-posts-col" key={colIdx}>
+                {col.map((p, i) => {
+                  const rank = colIdx * 5 + i + 1
+                  const body = (
+                    <>
+                      <div className={`ov-post-rank${rank > 5 ? ' second' : ''}`}>{rank}</div>
+                      <div className="ov-post-title">
+                        {p.title}
+                        {p.url && <span className="link-ico">🔗</span>}
+                      </div>
+                      <div className="ov-post-views">{fmtInt(p.views)}회</div>
+                    </>
+                  )
+                  return p.url ? (
+                    <a className="ov-post-row" key={`${p.monthKey}-${p.title}`} href={p.url} target="_blank" rel="noopener noreferrer">
+                      {body}
+                    </a>
+                  ) : (
+                    <button type="button" className="ov-post-row" key={`${p.monthKey}-${p.title}`} onClick={() => onSelect(p.monthKey)}>
+                      {body}
+                    </button>
+                  )
+                })}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
