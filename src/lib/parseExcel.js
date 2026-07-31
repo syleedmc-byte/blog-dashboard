@@ -671,37 +671,18 @@ function computeTopMover(months) {
   }
 }
 
-/** 이번 달 인기글(TOP10) 주제 비중 — 원본 엑셀에 게시물↔카테고리 연결 필드가 없어서, 제목에
- *  카테고리명이 포함되는지로 근사 추정하는 휴리스틱이다(정확한 분류 아님, UI에도 명시함).
- *  카테고리명뿐 아니라 버블차트에 쓰이는 그 카테고리의 top 키워드 태그도 함께 대조해, "카테고리
- *  이름 자체는 제목에 안 나오지만 관련 키워드는 나오는" 경우까지 잡아낸다. 총 조회수 비중이 큰
- *  카테고리부터 매칭을 시도해, 여러 카테고리가 겹치는 제목은 더 비중 큰 쪽으로 배정한다.
- *  매칭되는 카테고리가 없으면 "기타"로 묶는다. */
+/** 이번 달 카테고리 분류 비중 — 버블차트(CategoryBubbles)가 쓰는 것과 동일한 실제 카테고리
+ *  언급 횟수(categories[].total, 카테고리 분류 시트에서 집계된 값)를 그대로 쓴다. 제목 매칭 같은
+ *  추정 로직은 쓰지 않는다. 상위 5개 카테고리만 보여주고, 그 5개의 합을 100%로 정규화한다. */
 function computeCategoryMix(latestMonth) {
-  const posts = (latestMonth.posts || []).filter((p) => p.views != null)
   const categories = latestMonth.categories || []
-  if (posts.length === 0 || categories.length === 0) return []
+  if (categories.length === 0) return []
 
-  const sortedCats = [...categories].sort((a, b) => b.total - a.total)
-  const viewsByBucket = new Map()
+  const top5 = [...categories].sort((a, b) => b.total - a.total).slice(0, 5)
+  const totalMentions = top5.reduce((sum, c) => sum + c.total, 0)
+  if (totalMentions === 0) return []
 
-  for (const post of posts) {
-    const titleKey = normKey(post.title)
-    const match = sortedCats.find(
-      (c) => titleKey.includes(normKey(c.name)) || (c.keywords || []).some((k) => titleKey.includes(normKey(k.name)))
-    )
-    const bucket = match ? match.name : '기타'
-    viewsByBucket.set(bucket, (viewsByBucket.get(bucket) || 0) + post.views)
-  }
-
-  const totalViews = [...viewsByBucket.values()].reduce((a, b) => a + b, 0)
-  if (totalViews === 0) return []
-
-  const mix = [...viewsByBucket.entries()]
-    .map(([name, views]) => ({ name, pct: +((views / totalViews) * 100).toFixed(1) }))
-    .sort((a, b) => (a.name === '기타') - (b.name === '기타') || b.pct - a.pct)
-
-  return mix
+  return top5.map((c) => ({ name: c.name, pct: +((c.total / totalMentions) * 100).toFixed(1) }))
 }
 
 /** 인덱스 최상단 "누적 지표" 카드용 — 월별 상세 페이지에는 없는, 최신 달과 같은 연도에 속한

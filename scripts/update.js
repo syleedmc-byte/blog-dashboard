@@ -101,7 +101,7 @@ function main() {
     }
 
     if (ov.categoryMix.length > 0) {
-      console.log(`[검증용] 이번 달 인기글 주제 비중(제목 기반 추정, 합계 100%여야 함): ${ov.categoryMix.map((m) => `${m.name} ${m.pct}%`).join(', ')}`)
+      console.log(`[검증용] 이번 달 인기글 주제 비중(카테고리 분류 데이터 기준 상위 5개, 합계 100%여야 함): ${ov.categoryMix.map((m) => `${m.name} ${m.pct}%`).join(', ')} (개수=${ov.categoryMix.length})`)
     } else {
       console.log(`[검증용] 이번 달 인기글 주제 비중: 계산 불가 (카테고리 데이터 없음)`)
     }

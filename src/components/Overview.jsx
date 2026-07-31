@@ -102,7 +102,7 @@ export default function Overview({ overview, months, trend, onSelect }) {
 
           {categoryMix.length > 0 && (
             <div className="card topic-mix-card">
-              <p className="subcard-title"><span className="accent-dot" />{latest.label} 인기글 주제 비중 (TOP10 기준)</p>
+              <p className="subcard-title"><span className="accent-dot" />{latest.label} 인기글 주제 비중</p>
               <div className="topic-mix-bar">
                 {categoryMix.map((m, i) => (
                   <div
@@ -125,7 +125,7 @@ export default function Overview({ overview, months, trend, onSelect }) {
                   </div>
                 ))}
               </div>
-              <p className="topic-mix-caption">※ 게시물과 카테고리를 직접 잇는 데이터가 없어, 제목 텍스트 기반으로 추정한 값입니다 (참고용).</p>
+              <p className="topic-mix-caption">※ 카테고리 분류 데이터(버블차트와 동일 기준) 상위 5개 카테고리의 언급 비중입니다.</p>
             </div>
           )}
         </div>
