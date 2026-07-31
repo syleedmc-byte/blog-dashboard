@@ -1,6 +1,6 @@
 import Sparkline from './Sparkline.jsx'
 import ViewsBarChart from './ViewsBarChart.jsx'
-import { SERIES_VIEWS, SERIES_VISITORS } from '../theme.js'
+import { SERIES_VIEWS } from '../theme.js'
 
 function fmtInt(n) {
   return typeof n === 'number' ? n.toLocaleString('ko-KR') : '-'
@@ -28,14 +28,6 @@ export default function Overview({ overview, months, trend, onSelect }) {
             <div className="cumulative-card-label">누적 조회수</div>
           </div>
           <div className="stat-value">{fmtInt(cumulative.totalViews)}건</div>
-          <div className="cumulative-bottom">
-            {cumulative.viewsSparkline.length > 1 && <Sparkline values={cumulative.viewsSparkline} color={SERIES_VIEWS} />}
-            {cumulative.momViewsPct != null && (
-              <span className={`stat-delta ${cumulative.momViewsPct >= 0 ? 'up' : 'down'}`}>
-                {cumulative.momViewsPct >= 0 ? '▲' : '▼'} {Math.abs(cumulative.momViewsPct)}%
-              </span>
-            )}
-          </div>
         </div>
         <div className="stat-card cumulative-card icon-purple">
           <div className="cumulative-card-head">
@@ -43,14 +35,6 @@ export default function Overview({ overview, months, trend, onSelect }) {
             <div className="cumulative-card-label">누적 순방문자수</div>
           </div>
           <div className="stat-value">{fmtInt(cumulative.totalVisitors)}명</div>
-          <div className="cumulative-bottom">
-            {cumulative.visitorsSparkline.length > 1 && <Sparkline values={cumulative.visitorsSparkline} color={SERIES_VISITORS} />}
-            {cumulative.momVisitorsPct != null && (
-              <span className={`stat-delta ${cumulative.momVisitorsPct >= 0 ? 'up' : 'down'}`}>
-                {cumulative.momVisitorsPct >= 0 ? '▲' : '▼'} {Math.abs(cumulative.momVisitorsPct)}%
-              </span>
-            )}
-          </div>
         </div>
         <div className="stat-card cumulative-card icon-orange">
           <div className="cumulative-card-head">

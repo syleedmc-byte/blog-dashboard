@@ -339,7 +339,6 @@ body {
 .cumulative-card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
 .cumulative-card-head .stat-icon { margin-bottom: 0; flex-shrink: 0; }
 .cumulative-card-label { font-size: 14.5px; font-weight: 700; color: var(--ink); }
-.cumulative-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 4px; }
 
 /* 카드 배경은 흰색으로 중립적으로 유지하되(진한 단색 카드는 이전 피드백으로 지양), 아이콘
    원과 카드 상단에 지표별 포인트 컬러만 살짝 얹어 구분한다 */
