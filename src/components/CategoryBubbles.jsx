@@ -10,7 +10,7 @@ const isBrand = (name) => {
 /** categories/people (parseExcel.js 산출물) -> bubbleEngine이 기대하는 kd 모양으로 변환.
  *  브랜드(디엠씨미디어)가 실제 1위가 아니어도 항상 가장 큰 원으로 고정하는 규칙은 여기서 적용한다
  *  (확정된 디자인 규칙 — CategoryBubbles의 기존 정적 버전에 있던 로직 그대로 유지). */
-function buildKd(categories, people) {
+function buildKd(categories, people, misc) {
   const maxTotal = Math.max(...categories.map((c) => c.total), 1)
   const minTotal = Math.min(...categories.map((c) => c.total), 0)
   const sized = categories.map((c) => {
@@ -33,13 +33,14 @@ function buildKd(categories, people) {
     cat: c.section,
     size: c.size,
     mix: (c.mix || []).map((m) => ({ cat: m.section, pct: m.pct })),
-    related: (c.keywords || []).map((k) => k.name),
+    related: (c.keywords || []).map((k) => ({ name: k.name, section: k.section })),
   }))
 
   return {
     bubbles,
     people: (people || []).map((p) => ({ name: p.name, n: p.count })),
-    loose: [],
+    // "기타"(미분류) 중 언급 많은 상위 몇 개는 어느 원에도 안 붙는 독립(하늘색) 태그로
+    loose: misc || [],
   }
 }
 
@@ -51,13 +52,13 @@ const COLOR_SWATCHES = [
   { bg: '#FCE4EC', border: '#F5A8C4', fg: '#AD1457', title: '분홍' },
 ]
 
-export default function CategoryBubbles({ categories, people, monthKey }) {
+export default function CategoryBubbles({ categories, people, misc, monthKey }) {
   const svgRef = useRef(null)
   const [selectedColor, setSelectedColor] = useState(null) // null = 기본(흰색)
   const [selectedSwatchBg, setSelectedSwatchBg] = useState('#FFFFFF')
   const [addValue, setAddValue] = useState('')
 
-  const kd = useMemo(() => buildKd(categories || [], people || []), [categories, people])
+  const kd = useMemo(() => buildKd(categories || [], people || [], misc || []), [categories, people, misc])
   const { W: canvasW, H: canvasH } = useMemo(() => estimateCanvasSize(kd), [kd])
 
   useEffect(() => {

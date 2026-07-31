@@ -203,23 +203,28 @@
           "keywords": [
             {
               "name": "디엠씨미디어 블로그",
-              "count": 19
+              "count": 19,
+              "section": "About"
+            },
+            {
+              "name": "렙사 디엠씨",
+              "count": 1,
+              "section": "People"
+            },
+            {
+              "name": "DMC리포트",
+              "count": 1,
+              "section": "Trend"
+            },
+            {
+              "name": "디엠씨미디어 당근",
+              "count": 1,
+              "section": "Media"
             },
             {
               "name": "DMC미디어",
-              "count": 4
-            },
-            {
-              "name": "dmc미디어",
-              "count": 4
-            },
-            {
-              "name": "디엠씨미디어 공채",
-              "count": 2
-            },
-            {
-              "name": "dmc미디어 장기근속",
-              "count": 2
+              "count": 8,
+              "section": "About"
             }
           ]
         },
@@ -239,24 +244,29 @@
           ],
           "keywords": [
             {
-              "name": "옷 플랫폼",
-              "count": 6
-            },
-            {
               "name": "의류플랫폼",
-              "count": 4
+              "count": 4,
+              "section": "Media"
             },
             {
-              "name": "옷플랫폼",
-              "count": 2
+              "name": "옷 플랫폼",
+              "count": 8,
+              "section": "Trend"
             },
             {
               "name": "옷 플렛폼",
-              "count": 2
+              "count": 2,
+              "section": "Trend"
             },
             {
               "name": "의류 플렛폼",
-              "count": 2
+              "count": 2,
+              "section": "Media"
+            },
+            {
+              "name": "패션커머스",
+              "count": 1,
+              "section": "Trend"
             }
           ]
         },
@@ -273,23 +283,23 @@
           "keywords": [
             {
               "name": "컬리n마트",
-              "count": 14
-            },
-            {
-              "name": "컬리N마트",
-              "count": 1
-            },
-            {
-              "name": "컬리n마트 멤버십",
-              "count": 1
-            },
-            {
-              "name": "컬리N마트 거래액",
-              "count": 1
+              "count": 15,
+              "section": "Trend"
             },
             {
               "name": "컬리 n",
-              "count": 1
+              "count": 1,
+              "section": "Trend"
+            },
+            {
+              "name": "컬리n마트 멤버십",
+              "count": 1,
+              "section": "Trend"
+            },
+            {
+              "name": "컬리N마트 거래액",
+              "count": 1,
+              "section": "Trend"
             }
           ]
         },
@@ -306,23 +316,28 @@
           "keywords": [
             {
               "name": "로켓 위젯",
-              "count": 8
+              "count": 8,
+              "section": "Trend"
             },
             {
               "name": "로켓위쳇",
-              "count": 1
-            },
-            {
-              "name": "rocket widget",
-              "count": 1
+              "count": 1,
+              "section": "Trend"
             },
             {
               "name": "locket 광고",
-              "count": 1
+              "count": 1,
+              "section": "Trend"
+            },
+            {
+              "name": "rocket widget",
+              "count": 1,
+              "section": "Trend"
             },
             {
               "name": "locket widget",
-              "count": 1
+              "count": 1,
+              "section": "Trend"
             }
           ]
         },
@@ -339,19 +354,23 @@
           "keywords": [
             {
               "name": "쿠팡플레이 광고",
-              "count": 15
-            },
-            {
-              "name": "tving 광고대행사",
-              "count": 1
+              "count": 15,
+              "section": "About"
             },
             {
               "name": "티빙 쿠팡",
-              "count": 1
+              "count": 1,
+              "section": "About"
             },
             {
               "name": "티빙 쿠팡플레이",
-              "count": 1
+              "count": 1,
+              "section": "About"
+            },
+            {
+              "name": "tving 광고대행사",
+              "count": 1,
+              "section": "About"
             }
           ]
         },
@@ -372,15 +391,18 @@
           "keywords": [
             {
               "name": "당근 전문가모드 하는법",
-              "count": 3
+              "count": 3,
+              "section": "Media"
+            },
+            {
+              "name": "당근에 동영상 광고",
+              "count": 1,
+              "section": "About"
             },
             {
               "name": "당근 전문가모드광고방법",
-              "count": 2
-            },
-            {
-              "name": "당근마켓 동영상 광고",
-              "count": 1
+              "count": 2,
+              "section": "Media"
             }
           ]
         },
@@ -400,16 +422,19 @@
           ],
           "keywords": [
             {
-              "name": "카카오톡 선물하기에서 성공한 브랜드 사례를 알려주세요",
-              "count": 1
+              "name": "카카오 플친 유형",
+              "count": 1,
+              "section": "Media"
             },
             {
-              "name": "카카오톡 플친 웰컴메시지 ★★★★★ 해당 문자 조합 알려주세요",
-              "count": 1
+              "name": "카카오톡 소식 조회수",
+              "count": 1,
+              "section": "About"
             },
             {
-              "name": "카카오t 택시 핀테마",
-              "count": 1
+              "name": "카카오t rse광고",
+              "count": 1,
+              "section": "Media"
             }
           ]
         },
@@ -426,15 +451,18 @@
           "keywords": [
             {
               "name": "촬영실록",
-              "count": 2
+              "count": 3,
+              "section": "Trend"
             },
             {
               "name": "왕사남 노션",
-              "count": 2
+              "count": 2,
+              "section": "Trend"
             },
             {
-              "name": "쇼박스 실록",
-              "count": 1
+              "name": "왕과사는남자 촬영실록",
+              "count": 2,
+              "section": "Trend"
             }
           ]
         },
@@ -451,15 +479,18 @@
           "keywords": [
             {
               "name": "중저가 의류 브랜드",
-              "count": 4
+              "count": 6,
+              "section": "Trend"
             },
             {
-              "name": "중저가의류브랜드",
-              "count": 2
+              "name": "중가여성의류",
+              "count": 1,
+              "section": "Trend"
             },
             {
-              "name": "중저가 브랜드 여성의류",
-              "count": 1
+              "name": "중저가 패션",
+              "count": 1,
+              "section": "Trend"
             }
           ]
         },
@@ -476,15 +507,18 @@
           "keywords": [
             {
               "name": "토스애즈",
-              "count": 5
+              "count": 5,
+              "section": "Media"
+            },
+            {
+              "name": "토스 crm",
+              "count": 1,
+              "section": "Media"
             },
             {
               "name": "토스애즈잠재고객",
-              "count": 1
-            },
-            {
-              "name": "토스 CPC광고",
-              "count": 1
+              "count": 1,
+              "section": "Media"
             }
           ]
         },
@@ -501,15 +535,18 @@
           "keywords": [
             {
               "name": "엔하이픈 헌혈",
-              "count": 2
-            },
-            {
-              "name": "헌혈 참여독려",
-              "count": 1
+              "count": 2,
+              "section": "Trend"
             },
             {
               "name": "헌혈캠페인",
-              "count": 1
+              "count": 1,
+              "section": "Trend"
+            },
+            {
+              "name": "헌혈 인식",
+              "count": 1,
+              "section": "Trend"
             }
           ]
         }
@@ -531,6 +568,13 @@
           "name": "D.Metrics",
           "count": 1
         }
+      ],
+      "misc": [
+        "카톡 업데이트 프로필 광고",
+        "sns비교",
+        "하이퍼 로컬 마케팅",
+        "미디어믹스",
+        "아이돌 세계관"
       ]
     },
     {
@@ -737,24 +781,29 @@
           ],
           "keywords": [
             {
-              "name": "디엠씨미디어 복지",
-              "count": 4
+              "name": "dmc미디어",
+              "count": 3,
+              "section": "About"
             },
             {
-              "name": "디엠씨미디어 블로그",
-              "count": 3
+              "name": "디엠씨미디어 복지",
+              "count": 4,
+              "section": "People"
+            },
+            {
+              "name": "디프레임 aeo 분석",
+              "count": 1,
+              "section": "Media"
             },
             {
               "name": "DMC미디어 블로그",
-              "count": 2
+              "count": 3,
+              "section": "About"
             },
             {
-              "name": "dmc미디어",
-              "count": 2
-            },
-            {
-              "name": "디엠씨미디어 면접",
-              "count": 2
+              "name": "디엠씨미디어 블로그",
+              "count": 3,
+              "section": "People"
             }
           ]
         },
@@ -771,23 +820,28 @@
           "keywords": [
             {
               "name": "타불라 광고",
-              "count": 4
-            },
-            {
-              "name": "타불라 계정 생성",
-              "count": 1
+              "count": 4,
+              "section": "Media"
             },
             {
               "name": "타불라 지면",
-              "count": 1
-            },
-            {
-              "name": "타불라 마케팅",
-              "count": 1
+              "count": 1,
+              "section": "Media"
             },
             {
               "name": "타블라 광고",
-              "count": 1
+              "count": 1,
+              "section": "Media"
+            },
+            {
+              "name": "타불라 마케팅",
+              "count": 1,
+              "section": "Media"
+            },
+            {
+              "name": "타불라 계정 생성",
+              "count": 1,
+              "section": "Media"
             }
           ]
         },
@@ -808,23 +862,28 @@
           "keywords": [
             {
               "name": "하이네켄 캠페인",
-              "count": 2
+              "count": 2,
+              "section": "Trend"
             },
             {
-              "name": "아이돌 세계관",
-              "count": 1
-            },
-            {
-              "name": "콜라보 굿즈 레포트",
-              "count": 1
-            },
-            {
-              "name": "wendy’s 브랜드페르소나",
-              "count": 1
+              "name": "비지오 TV",
+              "count": 1,
+              "section": "Media"
             },
             {
               "name": "잡화 트렌드",
-              "count": 1
+              "count": 1,
+              "section": "Trend"
+            },
+            {
+              "name": "가전 삼신기",
+              "count": 1,
+              "section": "Trend"
+            },
+            {
+              "name": "집안 삼신기",
+              "count": 1,
+              "section": "Trend"
             }
           ]
         },
@@ -849,23 +908,28 @@
           "keywords": [
             {
               "name": "쿠팡플레이 광고",
-              "count": 11
-            },
-            {
-              "name": "티빙 광고 대행사",
-              "count": 3
+              "count": 11,
+              "section": "About"
             },
             {
               "name": "쿠팡 광고 리테일 미디어",
-              "count": 1
-            },
-            {
-              "name": "쿠팡플레이 티빙",
-              "count": 1
+              "count": 1,
+              "section": "Media"
             },
             {
               "name": "쿠팡콜라보클럽 협업 캐릭터 상품 목록 알려주세요",
-              "count": 1
+              "count": 1,
+              "section": "Trend"
+            },
+            {
+              "name": "티빙 광고 대행사",
+              "count": 3,
+              "section": "About"
+            },
+            {
+              "name": "쿠팡플레이 티빙",
+              "count": 1,
+              "section": "About"
             }
           ]
         },
@@ -882,11 +946,13 @@
           "keywords": [
             {
               "name": "어드민 나이트",
-              "count": 6
+              "count": 6,
+              "section": "Trend"
             },
             {
               "name": "admin night",
-              "count": 3
+              "count": 3,
+              "section": "Trend"
             }
           ]
         },
@@ -897,41 +963,46 @@
           "mix": [
             {
               "section": "Trend",
-              "pct": 50
+              "pct": 53.3
             },
             {
               "section": "Media",
-              "pct": 18.8
+              "pct": 20
             },
             {
               "section": "People",
-              "pct": 12.5
+              "pct": 13.3
             },
             {
               "section": "About",
-              "pct": 12.5
+              "pct": 13.3
             }
           ],
           "keywords": [
             {
               "name": "디지털 마케팅 suprt",
-              "count": 8
+              "count": 8,
+              "section": "Trend"
+            },
+            {
+              "name": "da 광고 성과 목표",
+              "count": 1,
+              "section": "Media"
             },
             {
               "name": "온드미디어",
-              "count": 3
-            },
-            {
-              "name": "m브랜딩 da",
-              "count": 1
-            },
-            {
-              "name": "데이터 기반 퍼포먼스 마케팅 원리",
-              "count": 1
+              "count": 3,
+              "section": "People"
             },
             {
               "name": "AEO마케팅 제안서",
-              "count": 1
+              "count": 1,
+              "section": "About"
+            },
+            {
+              "name": "m브랜딩 da",
+              "count": 1,
+              "section": null
             }
           ]
         }
@@ -953,6 +1024,13 @@
           "name": "D.Frame",
           "count": 1
         }
+      ],
+      "misc": [
+        "앰플리튜드 차트",
+        "삼신가전",
+        "감다살 브랜드",
+        "휴머노이드 짤",
+        "비주얼아이덴티티"
       ]
     },
     {
@@ -1146,23 +1224,28 @@
           "keywords": [
             {
               "name": "타불라 광고",
-              "count": 16
+              "count": 17,
+              "section": "Media"
             },
             {
               "name": "타블라광고",
-              "count": 7
-            },
-            {
-              "name": "타블라 광고",
-              "count": 4
+              "count": 11,
+              "section": "Media"
             },
             {
               "name": "타불라코리아",
-              "count": 3
+              "count": 5,
+              "section": "Media"
             },
             {
-              "name": "타불라 코리아",
-              "count": 2
+              "name": "타불라 신청",
+              "count": 1,
+              "section": "Media"
+            },
+            {
+              "name": "타불라 AI",
+              "count": 1,
+              "section": "Media"
             }
           ]
         },
@@ -1187,23 +1270,28 @@
           "keywords": [
             {
               "name": "dmc미디어",
-              "count": 4
-            },
-            {
-              "name": "DMC미디어",
-              "count": 3
-            },
-            {
-              "name": "모비엠",
-              "count": 3
+              "count": 8,
+              "section": "About"
             },
             {
               "name": "디엠씨미디어 복지",
-              "count": 2
+              "count": 2,
+              "section": "People"
+            },
+            {
+              "name": "DMC선크림",
+              "count": 1,
+              "section": "Trend"
+            },
+            {
+              "name": "모비엠",
+              "count": 3,
+              "section": "About"
             },
             {
               "name": "abbe",
-              "count": 2
+              "count": 2,
+              "section": "About"
             }
           ]
         },
@@ -1224,23 +1312,28 @@
           "keywords": [
             {
               "name": "더마코스메틱 화장품",
-              "count": 31
+              "count": 31,
+              "section": "Trend"
+            },
+            {
+              "name": "터블공식몰",
+              "count": 1,
+              "section": "About"
             },
             {
               "name": "더마 코스메틱 브랜드",
-              "count": 6
+              "count": 7,
+              "section": "Trend"
             },
             {
-              "name": "중저가 로드샵 화장품 브랜드",
-              "count": 1
+              "name": "tubble",
+              "count": 1,
+              "section": "About"
             },
             {
-              "name": "더마코스메틱 브랜드",
-              "count": 1
-            },
-            {
-              "name": "라로슈포제 더마코스메틱",
-              "count": 1
+              "name": "올리브영 터블",
+              "count": 1,
+              "section": "About"
             }
           ]
         },
@@ -1265,23 +1358,28 @@
           "keywords": [
             {
               "name": "디지털 마케팅 suprt",
-              "count": 21
+              "count": 21,
+              "section": "Trend"
             },
             {
               "name": "온드미디어",
-              "count": 5
+              "count": 5,
+              "section": "Media"
+            },
+            {
+              "name": "챌린저스 앱",
+              "count": 1,
+              "section": "About"
             },
             {
               "name": "네이티브 광고",
-              "count": 3
+              "count": 3,
+              "section": "Media"
             },
             {
               "name": "리테일 미디어 뜻",
-              "count": 3
-            },
-            {
-              "name": "핀테크 디지털 마케팅 활용 사례 알려주세요",
-              "count": 2
+              "count": 3,
+              "section": "Media"
             }
           ]
         },
@@ -1297,24 +1395,29 @@
           ],
           "keywords": [
             {
-              "name": "컬리n마트 보고서",
-              "count": 2
+              "name": "롯데 칸초광고",
+              "count": 2,
+              "section": "Trend"
             },
             {
               "name": "웬즈데이 웬디스",
-              "count": 2
+              "count": 2,
+              "section": "Trend"
             },
             {
-              "name": "롯데 칸초광고",
-              "count": 2
+              "name": "컬리n마트 보고서",
+              "count": 2,
+              "section": "Trend"
+            },
+            {
+              "name": "야닉시너",
+              "count": 1,
+              "section": "Trend"
             },
             {
               "name": "육아 삼신기",
-              "count": 1
-            },
-            {
-              "name": "프로스포츠 굿즈 유형별 판매량 분석",
-              "count": 1
+              "count": 1,
+              "section": "Trend"
             }
           ]
         }
@@ -1332,6 +1435,13 @@
           "name": "D.SaiO",
           "count": 2
         }
+      ],
+      "misc": [
+        "크리테오ㅍclv",
+        "공식 에스파 핀터레스트",
+        "구글 크리에이터 파트너십 부스트",
+        "탸불라",
+        "헌혈 아이돌"
       ]
     }
   ],
@@ -1394,5 +1504,5 @@
     "Trend"
   ],
   "sourceFile": "블로그_통계(통합)_0730.xlsx",
-  "updatedAt": "2026-07-31T00:19:58.731Z"
+  "updatedAt": "2026-07-31T02:23:33.424Z"
 }

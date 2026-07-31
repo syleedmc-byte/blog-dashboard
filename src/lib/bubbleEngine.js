@@ -169,6 +169,18 @@ function polarPoint(cx, cy, r, deg) {
   return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) }
 }
 
+// mix(파이 조각 배열, pieSlicesSvg와 같은 순서로 누적 각도를 계산)에서 특정 섹션이 차지하는
+// 조각의 한가운데 각도. polarPoint와 같은 각도 규칙(0°=위쪽, 시계방향)을 쓴다.
+function sectionMidAngle(mix, section) {
+  let start = 0
+  for (const seg of mix) {
+    const sweep = (seg.pct / 100) * 360
+    if (seg.cat === section) return start + sweep / 2
+    start += sweep
+  }
+  return null
+}
+
 function pieSlicesSvg(cx, cy, r, mix) {
   let start = 0
   let svg = ''
@@ -606,10 +618,20 @@ function buildFreshLayout(kd, W, H, margin) {
   })
 
   kd.bubbles.forEach((b, i) => {
-    ;(b.related || []).forEach((txt, j) => {
+    ;(b.related || []).forEach((rel, j) => {
+      const txt = rel.name
       const { w, h } = estimateTagSize(txt)
       const id = 't' + i + '_' + j
-      nodes.push({ id, type: 'tag', text: txt, w, h, r: Math.sqrt(w * w + h * h) / 2, parent: 'b' + i })
+      nodes.push({
+        id,
+        type: 'tag',
+        text: txt,
+        w,
+        h,
+        r: Math.sqrt(w * w + h * h) / 2,
+        parent: 'b' + i,
+        section: rel.section || null,
+      })
       links.push({ source: 'b' + i, target: id })
     })
   })
@@ -698,8 +720,28 @@ function buildFreshLayout(kd, W, H, margin) {
     n.x = Math.max(margin + n.r, Math.min(W - margin - n.r, n.x))
     n.y = Math.max(margin + n.r, Math.min(H - margin - n.r, n.y))
   })
-  // 위에서 부모 밖으로 밀어낸 태그가 다른 형제 태그와 새로 겹칠 수 있으니 마지막으로 한 번 더 정리
+  // 위에서 부모 밖으로 밀어낸 태그가 다른 형제 태그와 새로 겹칠 수 있으니 한 번 더 정리
   resolveOverlaps(nodes, 400, W, H, margin, false, 16)
+
+  // 태그가 자기 섹션을 알고 있으면(topKeywords가 섹션별로 골라준 대표 키워드), 그 섹션의 파이
+  // 조각 각도 쪽으로 맞춘다 — 회색/주황/연두 등 파이 색과 그 옆 태그가 서로 대응되게. 겹침
+  // 정리를 전부 끝낸 다음 마지막에 적용해야, 그 뒤에 도는 정리 과정에서 각도가 다시 흐트러지지
+  // 않는다. 같은 섹션 태그가 여럿이면 완전히 겹친 채로 시작하지 않도록 각도에 약간 지터를 준다.
+  nodes.forEach((n) => {
+    if (n.type !== 'tag' || !n.section) return
+    const p = n.parent && byId[n.parent]
+    if (!p || !p.mix) return
+    const mid = sectionMidAngle(p.mix, n.section)
+    if (mid == null) return
+    const jitter = (Math.random() - 0.5) * 30
+    const dist = p.r + n.r + 16
+    const pt = polarPoint(p.x, p.y, dist, mid + jitter)
+    n.x = Math.max(margin + n.r, Math.min(W - margin - n.r, pt.x))
+    n.y = Math.max(margin + n.r, Math.min(H - margin - n.r, pt.y))
+  })
+  // 각도 맞추기가 새로 만든 겹침만 가볍게 정리 (반복 적게 — 너무 많이 돌리면 애써 맞춘 각도가
+  // 다시 흐트러진다)
+  resolveOverlaps(nodes, 120, W, H, margin, false, 16)
 
   const plainLinks = links.map((l) => ({ source: l.source.id || l.source, target: l.target.id || l.target }))
   return { nodes, links: plainLinks }

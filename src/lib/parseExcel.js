@@ -237,17 +237,52 @@ export const PERSON_WATCHLIST = ['이준희', '이인성', 'D.SaiO', 'D.Frame', 
 
 const normKey = (s) => String(s).toLowerCase().replace(/[.\s-]/g, '')
 
+// 같은 뜻인데 띄어쓰기/대소문자만 다른 키워드("타불라광고" vs "타불라 광고")를 한 항목으로
+// 합친다. 표시 문구는 실제로 가장 많이 쓰인 표기를 쓰고(동점이면 더 짧은 쪽), 섹션은 그
+// 문구가 가장 많이 속했던 섹션을 쓴다.
+function addKeywordOccurrence(map, kw, count, section) {
+  const key = normKey(kw)
+  if (!map.has(key)) map.set(key, { count: 0, variants: new Map(), sectionCounts: new Map() })
+  const entry = map.get(key)
+  entry.count += count
+  entry.variants.set(kw, (entry.variants.get(kw) || 0) + count)
+  if (section) entry.sectionCounts.set(section, (entry.sectionCounts.get(section) || 0) + count)
+}
+
+function finalizeKeywordEntry(entry) {
+  let bestText = null
+  let bestTextCount = -1
+  for (const [text, c] of entry.variants) {
+    if (c > bestTextCount || (c === bestTextCount && text.length < bestText.length)) {
+      bestText = text
+      bestTextCount = c
+    }
+  }
+  let bestSection = null
+  let bestSectionCount = -1
+  for (const [sec, c] of entry.sectionCounts) {
+    if (c > bestSectionCount) {
+      bestSection = sec
+      bestSectionCount = c
+    }
+  }
+  return { name: bestText, count: entry.count, section: bestSection }
+}
+
 /** 카테고리 분류 시트 파싱 (참고 디자인 blog_dashboard_monthly_18.html의 버블차트 로직과 동일):
- *  - "기타"(미분류 묶음)는 버블차트 대상에서 제외
- *  - 섹션은 다수결이 아니라 환산횟수 가중합으로 비중(mix)을 계산해 파이 조각으로 표시
+ *  - "기타"(미분류 묶음)는 버블(원)로는 안 쓰고, 언급 많은 순 5개만 독립 태그로 뽑는다
+ *  - 섹션은 다수결이 아니라 환산횟수 가중합으로 비중(mix)을 계산해 파이 조각으로 표시하고,
+ *    그 비중(mix)의 합이 항상 100%가 되도록 섹션 있는 행만으로 나눈다(섹션 없는 행 때문에
+ *    파이에 빈 칸이 생기지 않게)
  *  - TOP5, 5위가 동점이면 그 동점 그룹만 통째로 포함 (동점이 top5 경계에 걸릴 때만 확장)
- *  - 카테고리별 키워드는 언급 횟수 상위 5개 (그보다 적으면 있는 만큼만)
+ *  - 카테고리별 키워드는 언급 횟수 상위 5개 (그보다 적으면 있는 만큼만), 비슷한 표기는 합쳐서
+ *    하나로 세고, 그 카테고리에 섹션이 2개 이상 섞여 있으면 각 섹션에서 최소 1개는 뽑는다
  *  - 인물/솔루션 워치리스트 언급 횟수는 카테고리와 무관하게 시트 전체에서 합산 */
 function parseCategorySheet(workbook, sheetName) {
   const sheet = workbook.Sheets[sheetName]
   const grid = sheetToGrid(sheet)
   const header = findHeaderCell(grid, (t) => t === '카테고리', { maxRow: 3 })
-  if (!header) return { categories: [], people: [] }
+  if (!header) return { categories: [], people: [], misc: [] }
 
   const colOf = (label) => {
     const pos = findHeaderCell(grid, (t) => t === label, { maxRow: header.row + 1 })
@@ -261,15 +296,25 @@ function parseCategorySheet(workbook, sheetName) {
   const totals = new Map()
   const sectionTotals = new Map()
   const keywordTotals = new Map()
+  const miscKeywords = new Map()
   const personNorm = PERSON_WATCHLIST.map((name) => ({ name, key: normKey(name) }))
   const personCounts = new Map(PERSON_WATCHLIST.map((name) => [name, 0]))
 
   for (let r = header.row + 1; r < grid.length; r++) {
     const cat = cell(grid, r, catCol)
-    if (cat == null || cat === '' || String(cat).trim() === '기타') continue
+    if (cat == null || cat === '') continue
     const count = Number(cell(grid, r, countCol)) || 0
     const section = sectionCol != null ? cell(grid, r, sectionCol) : null
     const kw = kwCol != null ? cell(grid, r, kwCol) : null
+
+    if (String(cat).trim() === '기타') {
+      if (kw) {
+        const kwKey = normKey(kw)
+        const isPersonMatch = personNorm.some((p) => kwKey.includes(p.key))
+        if (!isPersonMatch) addKeywordOccurrence(miscKeywords, kw, count, section)
+      }
+      continue
+    }
 
     totals.set(cat, (totals.get(cat) || 0) + count)
     if (section) {
@@ -295,30 +340,56 @@ function parseCategorySheet(workbook, sheetName) {
       // "솔루션·인물" 태그로 표시되므로 두 번 나오면 안 됨 (총 횟수/섹션 비중 집계에는 그대로 포함)
       if (!isSelfName && !isPersonMatch) {
         if (!keywordTotals.has(cat)) keywordTotals.set(cat, new Map())
-        const kws = keywordTotals.get(cat)
-        kws.set(kw, (kws.get(kw) || 0) + count)
+        addKeywordOccurrence(keywordTotals.get(cat), kw, count, section)
       }
     }
   }
 
-  const mixFor = (cat, total) => {
+  const mixFor = (cat) => {
     const secMap = sectionTotals.get(cat)
-    if (!secMap || total === 0) return []
+    if (!secMap) return []
+    const sum = [...secMap.values()].reduce((a, b) => a + b, 0)
+    if (sum === 0) return []
     return [...secMap.entries()]
       .sort((a, b) => b[1] - a[1])
-      .map(([section, count]) => ({ section, pct: +((count / total) * 100).toFixed(1) }))
+      .map(([section, count]) => ({ section, pct: +((count / sum) * 100).toFixed(1) }))
   }
 
-  const topKeywords = (cat, max = 5) => {
-    const kws = keywordTotals.get(cat)
-    if (!kws) return []
-    const sorted = [...kws.entries()].sort((a, b) => b[1] - a[1])
-    return sorted.slice(0, max).map(([name, count]) => ({ name, count }))
+  // 언급 많은 순으로 정렬하되(동점이면 짧은 문구 우선), mixSections(그 카테고리에 실제로 섞여
+  // 있는 섹션들, 비중 큰 순)가 2개 이상이면 각 섹션에서 최소 1개씩부터 채우고 나머지를 채운다 —
+  // 그래야 파이에 색이 있는 섹션인데 태그는 한쪽 섹션에서만 나오는 일이 없다
+  const topKeywords = (cat, max, mixSections) => {
+    const map = keywordTotals.get(cat)
+    if (!map) return []
+    const all = [...map.values()]
+      .map(finalizeKeywordEntry)
+      .sort((a, b) => b.count - a.count || a.name.length - b.name.length)
+
+    const selected = []
+    const used = new Set()
+    if (mixSections && mixSections.length > 1) {
+      for (const sec of mixSections) {
+        if (selected.length >= max) break
+        const cand = all.find((e) => e.section === sec && !used.has(e.name))
+        if (cand) {
+          selected.push(cand)
+          used.add(cand.name)
+        }
+      }
+    }
+    for (const e of all) {
+      if (selected.length >= max) break
+      if (used.has(e.name)) continue
+      selected.push(e)
+      used.add(e.name)
+    }
+    return selected
   }
 
   const allCategories = [...totals.entries()]
     .map(([name, total]) => {
-      const mix = mixFor(name, total)
+      const mix = mixFor(name)
+      const mixSections = mix.map((m) => m.section)
       return {
         name,
         total,
@@ -326,7 +397,7 @@ function parseCategorySheet(workbook, sheetName) {
         mix,
         // 언급이 적은(<=15회) 카테고리는 태그도 3개 정도만 — 원이 작은데 태그가 5개나 붙으면
         // 서로 겹치기 쉽다
-        keywords: topKeywords(name, total <= 15 ? 3 : 5),
+        keywords: topKeywords(name, total <= 15 ? 3 : 5, mixSections),
       }
     })
     .sort((a, b) => b.total - a.total)
@@ -341,7 +412,13 @@ function parseCategorySheet(workbook, sheetName) {
     (p) => p.count > 0
   )
 
-  return { categories, people }
+  const misc = [...miscKeywords.values()]
+    .map(finalizeKeywordEntry)
+    .sort((a, b) => b.count - a.count || a.name.length - b.name.length)
+    .slice(0, 5)
+    .map((e) => e.name)
+
+  return { categories, people, misc }
 }
 
 const SECTION_ORDER = ['About', 'Data', 'Media', 'People', 'Trend']
@@ -434,7 +511,7 @@ export function parseWorkbook(workbook) {
 
   const months = parsedKeyword.map((m, idx) => {
     const prev = idx > 0 ? parsedKeyword[idx - 1] : null
-    const { categories = [], people = [] } = categoryByMonth.get(m.monthNumber) || {}
+    const { categories = [], people = [], misc = [] } = categoryByMonth.get(m.monthNumber) || {}
 
     // 전월 조회수/순방문자수는 형제 시트(parsedKeyword[idx-1])가 없어도, 이 시트 자신에 실려 있는
     // "월간조회수추이"/"월간순방문자추이" 표에서 바로 앞 달을 찾아 구한다 — 그래서 지금 엑셀에서
@@ -477,6 +554,7 @@ export function parseWorkbook(workbook) {
       posts: m.posts,
       categories,
       people,
+      misc,
     }
   })
 

@@ -118,7 +118,7 @@ export default function App() {
         </div>
         <p className="section-sub">카테고리별 유입 키워드 빈도를 확인합니다 (원 크기는 유입 빈도에 비례, 동점 카테고리는 모두 표시)</p>
         <div className="card">
-          <CategoryBubbles categories={active.categories} people={active.people} monthKey={active.key} />
+          <CategoryBubbles categories={active.categories} people={active.people} misc={active.misc} monthKey={active.key} />
         </div>
       </div>
     </div>
