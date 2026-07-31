@@ -167,9 +167,9 @@ body {
 .device-legend .swatch { width: 9px; height: 9px; border-radius: 2px; }
 .device-legend .pct { font-weight: 800; margin-left: 3px; }
 
-.posts-grid { display: flex; flex-direction: column; }
+.posts-grid { display: grid; grid-template-columns: 1fr 1fr; grid-auto-columns: 1fr; grid-template-rows: repeat(5, auto); grid-auto-flow: column; gap: 0 16px; }
 .post-row { display: flex; align-items: flex-start; gap: 9px; padding: 8px 6px; border-bottom: 1px solid var(--line); font-size: 12.2px; }
-.post-row:last-child { border-bottom: none; }
+.post-row:nth-child(5), .post-row:nth-child(10) { border-bottom: none; }
 .post-rank { width: 19px; height: 19px; border-radius: 50%; font-size: 10.5px; font-weight: 800; color: #fff; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
 .post-title { flex: 1; line-height: 1.4; word-break: break-word; }
 .post-title a { color: var(--ink); text-decoration: none; }
