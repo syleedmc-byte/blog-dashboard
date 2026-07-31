@@ -1608,8 +1608,24 @@
         "pct": 8.4
       }
     ],
+    "cumulative": {
+      "totalViews": 4635,
+      "totalVisitors": 2534,
+      "viewsSparkline": [
+        1835,
+        1114,
+        1686
+      ],
+      "visitorsSparkline": [
+        1105,
+        630,
+        799
+      ],
+      "momViewsPct": 51.3,
+      "momVisitorsPct": 26.8
+    },
     "latestKey": "2026-06"
   },
   "sourceFile": "블로그_통계(통합)_0730.xlsx",
-  "updatedAt": "2026-07-31T07:10:29.115Z"
+  "updatedAt": "2026-07-31T07:27:26.340Z"
 }

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import dashboardData from './data/dashboard-data.json'
-import TopNav from './components/TopNav.jsx'
+import Sidebar from './components/Sidebar.jsx'
 import Overview from './components/Overview.jsx'
 import KpiCards from './components/KpiCards.jsx'
 import TrendChart from './components/TrendChart.jsx'
@@ -42,8 +42,8 @@ export default function App() {
 
   const active = useMemo(() => months.find((m) => m.key === activeKey) ?? null, [months, activeKey])
 
-  // 상단 내비게이션에 넘길 섹션 목록. "월별 리포트" 말고 다른 메뉴/카테고리가 나중에 생기면,
-  // TopNav.jsx는 그대로 두고 여기(또는 이 배열을 만드는 로직)에 섹션을 하나 더 추가하면 된다.
+  // 사이드바에 넘길 섹션 목록. "월별 리포트" 말고 다른 메뉴/카테고리가 나중에 생기면,
+  // Sidebar.jsx는 그대로 두고 여기(또는 이 배열을 만드는 로직)에 섹션을 하나 더 추가하면 된다.
   const navSections = useMemo(
     () => [
       {
@@ -93,18 +93,19 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <TopNav sections={navSections} />
+      <Sidebar sections={navSections} />
 
-      <div className="topbar">
-        <div>
-          <h1>{pageTitle}</h1>
-          <p>{pageSub}</p>
+      <div className="main-area">
+        <div className="topbar">
+          <div>
+            <h1>{pageTitle}</h1>
+            <p>{pageSub}</p>
+          </div>
+          {active && <div className="year-pill">📅 {active.year}.{String(active.monthNumber).padStart(2, '0')}</div>}
         </div>
-        {active && <div className="year-pill">📅 {active.year}.{String(active.monthNumber).padStart(2, '0')}</div>}
-      </div>
 
-      <div className="main-content">
-        <p className="top-note">데이터 출처: {sourceFile} (data/ 폴더에서 자동으로 읽어옵니다)</p>
+        <div className="main-content">
+          <p className="top-note">데이터 출처: {sourceFile} (data/ 폴더에서 자동으로 읽어옵니다)</p>
 
         {!active && <Overview overview={overview} months={months} trend={trend} onSelect={selectMonth} />}
 
@@ -181,6 +182,7 @@ export default function App() {
               </div>
             </>
           )}
+        </div>
       </div>
     </div>
   )

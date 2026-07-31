@@ -105,6 +105,11 @@ function main() {
     } else {
       console.log(`[검증용] 이번 달 인기글 주제 비중: 계산 불가 (카테고리 데이터 없음)`)
     }
+
+    const manualTotalViews = data.months.reduce((s, m) => s + (m.kpi.views.raw || 0), 0)
+    const manualTotalVisitors = data.months.reduce((s, m) => s + (m.kpi.visitors.raw || 0), 0)
+    console.log(`[검증용] 누적 조회수: ${formatNumber(ov.cumulative.totalViews)} (직접 합산과 일치=${ov.cumulative.totalViews === manualTotalViews})`)
+    console.log(`[검증용] 누적 순방문자수: ${formatNumber(ov.cumulative.totalVisitors)} (직접 합산과 일치=${ov.cumulative.totalVisitors === manualTotalVisitors})`)
   }
 
   console.log(`\n이제 "npm run dev"로 화면을 확인하거나, git commit + push로 배포하세요.`)

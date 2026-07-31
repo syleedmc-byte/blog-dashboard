@@ -699,6 +699,33 @@ function computeCategoryMix(latestMonth) {
   return mix
 }
 
+/** 인덱스 최상단 "누적 지표" 카드용 — 월별 상세 페이지에는 없는, 파싱된 전체 기간을 합산한
+ *  값이라 겹치지 않는다. 조회수·순방문자수는 months[]에 실제로 존재하는 값만 더한다(트렌드
+ *  표의 과거 달까지 포함하면 원본 게시물 데이터가 없는 달까지 섞여 다른 지표와 기준이 달라짐). */
+function computeCumulativeStats(months) {
+  const totalViews = months.reduce((sum, m) => sum + (m.kpi.views.raw || 0), 0)
+  const totalVisitors = months.reduce((sum, m) => sum + (m.kpi.visitors.raw || 0), 0)
+  const viewsSparkline = months.map((m) => m.kpi.views.raw)
+  const visitorsSparkline = months.map((m) => m.kpi.visitors.raw)
+
+  const momPct = (key) => {
+    if (months.length < 2) return null
+    const latest = months[months.length - 1].kpi[key].raw
+    const prev = months[months.length - 2].kpi[key].raw
+    if (!prev) return null
+    return +(((latest - prev) / prev) * 100).toFixed(1)
+  }
+
+  return {
+    totalViews,
+    totalVisitors,
+    viewsSparkline,
+    visitorsSparkline,
+    momViewsPct: momPct('views'),
+    momVisitorsPct: momPct('visitors'),
+  }
+}
+
 /** 홈(통합 인덱스) 페이지가 쓰는, 여러 달을 하나로 합친 값 중 실제로 유의미하다고 확인된 것만
  *  남긴다 (총 조회수 합계·가중평균 재방문율·통합 유입경로 1위 같은 값은 그다지 유용하지 않다는
  *  피드백에 따라 제거함). months[]는 이미 parseWorkbook이 만든 최종 값이라 여기서 시트를 다시
@@ -730,6 +757,7 @@ function computeOverview(months, trend) {
   const secondaryInsights = computeSecondaryInsights(months, headline.metricKey)
   const topMover = computeTopMover(months)
   const categoryMix = computeCategoryMix(latest)
+  const cumulative = computeCumulativeStats(months)
 
   return {
     topPosts,
@@ -738,6 +766,7 @@ function computeOverview(months, trend) {
     secondaryInsights,
     topMover,
     categoryMix,
+    cumulative,
     latestKey: latest.key,
   }
 }

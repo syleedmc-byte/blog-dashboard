@@ -1,5 +1,5 @@
 import Sparkline from './Sparkline.jsx'
-import TrendAreaChart from './TrendAreaChart.jsx'
+import ViewsBarChart from './ViewsBarChart.jsx'
 import { SERIES_VIEWS, SERIES_VISITORS } from '../theme.js'
 
 function fmtInt(n) {
@@ -17,11 +17,52 @@ const MIX_ETC_COLOR = 'var(--line)'
 export default function Overview({ overview, months, trend, onSelect }) {
   if (!overview || !months || months.length === 0) return null
   const latest = months[months.length - 1]
-  const { topPosts, risingPosts, headline, secondaryInsights, topMover, categoryMix } = overview
+  const { topPosts, risingPosts, headline, secondaryInsights, topMover, categoryMix, cumulative } = overview
   const ai = latest.kpi.ai
 
   return (
     <div className="overview">
+      <div className="cumulative-row">
+        <div className="stat-card cumulative-card">
+          <div className="stat-icon">👁</div>
+          <div className="stat-value">{fmtInt(cumulative.totalViews)}</div>
+          <div className="stat-label">누적 조회수 (전체 기간)</div>
+          <div className="cumulative-bottom">
+            {cumulative.viewsSparkline.length > 1 && <Sparkline values={cumulative.viewsSparkline} color={SERIES_VIEWS} />}
+            {cumulative.momViewsPct != null && (
+              <span className={`stat-delta ${cumulative.momViewsPct >= 0 ? 'up' : 'down'}`}>
+                {cumulative.momViewsPct >= 0 ? '▲' : '▼'} {Math.abs(cumulative.momViewsPct)}% <span className="muted">전월 대비</span>
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="stat-card cumulative-card">
+          <div className="stat-icon">👤</div>
+          <div className="stat-value">{fmtInt(cumulative.totalVisitors)}</div>
+          <div className="stat-label">누적 순방문자수 (전체 기간)</div>
+          <div className="cumulative-bottom">
+            {cumulative.visitorsSparkline.length > 1 && <Sparkline values={cumulative.visitorsSparkline} color={SERIES_VISITORS} />}
+            {cumulative.momVisitorsPct != null && (
+              <span className={`stat-delta ${cumulative.momVisitorsPct >= 0 ? 'up' : 'down'}`}>
+                {cumulative.momVisitorsPct >= 0 ? '▲' : '▼'} {Math.abs(cumulative.momVisitorsPct)}% <span className="muted">전월 대비</span>
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="stat-card cumulative-card">
+          <div className="stat-icon">🤖</div>
+          <div className="stat-value">{ai.cumulative ?? '-'}</div>
+          <div className="stat-label">AI 브리핑 인용수 (누적)</div>
+          <div className="cumulative-bottom">
+            {ai.cumulative != null ? (
+              <span className="ai-sub">AI 검색 인용(GEO) 지표</span>
+            ) : (
+              <span className="ai-pending">📡 데이터 수집 예정</span>
+            )}
+          </div>
+        </div>
+      </div>
+
       <button type="button" className="headline-banner" onClick={() => onSelect(latest.key)}>
         <div className="headline-left">
           <p className="headline-eyebrow">{latest.label} 헤드라인 인사이트</p>
@@ -120,19 +161,15 @@ export default function Overview({ overview, months, trend, onSelect }) {
 
       <div className="section-block">
         <h2 className="section-title">월별 추이 비교</h2>
-        <p className="section-sub">엑셀에 있는 전체 {trend?.length ?? 0}개월치 조회수·순방문자수를 나란히 비교합니다</p>
+        <p className="section-sub">엑셀에 있는 전체 {trend?.length ?? 0}개월치 조회수를 월별 막대로 비교합니다</p>
         <div className="card">
           <div className="chart-legend">
             <div className="item">
               <span className="swatch" style={{ background: SERIES_VIEWS }} />
               조회수
             </div>
-            <div className="item">
-              <span className="swatch" style={{ background: SERIES_VISITORS }} />
-              순방문자수
-            </div>
           </div>
-          <TrendAreaChart trend={trend} />
+          <ViewsBarChart trend={trend} />
         </div>
       </div>
 
