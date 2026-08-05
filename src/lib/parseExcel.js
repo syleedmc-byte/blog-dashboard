@@ -546,7 +546,7 @@ function computeHeadlineInsight(months, trend) {
         sentence: `${def.label}, ${length}개월 연속 ${dir === 'up' ? '상승' : '하락'} — ${phrase}`,
         metricKey: def.key,
         metricLabel: def.label,
-        value: latest.kpi[def.key].value,
+        value: fmtMetricValue(def.unit, latest.kpi[def.key].raw),
         trendText: `${startMonth.label} ${fmtMetricValue(def.unit, startMonth.kpi[def.key].raw)} → ${latest.label} ${fmtMetricValue(def.unit, latest.kpi[def.key].raw)}`,
         sparkline: sparklineFor(def.key, months, trend),
       }
@@ -564,7 +564,7 @@ function computeHeadlineInsight(months, trend) {
         sentence: `${def.label}, 전월 대비 ${field.delta} — 이번 달 가장 큰 변화입니다`,
         metricKey: def.key,
         metricLabel: def.label,
-        value: latest.kpi[def.key].value,
+        value: fmtMetricValue(def.unit, latest.kpi[def.key].raw),
         trendText: `${prev.label} ${fmtMetricValue(def.unit, prev.kpi[def.key].raw)} → ${latest.label} ${fmtMetricValue(def.unit, latest.kpi[def.key].raw)}`,
         sparkline: sparklineFor(def.key, months, trend),
       }
@@ -576,7 +576,7 @@ function computeHeadlineInsight(months, trend) {
     sentence: `${latest.label} 데이터가 새로 반영됐습니다`,
     metricKey: 'views',
     metricLabel: '조회수',
-    value: latest.kpi.views.value,
+    value: fmtMetricValue('count', latest.kpi.views.raw),
     trendText: null,
     sparkline: sparklineFor('views', months, trend),
   }
@@ -803,6 +803,15 @@ export function parseWorkbook(workbook) {
       entry.visitors = t.value
       trendMap.set(key, entry)
     }
+    // 그 달 시트에 조회수/순방문자 추이 미니표 중 하나가 통째로 빠져 있어도(예: 순방문자 추이
+    // 표를 붙여넣지 않은 달), 최소한 "자기 자신 달"의 값은 이미 파싱된 stats에서 바로 채워
+    // 넣는다 — 안 그러면 trend[]에 그 달 항목의 views 또는 visitors가 undefined로 남아
+    // TrendChart 등에서 렌더링 중 크래시가 난다.
+    const selfKey = `${m.year}.${String(m.monthNumber).padStart(2, '0')}`
+    const selfEntry = trendMap.get(selfKey) || { year: m.year, month: m.monthNumber, label: selfKey }
+    if (selfEntry.views == null) selfEntry.views = m.stats.views
+    if (selfEntry.visitors == null) selfEntry.visitors = m.stats.visitors
+    trendMap.set(selfKey, selfEntry)
   }
   const trend = [...trendMap.values()].sort((a, b) => (a.year - b.year) || (a.month - b.month))
 
