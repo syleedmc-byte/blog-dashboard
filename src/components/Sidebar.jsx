@@ -13,7 +13,9 @@ export default function Sidebar({ sections, collapsed, onToggleCollapse }) {
             <span className="sidebar-brand-text">
               디엠씨미디어
               <br />
-              블로그 통계
+              블로그·홈페이지
+              <br />
+              통계
             </span>
           )}
         </div>

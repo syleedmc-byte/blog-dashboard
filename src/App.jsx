@@ -52,7 +52,7 @@ export default function App() {
         items: [
           {
             key: 'index',
-            label: '블로그 통계',
+            label: '블로그·홈페이지 통계',
             icon: '🏠',
             active: activeKey == null,
             onClick: goHome,
@@ -97,7 +97,7 @@ export default function App() {
     )
   }
 
-  const pageTitle = active ? `${active.label} 블로그 통계` : '블로그 통계 보고서'
+  const pageTitle = active ? `${active.label} 블로그 통계` : '블로그·홈페이지 통계 보고서'
   const pageSub = active ? '블로그 운영 성과를 한눈에 확인하세요.' : ''
 
   return (
