@@ -134,7 +134,12 @@ function parseDevice(grid) {
 function parsePosts(sheet, grid) {
   const header = findHeaderCell(grid, (t) => t.includes('인기게시물'), { maxRow: 6 })
   if (!header) return []
-  const titleCol = header.col
+  // 보통은 "인기게시물" 헤더 바로 아래 칸이 제목이고 그 왼쪽 칸이 순위인데, 시트에 따라 이 헤더가
+  // 순위 칸 위에 한 칸 어긋나 놓이기도 한다(헤더 아래 첫 칸이 숫자(순위)이면 이 경우). 그땐 제목은
+  // 오른쪽 한 칸이다.
+  const firstBelow = cell(grid, header.row + 1, header.col)
+  const headerOverRank = firstBelow != null && firstBelow !== '' && !isNaN(Number(firstBelow))
+  const titleCol = headerOverRank ? header.col + 1 : header.col
   const rankCol = titleCol - 1
 
   let viewsCol = null
@@ -199,7 +204,10 @@ function parseAi(grid) {
   for (let r = row + 1; r < row + 1 + 6; r++) {
     const label = cell(grid, r, col)
     if (label == null) continue
-    const v = cell(grid, r, col + 1)
+    const rawV = cell(grid, r, col + 1)
+    // 아직 대시보드에 반영하지 않기로 한 상태라, 숫자가 아닌 값(예: 8월 시트의 "8.3천" 같은 글자
+    // 입력)은 수집 전으로 보고 무시한다. 반영하게 되면 이 줄을 풀면 된다.
+    const v = typeof rawV === 'number' ? rawV : null
     if (String(label).includes('합계')) cumulative = v
     else if (value == null) value = v
   }
