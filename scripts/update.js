@@ -4,6 +4,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import XLSX from 'xlsx'
 import { parseWorkbook } from '../src/lib/parseExcel.js'
+import { buildHomepage } from '../src/lib/homepageGa.js'
 
 // 이 스크립트가 하는 일:
 //   1. data/ 폴더(또는 명령줄로 넘긴 경로)에서 엑셀 파일을 찾는다
@@ -63,8 +64,18 @@ function main() {
     )
   }
 
+  // 홈페이지(GA4) 수치: 엑셀과 별개로 data/homepage-ga.json에 월마다 적어 둔다. 파일이 없으면 건너뜀.
+  const gaPath = path.join(DATA_DIR, 'homepage-ga.json')
+  let homepage = {}
+  if (fs.existsSync(gaPath)) {
+    const built = buildHomepage(JSON.parse(fs.readFileSync(gaPath, 'utf-8')))
+    homepage = built.homepage
+    built.warnings.forEach((w) => console.warn(`[경고] 홈페이지 GA: ${w}`))
+  }
+
   const output = {
     ...data,
+    homepage,
     sourceFile: path.basename(excelPath),
     updatedAt: new Date().toISOString(),
   }
@@ -121,6 +132,15 @@ function main() {
     console.log(`[검증용] 급성장 게시물 링크: ${ov.topMover?.url ?? '(링크 없음)'}`)
     console.log(`[검증용] AI 브리핑 인용수 누적: ${formatNumber(ov.cumulative.aiCumulative)} (엑셀에 실제 값 없으면 폴백 36,000이 표시되어야 함)`)
     console.log(`[검증용] 역대 인기게시물 개수: ${ov.topPosts.length}개 (top10 기준)`)
+  }
+
+  const hpKeys = Object.keys(homepage)
+  if (hpKeys.length > 0) {
+    console.log(`\n[검증용] 홈페이지 GA 반영된 월: ${hpKeys.join(', ')}`)
+    hpKeys.forEach((k) => {
+      const h = homepage[k]
+      console.log(`  ${k}: 활성 사용자 ${formatNumber(h.users)}, 조회수 ${formatNumber(h.views)} | ${h.channels.map((c) => `${c.name} ${formatNumber(c.views)}(${c.pct}%)`).join(', ')}`)
+    })
   }
 
   console.log(`\n이제 "npm run dev"로 화면을 확인하거나, git commit + push로 배포하세요.`)

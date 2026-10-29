@@ -1,5 +1,6 @@
 import Sparkline from './Sparkline.jsx'
-import ViewsBarChart from './ViewsBarChart.jsx'
+import ViewsBarChart, { BLOG_COLOR, HOMEPAGE_COLOR } from './ViewsBarChart.jsx'
+import HomepageChannels from './HomepageChannels.jsx'
 import { SERIES_VIEWS } from '../theme.js'
 
 function fmtInt(n) {
@@ -13,11 +14,17 @@ function fmtInt(n) {
 const MIX_COLORS = ['var(--pill-purple)', 'var(--pill-teal)', 'var(--pill-orange)', 'var(--pill-pink)', 'var(--pill-navy)']
 const MIX_ETC_COLOR = 'var(--line)'
 
-export default function Overview({ overview, months, trend, onSelect }) {
+export default function Overview({ overview, months, trend, homepage = {}, onSelect }) {
   if (!overview || !months || months.length === 0) return null
   const latest = months[months.length - 1]
   const { topPosts, headline, secondaryInsights, topMover, categoryMix, cumulative } = overview
   const ai = latest.kpi.ai
+
+  // 홈페이지(GA) 수치: 최근 6개월 차트 구간에 하나라도 있으면 비교 모드, 채널 카드는 수치가 있는 가장 최근 달
+  const chartTrend = trend?.slice(-6) ?? []
+  const hasHomepageInChart = chartTrend.some((t) => homepage[`${t.year}-${String(t.month).padStart(2, '0')}`])
+  const hpKey = Object.keys(homepage).sort().pop()
+  const hpMonthLabel = hpKey ? `${Number(hpKey.slice(5))}월` : null
 
   return (
     <div className="overview">
@@ -57,14 +64,24 @@ export default function Overview({ overview, months, trend, onSelect }) {
       <div className="chart-side-grid">
         <div className="card">
           <p className="subcard-title"><span className="accent-dot" />월별 추이 비교</p>
-          <p className="section-sub">최근 6개월치 조회수를 월별 막대로 비교합니다</p>
+          <p className="section-sub">
+            {hasHomepageInChart
+              ? '최근 6개월 블로그 조회수와 홈페이지 조회수를 함께 비교합니다 (홈페이지는 수치를 입력한 달만 표시)'
+              : '최근 6개월치 조회수를 월별 막대로 비교합니다'}
+          </p>
           <div className="chart-legend">
             <div className="item">
-              <span className="swatch" style={{ background: SERIES_VIEWS }} />
-              조회수
+              <span className="swatch" style={{ background: hasHomepageInChart ? BLOG_COLOR : SERIES_VIEWS }} />
+              {hasHomepageInChart ? '블로그 조회수' : '조회수'}
             </div>
+            {hasHomepageInChart && (
+              <div className="item">
+                <span className="swatch" style={{ background: HOMEPAGE_COLOR }} />
+                홈페이지 조회수
+              </div>
+            )}
           </div>
-          <ViewsBarChart trend={trend?.slice(-6)} />
+          <ViewsBarChart trend={chartTrend} homepage={homepage} />
         </div>
 
         <div className="side-stack">
@@ -112,6 +129,13 @@ export default function Overview({ overview, months, trend, onSelect }) {
                 ))}
               </div>
               <p className="topic-mix-caption">※ {latest.label} 기준 카테고리 분류 데이터(버블차트와 동일 기준) 상위 5개 카테고리의 언급 비중입니다.</p>
+            </div>
+          )}
+
+          {hpKey && (
+            <div className="card">
+              <p className="subcard-title"><span className="accent-dot" />{hpMonthLabel} 홈페이지 유입 채널</p>
+              <HomepageChannels ga={homepage[hpKey]} compact />
             </div>
           )}
         </div>

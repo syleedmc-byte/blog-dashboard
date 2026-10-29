@@ -9,6 +9,7 @@ import ReferrerList from './components/ReferrerList.jsx'
 import KeywordList from './components/KeywordList.jsx'
 import DeviceDonut from './components/DeviceDonut.jsx'
 import CategoryBubbles from './components/CategoryBubbles.jsx'
+import HomepageChannels from './components/HomepageChannels.jsx'
 import { SERIES_VIEWS, SERIES_VISITORS } from './theme.js'
 
 // URL 해시(#2026-06)로 달을 지정할 수 있게 한다. 경로 방식(/blog-dashboard/2026-06)은 GitHub
@@ -21,7 +22,7 @@ function monthKeyFromHash(months) {
 }
 
 export default function App() {
-  const { months, trend, sourceFile, overview, error } = dashboardData
+  const { months, trend, sourceFile, overview, error, homepage = {} } = dashboardData
   const [activeKey, setActiveKey] = useState(() => monthKeyFromHash(months))
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
@@ -127,7 +128,7 @@ export default function App() {
         <div className="main-content">
           <p className="top-note">데이터 출처: {sourceFile} (data/ 폴더에서 자동으로 읽어옵니다)</p>
 
-        {!active && <Overview overview={overview} months={months} trend={trend} onSelect={selectMonth} />}
+        {!active && <Overview overview={overview} months={months} trend={trend} homepage={homepage} onSelect={selectMonth} />}
 
         {active && (
             <>
@@ -188,6 +189,12 @@ export default function App() {
                     <DeviceDonut device={active.device} />
                   </div>
                 </div>
+                {homepage[active.key] && (
+                  <div className="card hp-card">
+                    <p className="subcard-title"><span className="accent-dot" />홈페이지 유입 채널</p>
+                    <HomepageChannels ga={homepage[active.key]} />
+                  </div>
+                )}
               </div>
 
               <div className="section-block">

@@ -2863,6 +2863,248 @@
     },
     "latestKey": "2026-09"
   },
+  "homepage": {
+    "2026-04": {
+      "users": 2687,
+      "views": 8533,
+      "channels": [
+        {
+          "name": "Organic Search",
+          "users": 735,
+          "views": 3341,
+          "pct": 39.2
+        },
+        {
+          "name": "Direct",
+          "users": 1619,
+          "views": 3153,
+          "pct": 37
+        },
+        {
+          "name": "Referral",
+          "users": 235,
+          "views": 1225,
+          "pct": 14.4
+        },
+        {
+          "name": "Organic Social",
+          "users": 40,
+          "views": 647,
+          "pct": 7.6
+        },
+        {
+          "name": "기타",
+          "users": 81,
+          "views": 167,
+          "pct": 2
+        }
+      ]
+    },
+    "2026-05": {
+      "users": 2594,
+      "views": 7117,
+      "channels": [
+        {
+          "name": "Direct",
+          "users": 1600,
+          "views": 2918,
+          "pct": 41
+        },
+        {
+          "name": "Organic Search",
+          "users": 608,
+          "views": 2719,
+          "pct": 38.2
+        },
+        {
+          "name": "Referral",
+          "users": 228,
+          "views": 996,
+          "pct": 14
+        },
+        {
+          "name": "Organic Social",
+          "users": 37,
+          "views": 234,
+          "pct": 3.3
+        },
+        {
+          "name": "기타",
+          "users": 143,
+          "views": 250,
+          "pct": 3.5
+        }
+      ]
+    },
+    "2026-06": {
+      "users": 2457,
+      "views": 6367,
+      "channels": [
+        {
+          "name": "Direct",
+          "users": 1524,
+          "views": 2601,
+          "pct": 40.9
+        },
+        {
+          "name": "Organic Search",
+          "users": 568,
+          "views": 2521,
+          "pct": 39.6
+        },
+        {
+          "name": "Referral",
+          "users": 200,
+          "views": 697,
+          "pct": 10.9
+        },
+        {
+          "name": "Unassigned",
+          "users": 90,
+          "views": 210,
+          "pct": 3.3
+        },
+        {
+          "name": "AI Assistant",
+          "users": 30,
+          "views": 110,
+          "pct": 1.7
+        },
+        {
+          "name": "기타",
+          "users": 60,
+          "views": 228,
+          "pct": 3.6
+        }
+      ]
+    },
+    "2026-07": {
+      "users": 2573,
+      "views": 8670,
+      "channels": [
+        {
+          "name": "Organic Search",
+          "users": 647,
+          "views": 3506,
+          "pct": 40.4
+        },
+        {
+          "name": "Direct",
+          "users": 1604,
+          "views": 3169,
+          "pct": 36.6
+        },
+        {
+          "name": "Referral",
+          "users": 172,
+          "views": 1310,
+          "pct": 15.1
+        },
+        {
+          "name": "AI Assistant",
+          "users": 57,
+          "views": 388,
+          "pct": 4.5
+        },
+        {
+          "name": "Unassigned",
+          "users": 67,
+          "views": 162,
+          "pct": 1.9
+        },
+        {
+          "name": "기타",
+          "users": 59,
+          "views": 135,
+          "pct": 1.6
+        }
+      ]
+    },
+    "2026-08": {
+      "users": 3193,
+      "views": 6934,
+      "channels": [
+        {
+          "name": "Direct",
+          "users": 1837,
+          "views": 2840,
+          "pct": 41
+        },
+        {
+          "name": "Organic Search",
+          "users": 559,
+          "views": 2137,
+          "pct": 30.8
+        },
+        {
+          "name": "Unassigned",
+          "users": 597,
+          "views": 1026,
+          "pct": 14.8
+        },
+        {
+          "name": "Referral",
+          "users": 140,
+          "views": 597,
+          "pct": 8.6
+        },
+        {
+          "name": "AI Assistant",
+          "users": 38,
+          "views": 155,
+          "pct": 2.2
+        },
+        {
+          "name": "기타",
+          "users": 48,
+          "views": 179,
+          "pct": 2.6
+        }
+      ]
+    },
+    "2026-09": {
+      "users": 2240,
+      "views": 5650,
+      "channels": [
+        {
+          "name": "Direct",
+          "users": 1437,
+          "views": 2345,
+          "pct": 41.5
+        },
+        {
+          "name": "Organic Search",
+          "users": 548,
+          "views": 2241,
+          "pct": 39.7
+        },
+        {
+          "name": "Referral",
+          "users": 130,
+          "views": 652,
+          "pct": 11.5
+        },
+        {
+          "name": "Unassigned",
+          "users": 64,
+          "views": 164,
+          "pct": 2.9
+        },
+        {
+          "name": "AI Assistant",
+          "users": 39,
+          "views": 146,
+          "pct": 2.6
+        },
+        {
+          "name": "기타",
+          "users": 45,
+          "views": 102,
+          "pct": 1.8
+        }
+      ]
+    }
+  },
   "sourceFile": "블로그_월간리포트_로우데이터.xlsx",
-  "updatedAt": "2026-10-29T06:20:22.531Z"
+  "updatedAt": "2026-10-29T07:32:24.850Z"
 }

@@ -397,6 +397,32 @@ a.mover-value:hover { color: var(--accent); text-decoration: underline; }
 .topic-mix-legend-swatch { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
 .topic-mix-caption { font-size: 11px; color: var(--sub); }
 
+/* 홈페이지(GA4) 유입 채널 — 월별 상세의 사용자 분석 아래(전체 표)와 홈 오른쪽 카드(compact) */
+.hp-card { margin-top: 16px; }
+.hp-channels { display: flex; gap: 28px; align-items: flex-start; }
+.hp-channels.compact { flex-direction: column; gap: 10px; }
+.hp-summary { display: flex; gap: 28px; flex: 0 0 auto; }
+.hp-channels.compact .hp-summary { gap: 24px; }
+.hp-sum-label { font-size: 12px; color: var(--sub); margin-bottom: 4px; }
+.hp-sum-value { font-size: 22px; font-weight: 800; letter-spacing: -.4px; }
+.hp-channels.compact .hp-sum-value { font-size: 18px; }
+.hp-rows { flex: 1; min-width: 0; width: 100%; }
+.hp-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 12.5px; }
+.hp-row:last-child { border-bottom: none; }
+.hp-row.hp-head { color: var(--sub); font-size: 11.5px; font-weight: 700; padding-top: 0; }
+.hp-name { flex: 0 0 118px; font-weight: 700; display: flex; align-items: center; gap: 7px; }
+.hp-name i { width: 9px; height: 9px; border-radius: 3px; display: inline-block; flex-shrink: 0; }
+.hp-bar { flex: 1; min-width: 40px; background: var(--line); border-radius: 4px; height: 9px; overflow: hidden; }
+.hp-row.hp-head .hp-bar { background: none; }
+.hp-bar span { display: block; height: 100%; border-radius: 4px; }
+.hp-users { flex: 0 0 76px; text-align: right; color: var(--sub); font-weight: 700; }
+.hp-views { flex: 0 0 60px; text-align: right; font-weight: 800; }
+.hp-pct { flex: 0 0 48px; text-align: right; color: var(--sub); font-weight: 700; }
+.hp-cap { flex-basis: 100%; margin: 6px 0 0; font-size: 11px; color: var(--sub); }
+.hp-channels:not(.compact) { flex-wrap: wrap; }
+.hp-channels:not(.compact) .hp-rows { flex: 1 1 420px; }
+@media (max-width: 700px) { .hp-channels { flex-direction: column; gap: 14px; } .hp-name { flex-basis: 96px; } }
+
 /* 역대 인기 게시물 TOP10 — 좌 5개/우 5개로 나눠 렌더링, 밑줄(구분선) 없이 조회수를 크게 강조 */
 .ov-posts-grid { display: flex; gap: 0 20px; }
 .ov-posts-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; }

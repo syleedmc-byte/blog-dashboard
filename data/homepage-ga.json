@@ -1,0 +1,80 @@
+{
+  "_설명": "홈페이지 GA4 월별 수치. GA4 '트래픽 획득: 세션 기본 채널 그룹' 표에서 활성 사용자와 조회수 열만 옮겨 적는다. 월마다 항목을 하나씩 추가하면 대시보드에 자동 반영된다. 키는 연-월(예: 2026-07), users/views는 표의 '합계' 행, channels는 채널별 행.",
+  "2026-04": {
+    "users": 2687,
+    "views": 8533,
+    "channels": [
+      { "name": "Direct", "users": 1619, "views": 3153 },
+      { "name": "Organic Search", "users": 735, "views": 3341 },
+      { "name": "Referral", "users": 235, "views": 1225 },
+      { "name": "Organic Social", "users": 40, "views": 647 },
+      { "name": "Unassigned", "users": 58, "views": 135 },
+      { "name": "Organic Shopping", "users": 23, "views": 32 }
+    ]
+  },
+  "2026-05": {
+    "users": 2594,
+    "views": 7117,
+    "channels": [
+      { "name": "Direct", "users": 1600, "views": 2918 },
+      { "name": "Organic Search", "users": 608, "views": 2719 },
+      { "name": "Referral", "users": 228, "views": 996 },
+      { "name": "Unassigned", "users": 122, "views": 225 },
+      { "name": "Organic Social", "users": 37, "views": 234 },
+      { "name": "Organic Shopping", "users": 21, "views": 25 }
+    ]
+  },
+  "2026-06": {
+    "users": 2457,
+    "views": 6367,
+    "channels": [
+      { "name": "Direct", "users": 1524, "views": 2601 },
+      { "name": "Organic Search", "users": 568, "views": 2521 },
+      { "name": "Referral", "users": 200, "views": 697 },
+      { "name": "Unassigned", "users": 90, "views": 210 },
+      { "name": "Organic Social", "users": 36, "views": 185 },
+      { "name": "AI Assistant", "users": 30, "views": 110 },
+      { "name": "Organic Shopping", "users": 23, "views": 42 },
+      { "name": "Paid Search", "users": 1, "views": 1 }
+    ]
+  },
+  "2026-07": {
+    "users": 2573,
+    "views": 8670,
+    "channels": [
+      { "name": "Direct", "users": 1604, "views": 3169 },
+      { "name": "Organic Search", "users": 647, "views": 3506 },
+      { "name": "Referral", "users": 172, "views": 1310 },
+      { "name": "AI Assistant", "users": 57, "views": 388 },
+      { "name": "Unassigned", "users": 67, "views": 162 },
+      { "name": "Organic Social", "users": 38, "views": 105 },
+      { "name": "Organic Shopping", "users": 21, "views": 30 }
+    ]
+  },
+  "2026-08": {
+    "users": 3193,
+    "views": 6934,
+    "channels": [
+      { "name": "Direct", "users": 1837, "views": 2840 },
+      { "name": "Organic Search", "users": 559, "views": 2137 },
+      { "name": "Unassigned", "users": 597, "views": 1026 },
+      { "name": "Referral", "users": 140, "views": 597 },
+      { "name": "AI Assistant", "users": 38, "views": 155 },
+      { "name": "Organic Social", "users": 36, "views": 162 },
+      { "name": "Organic Shopping", "users": 12, "views": 17 }
+    ]
+  },
+  "2026-09": {
+    "users": 2240,
+    "views": 5650,
+    "channels": [
+      { "name": "Direct", "users": 1437, "views": 2345 },
+      { "name": "Organic Search", "users": 548, "views": 2241 },
+      { "name": "Referral", "users": 130, "views": 652 },
+      { "name": "Unassigned", "users": 64, "views": 164 },
+      { "name": "AI Assistant", "users": 39, "views": 146 },
+      { "name": "Organic Social", "users": 26, "views": 79 },
+      { "name": "Organic Shopping", "users": 19, "views": 23 }
+    ]
+  }
+}
