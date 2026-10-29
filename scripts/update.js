@@ -30,6 +30,13 @@ function findLatestExcel() {
     throw new Error(`data/ 폴더에 엑셀 파일(.xlsx)이 없습니다. 새 엑셀 파일을 data/ 폴더에 넣고 다시 실행해 주세요.`)
   }
   files.sort((a, b) => fs.statSync(path.join(DATA_DIR, b)).mtimeMs - fs.statSync(path.join(DATA_DIR, a)).mtimeMs)
+  if (files.length > 1) {
+    // "가장 최근 수정된 파일"은 내 컴퓨터에서만 의미가 있다. GitHub 배포 서버는 파일을 내려받는
+    // 순간 수정 시각이 모두 같아져서, 엑셀이 여러 개면 옛 파일이 골라져 옛 데이터로 배포된 적이 있다.
+    const msg = `data/ 폴더에 엑셀이 ${files.length}개 있습니다(${files.join(', ')}). 배포 서버에서는 어느 파일이 최신인지 알 수 없으니 최신 파일 하나만 남겨 주세요.`
+    if (process.env.CI) throw new Error(msg)
+    console.warn(`\n[경고] ${msg}\n  이번에는 가장 최근에 수정된 "${files[0]}" 를 사용합니다.\n`)
+  }
   return path.join(DATA_DIR, files[0])
 }
 
