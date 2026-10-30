@@ -15,7 +15,11 @@ const PLOT_H = H - PAD_T - PAD_B
 
 const fmt = (n) => n.toLocaleString('ko-KR')
 
-export default function ViewsBarChart({ trend }) {
+// selectedKey('2026-09' 형식)를 주면 그 달 막대를 강조하고, 막대를 누르면 onSelect(key)를 호출한다.
+// selectedKey가 없으면 가장 최근 달을 강조한다.
+const keyOf = (t) => `${t.year}-${String(t.month).padStart(2, '0')}`
+
+export default function ViewsBarChart({ trend, selectedKey = null, onSelect }) {
   if (!trend || trend.length === 0) return null
 
   const labels = trend.map((t) => t.label)
@@ -52,12 +56,25 @@ export default function ViewsBarChart({ trend }) {
               height={baselineY - yPos(v)}
               rx={4}
               fill={BLOG_COLOR}
-              opacity={i === views.length - 1 ? 1 : 0.4}
-              style={{ cursor: 'pointer' }}
+              opacity={(selectedKey ? keyOf(trend[i]) === selectedKey : i === views.length - 1) ? 1 : 0.4}
+              style={{ cursor: onSelect ? 'pointer' : 'default' }}
               onMouseMove={(e) => showTip(e, `${labels[i]} 블로그 조회수: ${fmt(v)}`)}
               onMouseLeave={hideTip}
+              onClick={() => onSelect?.(keyOf(trend[i]))}
             />
-            <text x={xCenter(i)} y={yPos(v) - 5} fontSize="9.5" fontWeight="700" fill={BLOG_COLOR} textAnchor="middle">
+            {/* 막대가 낮아도 누르기 쉽도록 달 전체 폭을 클릭 영역으로 둔다 */}
+            <rect
+              x={xCenter(i) - slot / 2}
+              y={PAD_T}
+              width={slot}
+              height={PLOT_H}
+              fill="transparent"
+              style={{ cursor: onSelect ? 'pointer' : 'default' }}
+              onMouseMove={(e) => showTip(e, `${labels[i]} 블로그 조회수: ${fmt(v)}`)}
+              onMouseLeave={hideTip}
+              onClick={() => onSelect?.(keyOf(trend[i]))}
+            />
+            <text x={xCenter(i)} y={yPos(v) - 5} fontSize="9.5" fontWeight="700" fill={BLOG_COLOR} textAnchor="middle" pointerEvents="none">
               {fmt(v)}
             </text>
           </g>

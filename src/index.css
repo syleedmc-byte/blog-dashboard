@@ -348,6 +348,28 @@ body {
 .home-section-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 14px; margin: 0 0 16px; padding-left: 14px; border-left: 5px solid var(--accent); }
 .home-section-head.hp { border-left-color: var(--series-views); }
 .home-section-head h2 { margin: 0; font-size: 22px; font-weight: 800; color: var(--ink); }
+/* 블로그 페이지 상단 탭: 통합 통계 / 월별 상세 */
+.view-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 26px; }
+.view-tab { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; text-align: left; padding: 16px 20px; border: 2px solid var(--line); border-radius: 18px; background: var(--card); cursor: pointer; transition: border-color .15s, box-shadow .15s, background .15s; }
+.view-tab:hover { border-color: var(--accent); }
+.view-tab-title { font-size: 17px; font-weight: 800; color: var(--ink); }
+.view-tab-sub { font-size: 12.5px; color: var(--sub); }
+.view-tab.active { border-color: var(--accent); background: linear-gradient(135deg, #6C5CE0, #8574F2); box-shadow: 0 10px 24px rgba(108, 92, 224, 0.3); }
+.view-tab.active .view-tab-title { color: #fff; }
+.view-tab.active .view-tab-sub { color: rgba(255, 255, 255, 0.85); }
+
+/* 월별 상세: 월 선택 카드 + 제목 */
+.month-picker { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+.month-pick { padding: 7px 18px; border: 1.5px solid var(--line); border-radius: 999px; background: var(--card); color: var(--sub); font-size: 14px; font-weight: 700; cursor: pointer; transition: border-color .15s, background .15s, color .15s; }
+.month-pick:hover { border-color: var(--accent); color: var(--accent); }
+.month-pick.active { border-color: var(--accent); background: var(--accent); color: #fff; }
+.month-detail-title { margin: 0 0 22px; }
+.month-detail-title h2 { margin: 0; font-size: 24px; font-weight: 800; color: var(--ink); }
+.month-detail-title p { margin: 6px 0 0; font-size: 13px; color: var(--sub); }
+.month-open-btn { margin-top: 12px; width: 100%; border: none; background: var(--accent); color: #fff; font-size: 13.5px; font-weight: 800; padding: 10px 14px; border-radius: 12px; cursor: pointer; }
+.month-open-btn:hover { filter: brightness(1.08); }
+.ov-post-month { display: block; font-size: 10.5px; font-weight: 600; color: var(--sub); text-align: right; }
+.month-top-list { display: flex; flex-direction: column; }
 .section-block.hp-section { margin-top: 36px; padding-top: 28px; border-top: 2px dashed var(--line); }
 .home-section-period { font-size: 12.5px; color: var(--sub); font-weight: 600; }
 .cumulative-card.icon-teal .cumulative-card-label { color: var(--ink); }
@@ -471,3 +493,5 @@ a.mover-value:hover { color: var(--accent); text-decoration: underline; }
   .kwd-chart-wrap, .kwd-add-row, .kwd-desktop-note { display: none; }
   .bubble-mobile-list { display: block; }
 }
+
+@media (max-width: 700px) { .view-tabs { grid-template-columns: 1fr; }  }

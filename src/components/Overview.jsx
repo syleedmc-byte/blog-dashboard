@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import MonthDetail from './MonthDetail.jsx'
 import Sparkline from './Sparkline.jsx'
 import ViewsBarChart, { BLOG_COLOR } from './ViewsBarChart.jsx'
 import HomepageTrendChart, { PV_COLOR, UV_COLOR } from './HomepageTrendChart.jsx'
@@ -8,11 +10,9 @@ function fmtInt(n) {
 }
 
 /** 블로그 통계 / 홈페이지 통계 메인 페이지(view로 선택). 두 페이지는 사이드바에서 따로 연다.
- *  블로그: 누적 카드 → 월별 조회수 + 주제 비중 → 통계 인사이트 → 인기 게시물 TOP10
+ *  블로그: 누적 카드 → 월별 조회수 + 선택한 달 TOP5 → 통계 인사이트 → 인기 게시물 TOP10
  *  홈페이지: 누적 카드 → 월별 조회수(PV)·활성 사용자(UV) + 유입 채널 → 통계 인사이트
  *  여기서는 숫자를 새로 계산하지 않고 parseExcel.js/homepageGa.js가 만든 결과를 그대로 쓴다. */
-const MIX_COLORS = ['var(--pill-purple)', 'var(--pill-teal)', 'var(--pill-orange)', 'var(--pill-pink)', 'var(--pill-navy)']
-const MIX_ETC_COLOR = 'var(--line)'
 
 function Delta({ pct }) {
   if (pct == null) return null
@@ -23,36 +23,73 @@ function Delta({ pct }) {
   )
 }
 
-function SectionHead({ kind, title, period }) {
+function SectionHead({ kind, title, period, action = null }) {
   return (
     <div className={`home-section-head ${kind}`}>
       <h2>{title}</h2>
       <span className="home-section-period">{period}</span>
+      {action}
     </div>
   )
 }
 
-export default function Overview({ overview, months, trend, homepage = {}, homepageSummary = null, view = 'blog', onSelect }) {
+export default function Overview({ overview, months, trend, homepage = {}, homepageSummary = null, view = 'blog', initialMonthKey = null }) {
+  // 블로그 페이지는 "통합 통계"와 "월별 상세" 두 탭으로 나뉜다. 월별 조회수 막대를 누르면 그 달 TOP5가 오른쪽 카드에 나오고,
+  // 월별 상세 탭에서는 같은 달의 전체 통계를 본다. 예전 월별 주소(#2026-06)로 들어오면 월별 상세 탭이 열린다.
+  const [pickedKey, setPickedKey] = useState(initialMonthKey)
+  const [tab, setTab] = useState(initialMonthKey ? 'month' : 'total')
+  const [hpPickedKey, setHpPickedKey] = useState(null)
   if (!overview || !months || months.length === 0) return null
   const latest = months[months.length - 1]
-  const { topPosts, headline, secondaryInsights, topMover, categoryMix, cumulative } = overview
+  const { topPosts, headline, secondaryInsights, topMover, cumulative } = overview
   const ai = latest.kpi.ai
 
   // 블로그 누적 기간 표시(예: 1월~9월): 같은 연도에서 합산에 쓰인 달
   const yearTrend = (trend ?? []).filter((t) => t.year === cumulative.year)
   const blogPeriod = yearTrend.length > 0 ? `${yearTrend[0].month}월~${yearTrend[yearTrend.length - 1].month}월` : ''
   const chartTrend = trend?.slice(-6) ?? []
+  // 아무 달도 고르지 않았으면 가장 최근 달의 TOP5를 보여준다
+  const activeKey = pickedKey ?? latest.key
+  const pickedMonth = months.find((m) => m.key === activeKey) ?? latest
+  const pickedPosts = (pickedMonth.posts ?? []).filter((p) => Number(p.rank) <= 5)
+  const hasPickedViews = pickedPosts.some((p) => typeof p.views === 'number')
+  const pickMonth = (key) => {
+    if (months.some((m) => m.key === key)) setPickedKey(key)
+  }
+  // 게시물·인사이트·TOP5 카드에서 그 달로 이동: 달을 고르고 월별 상세 탭을 연다
+  const openMonth = (key) => {
+    pickMonth(key)
+    setTab('month')
+    setTimeout(() => document.getElementById('view-tabs')?.scrollIntoView({ behavior: 'smooth' }), 50)
+  }
 
   // 홈페이지(GA): 수치가 있는 가장 최근 달
   const hpKey = Object.keys(homepage).sort().pop()
-  const hpMonthLabel = hpKey ? `${Number(hpKey.slice(5))}월` : null
+  // 홈페이지 그래프에서 달을 누르면 그 달 유입 채널을 보여준다(고르지 않았으면 최근 달)
+  const hpShownKey = hpPickedKey && homepage[hpPickedKey] ? hpPickedKey : hpKey
+  const hpMonthLabel = hpShownKey ? `${Number(hpShownKey.slice(5))}월` : null
 
   return (
     <div className="overview">
       {/* ───────────── 블로그 ───────────── */}
       {view === 'blog' && (
+        <div className="view-tabs" id="view-tabs" role="tablist" aria-label="블로그 통계 보기 방식">
+          <button type="button" role="tab" aria-selected={tab === 'total'} className={`view-tab${tab === 'total' ? ' active' : ''}`} onClick={() => setTab('total')}>
+            <span className="view-tab-title">📊 통합 통계</span>
+            <span className="view-tab-sub">{cumulative.year}년 {blogPeriod} 전체를 한눈에</span>
+          </button>
+          <button type="button" role="tab" aria-selected={tab === 'month'} className={`view-tab${tab === 'month' ? ' active' : ''}`} onClick={() => setTab('month')}>
+            <span className="view-tab-title">📅 월별 상세</span>
+            <span className="view-tab-sub">달을 골라 한 달 치 자세히 보기</span>
+          </button>
+        </div>
+      )}
+
+      {view === 'blog' && tab === 'month' && <MonthDetail month={pickedMonth} months={months} trend={trend} onPick={pickMonth} />}
+
+      {view === 'blog' && tab === 'total' && (
       <section className="home-section">
-        <SectionHead kind="blog" title="블로그" period={`${cumulative.year}년 ${blogPeriod} 누적`} />
+        <SectionHead kind="blog" title="블로그 통합 통계" period={`${cumulative.year}년 ${blogPeriod} 누적`} />
 
         <div className="cumulative-row">
           <div className="stat-card cumulative-card icon-purple">
@@ -97,14 +134,14 @@ export default function Overview({ overview, months, trend, homepage = {}, homep
         <div className="chart-side-grid">
           <div className="card">
             <p className="subcard-title"><span className="accent-dot" />블로그 월별 조회수</p>
-            <p className="section-sub">최근 6개월 블로그 조회수를 월별 막대로 비교합니다</p>
+            <p className="section-sub">최근 6개월 블로그 조회수를 비교합니다. 막대를 누르면 그 달의 인기 게시글 TOP5가 오른쪽에 나오고, 그 달의 전체 통계는 위의 '월별 상세' 탭에서 볼 수 있습니다</p>
             <div className="chart-legend">
               <div className="item">
                 <span className="swatch" style={{ background: BLOG_COLOR }} />
                 블로그 조회수
               </div>
             </div>
-            <ViewsBarChart trend={chartTrend} />
+            <ViewsBarChart trend={chartTrend} selectedKey={activeKey} onSelect={pickMonth} />
           </div>
 
           <div className="side-stack">
@@ -126,39 +163,47 @@ export default function Overview({ overview, months, trend, homepage = {}, homep
               </div>
             )}
 
-            {categoryMix.length > 0 && (
-              <div className="card topic-mix-card">
-                <p className="subcard-title"><span className="accent-dot" />인기글 주제 비중</p>
-                <div className="topic-mix-bar">
-                  {categoryMix.map((m, i) => (
-                    <div
-                      key={m.name}
-                      className="topic-mix-seg"
-                      style={{ width: `${m.pct}%`, background: m.name === '기타' ? MIX_ETC_COLOR : MIX_COLORS[i % MIX_COLORS.length] }}
-                    >
-                      {m.pct >= 8 ? `${m.pct}%` : ''}
-                    </div>
-                  ))}
-                </div>
-                <div className="topic-mix-legend">
-                  {categoryMix.map((m, i) => (
-                    <div className="topic-mix-legend-item" key={m.name}>
-                      <span
-                        className="topic-mix-legend-swatch"
-                        style={{ background: m.name === '기타' ? MIX_ETC_COLOR : MIX_COLORS[i % MIX_COLORS.length] }}
-                      />
-                      {m.name} {m.pct}%
-                    </div>
-                  ))}
-                </div>
-                <p className="topic-mix-caption">※ {latest.label} 기준 카테고리 분류 데이터(버블차트와 동일 기준) 상위 5개 카테고리의 언급 비중입니다.</p>
+            {pickedMonth && (
+              <div className="card month-top-card">
+                <p className="subcard-title"><span className="accent-dot" />{pickedMonth.monthNumber}월 인기 게시글 TOP 5</p>
+                {hasPickedViews ? (
+                  <div className="month-top-list">
+                    {pickedPosts.map((p) => {
+                      const body = (
+                        <>
+                          <div className="ov-post-rank">{p.rank}</div>
+                          <div className="ov-post-title">
+                            {p.title}
+                            {p.url && <span className="link-ico">🔗</span>}
+                          </div>
+                          <div className="ov-post-views">{fmtInt(p.views)}회</div>
+                        </>
+                      )
+                      return p.url ? (
+                        <a className="ov-post-row" key={`${p.rank}-${p.title}`} href={p.url} target="_blank" rel="noopener noreferrer">
+                          {body}
+                        </a>
+                      ) : (
+                        <div className="ov-post-row" key={`${p.rank}-${p.title}`}>
+                          {body}
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <p className="topic-mix-caption">{pickedMonth.monthNumber}월은 게시글별 조회수 데이터가 없어 순위를 표시할 수 없습니다.</p>
+                )}
+                <p className="topic-mix-caption">※ 각 조회수는 {pickedMonth.monthNumber}월 한 달 동안 읽힌 횟수만 센 값입니다. 위 막대에서 다른 달을 누르면 그 달의 TOP 5로 바뀝니다.</p>
+                <button type="button" className="month-open-btn" onClick={() => openMonth(pickedMonth.key)}>
+                  📅 {pickedMonth.monthNumber}월 상세 통계 보기 →
+                </button>
               </div>
             )}
           </div>
         </div>
 
         <div className="headline-banner">
-          <button type="button" className="headline-top-row" onClick={() => onSelect(latest.key)}>
+          <button type="button" className="headline-top-row" onClick={() => openMonth(latest.key)}>
             <div className="headline-left">
               <p className="headline-eyebrow">블로그 통계 인사이트</p>
               <p className="headline-sentence">{headline.sentence}</p>
@@ -188,7 +233,7 @@ export default function Overview({ overview, months, trend, homepage = {}, homep
 
         <div className="section-block">
           <h3 className="section-title">역대 인기 게시물 TOP10</h3>
-          <p className="section-sub">전체 기간 통틀어 가장 많이 읽힌 글 top10입니다 (클릭하면 게시물로 바로 이동합니다)</p>
+          <p className="section-sub">한 달 기준으로 가장 많이 읽힌 글 top10입니다. 조회수는 표시된 달에 읽힌 횟수만 센 값입니다 (클릭하면 게시물로 바로 이동합니다)</p>
           <div className="card">
             <div className="ov-posts-grid">
               {[topPosts.slice(0, 5), topPosts.slice(5, 10)].map((col, colIdx) => (
@@ -202,7 +247,10 @@ export default function Overview({ overview, months, trend, homepage = {}, homep
                           {p.title}
                           {p.url && <span className="link-ico">🔗</span>}
                         </div>
-                        <div className="ov-post-views">{fmtInt(p.views)}회</div>
+                        <div className="ov-post-views">
+                          {fmtInt(p.views)}회
+                          <span className="ov-post-month">{p.monthLabel} 조회수</span>
+                        </div>
                       </>
                     )
                     return p.url ? (
@@ -210,7 +258,7 @@ export default function Overview({ overview, months, trend, homepage = {}, homep
                         {body}
                       </a>
                     ) : (
-                      <button type="button" className="ov-post-row" key={`${p.monthKey}-${p.title}`} onClick={() => onSelect(p.monthKey)}>
+                      <button type="button" className="ov-post-row" key={`${p.monthKey}-${p.title}`} onClick={() => openMonth(p.monthKey)}>
                         {body}
                       </button>
                     )
@@ -264,7 +312,7 @@ export default function Overview({ overview, months, trend, homepage = {}, homep
           <div className="chart-side-grid">
             <div className="card">
               <p className="subcard-title"><span className="accent-dot" style={{ background: PV_COLOR }} />홈페이지 월별 조회수(PV)·활성 사용자(UV)</p>
-              <p className="section-sub">최근 6개월 홈페이지 조회수는 막대, 활성 사용자는 선으로 함께 봅니다</p>
+              <p className="section-sub">최근 6개월 홈페이지 조회수는 막대, 활성 사용자는 선으로 함께 봅니다. 달을 누르면 그 달의 홈페이지 유입 채널이 오른쪽에 나옵니다</p>
               <div className="chart-legend">
                 <div className="item">
                   <span className="swatch" style={{ background: PV_COLOR }} />
@@ -275,13 +323,13 @@ export default function Overview({ overview, months, trend, homepage = {}, homep
                   활성 사용자(UV)
                 </div>
               </div>
-              <HomepageTrendChart homepage={homepage} />
+              <HomepageTrendChart homepage={homepage} selectedKey={hpShownKey} onSelect={setHpPickedKey} />
             </div>
 
             <div className="side-stack">
               <div className="card">
                 <p className="subcard-title"><span className="accent-dot" style={{ background: PV_COLOR }} />{hpMonthLabel} 홈페이지 유입 채널</p>
-                <HomepageChannels ga={homepage[hpKey]} compact />
+                <HomepageChannels ga={homepage[hpShownKey]} compact />
               </div>
             </div>
           </div>

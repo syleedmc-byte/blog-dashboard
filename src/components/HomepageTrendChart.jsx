@@ -16,11 +16,13 @@ const PLOT_H = H - PAD_T - PAD_B
 
 const fmt = (n) => n.toLocaleString('ko-KR')
 
-export default function HomepageTrendChart({ homepage }) {
+// selectedKey('2026-09' 형식)를 주면 그 달 막대를 강조하고, 달을 누르면 onSelect(key)를 호출한다.
+// selectedKey가 없으면 가장 최근 달을 강조한다.
+export default function HomepageTrendChart({ homepage, selectedKey = null, onSelect }) {
   const keys = Object.keys(homepage || {}).sort().slice(-6)
   if (keys.length === 0) return null
 
-  const rows = keys.map((k) => ({ label: `${Number(k.slice(5))}월`, pv: homepage[k].views, uv: homepage[k].users }))
+  const rows = keys.map((k) => ({ key: k, label: `${Number(k.slice(5))}월`, pv: homepage[k].views, uv: homepage[k].users }))
   const maxVal = Math.max(...rows.map((r) => r.pv), ...rows.map((r) => r.uv)) * 1.15
   const slot = PLOT_W / rows.length
   const barW = Math.min(40, slot * 0.5)
@@ -53,12 +55,13 @@ export default function HomepageTrendChart({ homepage }) {
               height={baselineY - yPos(r.pv)}
               rx={4}
               fill={PV_COLOR}
-              opacity={i === last ? 1 : 0.4}
-              style={{ cursor: 'pointer' }}
+              opacity={(selectedKey ? r.key === selectedKey : i === last) ? 1 : 0.4}
+              style={{ cursor: onSelect ? 'pointer' : 'default' }}
               onMouseMove={(e) => showTip(e, `${r.label} 조회수(PV): ${fmt(r.pv)}`)}
               onMouseLeave={hideTip}
+              onClick={() => onSelect?.(r.key)}
             />
-            <text x={xCenter(i)} y={yPos(r.pv) - 5} fontSize="9.5" fontWeight="700" fill="#0E8E7F" textAnchor="middle">
+            <text x={xCenter(i)} y={yPos(r.pv) - 5} fontSize="9.5" fontWeight="700" fill="#0E8E7F" textAnchor="middle" pointerEvents="none">
               {fmt(r.pv)}
             </text>
             <text x={xCenter(i)} y={H - 8} fontSize="10" fill="var(--sub)" textAnchor="middle">
@@ -66,7 +69,23 @@ export default function HomepageTrendChart({ homepage }) {
             </text>
           </g>
         ))}
-        <polyline fill="none" stroke={UV_COLOR} strokeWidth="2.5" points={rows.map((r, i) => `${xCenter(i)},${yPos(r.uv)}`).join(' ')} />
+        {/* 막대가 낮아도 누르기 쉽도록 달 전체 폭을 클릭 영역으로 둔다 */}
+        {onSelect &&
+          rows.map((r, i) => (
+            <rect
+              key={`hit-${r.key}`}
+              x={xCenter(i) - slot / 2}
+              y={PAD_T}
+              width={slot}
+              height={PLOT_H}
+              fill="transparent"
+              style={{ cursor: 'pointer' }}
+              onMouseMove={(e) => showTip(e, `${r.label} 조회수(PV) ${fmt(r.pv)} · 활성 사용자(UV) ${fmt(r.uv)}`)}
+              onMouseLeave={hideTip}
+              onClick={() => onSelect(r.key)}
+            />
+          ))}
+        <polyline fill="none" pointerEvents="none" stroke={UV_COLOR} strokeWidth="2.5" points={rows.map((r, i) => `${xCenter(i)},${yPos(r.uv)}`).join(' ')} />
         {rows.map((r, i) => (
           <g key={`uv-${r.label}`}>
             <circle
@@ -77,8 +96,9 @@ export default function HomepageTrendChart({ homepage }) {
               style={{ cursor: 'pointer' }}
               onMouseMove={(e) => showTip(e, `${r.label} 활성 사용자(UV): ${fmt(r.uv)}`)}
               onMouseLeave={hideTip}
+              onClick={() => onSelect?.(r.key)}
             />
-            <text x={xCenter(i)} y={yPos(r.uv) - 9} fontSize="9.5" fontWeight="700" fill="#9A630F" stroke="#fff" strokeWidth="3" paintOrder="stroke" textAnchor="middle">
+            <text x={xCenter(i)} y={yPos(r.uv) - 9} fontSize="9.5" fontWeight="700" fill="#9A630F" stroke="#fff" strokeWidth="3" paintOrder="stroke" textAnchor="middle" pointerEvents="none">
               {fmt(r.uv)}
             </text>
           </g>
