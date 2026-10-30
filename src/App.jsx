@@ -12,12 +12,16 @@ import CategoryBubbles from './components/CategoryBubbles.jsx'
 import HomepageChannels from './components/HomepageChannels.jsx'
 import { SERIES_VIEWS, SERIES_VISITORS } from './theme.js'
 
+// 홈페이지 통계 페이지는 달이 아니라 별도 페이지라서 해시(#homepage)로 구분한다.
+const HOMEPAGE_KEY = 'homepage'
+
 // URL 해시(#2026-06)로 달을 지정할 수 있게 한다. 경로 방식(/blog-dashboard/2026-06)은 GitHub
 // Pages가 정적 호스팅이라 새로고침 시 404가 나기 쉬운데, 해시는 서버에 요청을 보내지 않으므로
 // 항상 안전하게 동작한다. 해시가 없거나 알 수 없는 값이면 홈(전체 달 개요)을 보여준다.
 function monthKeyFromHash(months) {
   const raw = decodeURIComponent(window.location.hash.replace(/^#\/?/, ''))
   if (!raw) return null
+  if (raw === HOMEPAGE_KEY) return HOMEPAGE_KEY
   return months.find((m) => m.key === raw)?.key ?? null
 }
 
@@ -52,10 +56,17 @@ export default function App() {
         items: [
           {
             key: 'index',
-            label: '블로그·홈페이지 통계',
+            label: '블로그 통계',
             icon: '🏠',
             active: activeKey == null,
             onClick: goHome,
+          },
+          {
+            key: HOMEPAGE_KEY,
+            label: '홈페이지 통계',
+            icon: '🌐',
+            active: activeKey === HOMEPAGE_KEY,
+            onClick: () => selectMonth(HOMEPAGE_KEY),
           },
           ...[...months].reverse().map((m) => ({
             key: m.key,
@@ -97,8 +108,18 @@ export default function App() {
     )
   }
 
-  const pageTitle = active ? `${active.label} 블로그 통계` : '블로그·홈페이지 통계 보고서'
-  const pageSub = active ? '블로그 운영 성과를 한눈에 확인하세요.' : ''
+  const isHomepage = activeKey === HOMEPAGE_KEY
+  const hasMonthHomepage = active ? Boolean(homepage[active.key]) : false
+  const pageTitle = active
+    ? `${active.label} ${hasMonthHomepage ? '블로그·홈페이지 통계' : '블로그 통계'}`
+    : isHomepage
+      ? '홈페이지 통계 보고서'
+      : '블로그 통계 보고서'
+  const pageSub = active
+    ? hasMonthHomepage
+      ? '블로그 운영 성과와 홈페이지(GA4) 유입 현황을 한눈에 확인하세요.'
+      : '블로그 운영 성과를 한눈에 확인하세요.'
+    : ''
 
   return (
     <div className="app-shell">
@@ -111,7 +132,7 @@ export default function App() {
             {pageSub && <p>{pageSub}</p>}
           </div>
           {active && <div className="year-pill">📅 {active.year}.{String(active.monthNumber).padStart(2, '0')}</div>}
-          {!active && (
+          {!active && !isHomepage && (
             <a
               className="naver-badge"
               href="https://blog.naver.com/dmcmedia_official"
@@ -126,18 +147,32 @@ export default function App() {
         </div>
 
         <div className="main-content">
-          <p className="top-note">데이터 출처: {sourceFile} (data/ 폴더에서 자동으로 읽어옵니다)</p>
+          <p className="top-note">
+            {isHomepage
+              ? '데이터 출처: GA4 월별 수치 (data/homepage-ga.json, 직접 입력한 달 기준)'
+              : `데이터 출처: ${sourceFile} (data/ 폴더에서 자동으로 읽어옵니다)`}
+          </p>
 
-        {!active && <Overview overview={overview} months={months} trend={trend} homepage={homepage} homepageSummary={homepageSummary} onSelect={selectMonth} />}
+        {!active && (
+          <Overview
+            overview={overview}
+            months={months}
+            trend={trend}
+            homepage={homepage}
+            homepageSummary={homepageSummary}
+            view={isHomepage ? 'homepage' : 'blog'}
+            onSelect={selectMonth}
+          />
+        )}
 
         {active && (
             <>
               <div className="section-block">
                 <div className="section-head">
                   <span className="badge">01</span>
-                  <h2 className="section-title">주요 현황</h2>
+                  <h2 className="section-title">블로그 주요 현황</h2>
                 </div>
-                <p className="section-sub">주요 지표로 보는 이달의 성과 &nbsp;|&nbsp; {active.period}</p>
+                <p className="section-sub">블로그 주요 지표로 보는 이달의 성과 &nbsp;|&nbsp; {active.period}</p>
                 <KpiCards kpi={active.kpi} />
               </div>
 
@@ -145,7 +180,7 @@ export default function App() {
                 <div>
                   <div className="section-head">
                     <span className="badge">02</span>
-                    <h2 className="section-title">월간 방문 분석</h2>
+                    <h2 className="section-title">블로그 월간 방문 분석</h2>
                   </div>
                   <p className="section-sub">조회수·순방문자수 추이를 확인합니다</p>
                   <div className="card">
@@ -160,7 +195,7 @@ export default function App() {
                 <div>
                   <div className="section-head">
                     <span className="badge">★</span>
-                    <h2 className="section-title">인기 게시글 TOP 10</h2>
+                    <h2 className="section-title">블로그 인기 게시글 TOP 10</h2>
                   </div>
                   <p className="section-sub">이달 가장 많이 읽힌 글입니다</p>
                   <div className="card">
@@ -172,9 +207,9 @@ export default function App() {
               <div className="section-block">
                 <div className="section-head">
                   <span className="badge">03</span>
-                  <h2 className="section-title">사용자 분석</h2>
+                  <h2 className="section-title">블로그 사용자 분석</h2>
                 </div>
-                <p className="section-sub">방문자의 특성과 유입 경로를 확인합니다</p>
+                <p className="section-sub">블로그 방문자의 특성과 유입 경로를 확인합니다</p>
                 <div className="user-grid">
                   <div className="card">
                     <p className="subcard-title"><span className="accent-dot" />유입 경로 분석 TOP 5</p>
@@ -189,12 +224,6 @@ export default function App() {
                     <DeviceDonut device={active.device} />
                   </div>
                 </div>
-                {homepage[active.key] && (
-                  <div className="card hp-card">
-                    <p className="subcard-title"><span className="accent-dot" />홈페이지 유입 채널</p>
-                    <HomepageChannels ga={homepage[active.key]} />
-                  </div>
-                )}
               </div>
 
               <div className="section-block">
@@ -207,6 +236,22 @@ export default function App() {
                   <CategoryBubbles categories={active.categories} people={active.people} misc={active.misc} monthKey={active.key} />
                 </div>
               </div>
+
+              {homepage[active.key] && (
+                <div className="section-block hp-section">
+                  <div className="section-head">
+                    <span className="badge">04</span>
+                    <h2 className="section-title">홈페이지 통계 (GA4)</h2>
+                  </div>
+                  <p className="section-sub">
+                    위의 블로그 통계와 별개로, 디엠씨미디어 홈페이지의 {active.label} 활성 사용자·조회수와 유입 채널입니다
+                  </p>
+                  <div className="card hp-card">
+                    <p className="subcard-title"><span className="accent-dot" />{active.label} 홈페이지 유입 채널</p>
+                    <HomepageChannels ga={homepage[active.key]} />
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>

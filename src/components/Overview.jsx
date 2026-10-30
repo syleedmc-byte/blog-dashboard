@@ -7,7 +7,7 @@ function fmtInt(n) {
   return typeof n === 'number' ? n.toLocaleString('ko-KR') : '-'
 }
 
-/** 메인 화면: 블로그 구역과 홈페이지 구역을 확실히 나눠 보여준다.
+/** 블로그 통계 / 홈페이지 통계 메인 페이지(view로 선택). 두 페이지는 사이드바에서 따로 연다.
  *  블로그: 누적 카드 → 월별 조회수 + 주제 비중 → 통계 인사이트 → 인기 게시물 TOP10
  *  홈페이지: 누적 카드 → 월별 조회수(PV)·활성 사용자(UV) + 유입 채널 → 통계 인사이트
  *  여기서는 숫자를 새로 계산하지 않고 parseExcel.js/homepageGa.js가 만든 결과를 그대로 쓴다. */
@@ -32,7 +32,7 @@ function SectionHead({ kind, title, period }) {
   )
 }
 
-export default function Overview({ overview, months, trend, homepage = {}, homepageSummary = null, onSelect }) {
+export default function Overview({ overview, months, trend, homepage = {}, homepageSummary = null, view = 'blog', onSelect }) {
   if (!overview || !months || months.length === 0) return null
   const latest = months[months.length - 1]
   const { topPosts, headline, secondaryInsights, topMover, categoryMix, cumulative } = overview
@@ -50,6 +50,7 @@ export default function Overview({ overview, months, trend, homepage = {}, homep
   return (
     <div className="overview">
       {/* ───────────── 블로그 ───────────── */}
+      {view === 'blog' && (
       <section className="home-section">
         <SectionHead kind="blog" title="블로그" period={`${cumulative.year}년 ${blogPeriod} 누적`} />
 
@@ -220,9 +221,10 @@ export default function Overview({ overview, months, trend, homepage = {}, homep
           </div>
         </div>
       </section>
+      )}
 
       {/* ───────────── 홈페이지 ───────────── */}
-      {homepageSummary && hpKey && (
+      {view === 'homepage' && homepageSummary && hpKey && (
         <section className="home-section">
           <SectionHead
             kind="hp"
