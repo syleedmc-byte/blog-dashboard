@@ -2859,7 +2859,7 @@
       ],
       "momViewsPct": -31.9,
       "momVisitorsPct": -48.3,
-      "aiCumulative": 36000
+      "aiCumulative": 51000
     },
     "latestKey": "2026-09"
   },
@@ -3136,5 +3136,5 @@
     ]
   },
   "sourceFile": "블로그_월간리포트_로우데이터.xlsx",
-  "updatedAt": "2026-10-30T06:53:37.584Z"
+  "updatedAt": "2026-10-30T08:51:34.953Z"
 }
