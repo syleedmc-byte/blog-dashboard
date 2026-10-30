@@ -4,7 +4,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import XLSX from 'xlsx'
 import { parseWorkbook } from '../src/lib/parseExcel.js'
-import { buildHomepage } from '../src/lib/homepageGa.js'
+import { buildHomepage, summarizeHomepage } from '../src/lib/homepageGa.js'
 
 // 이 스크립트가 하는 일:
 //   1. data/ 폴더(또는 명령줄로 넘긴 경로)에서 엑셀 파일을 찾는다
@@ -73,9 +73,12 @@ function main() {
     built.warnings.forEach((w) => console.warn(`[경고] 홈페이지 GA: ${w}`))
   }
 
+  const homepageSummary = summarizeHomepage(homepage)
+
   const output = {
     ...data,
     homepage,
+    homepageSummary,
     sourceFile: path.basename(excelPath),
     updatedAt: new Date().toISOString(),
   }
@@ -132,6 +135,12 @@ function main() {
     console.log(`[검증용] 급성장 게시물 링크: ${ov.topMover?.url ?? '(링크 없음)'}`)
     console.log(`[검증용] AI 브리핑 인용수 누적: ${formatNumber(ov.cumulative.aiCumulative)} (엑셀에 실제 값 없으면 폴백 36,000이 표시되어야 함)`)
     console.log(`[검증용] 역대 인기게시물 개수: ${ov.topPosts.length}개 (top10 기준)`)
+  }
+
+  if (homepageSummary) {
+    const s = homepageSummary
+    console.log(`\n[검증용] 홈페이지 요약(${s.firstLabel}~${s.lastLabel} ${s.count}개월): 누적 조회수 ${formatNumber(s.totalViews)}, ${s.latest.label} 조회수 ${formatNumber(s.latest.views)}(전월 대비 ${s.momViewsPct ?? '-'}%), 활성 사용자 ${formatNumber(s.latest.users)}(전월 대비 ${s.momUsersPct ?? '-'}%)`)
+    s.insights.forEach((i) => console.log(`    - ${i.title}: ${i.detail} (${i.note})`))
   }
 
   const hpKeys = Object.keys(homepage)

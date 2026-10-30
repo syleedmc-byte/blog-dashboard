@@ -3105,6 +3105,36 @@
       ]
     }
   },
+  "homepageSummary": {
+    "count": 6,
+    "firstLabel": "4월",
+    "lastLabel": "9월",
+    "totalViews": 43271,
+    "latest": {
+      "label": "9월",
+      "views": 5650,
+      "users": 2240
+    },
+    "momViewsPct": -18.5,
+    "momUsersPct": -29.8,
+    "insights": [
+      {
+        "title": "조회수 2개월 연속 감소",
+        "detail": "7월 8,670 → 9월 5,650",
+        "note": "유입이 줄고 있어 원인 점검이 필요합니다"
+      },
+      {
+        "title": "Unassigned 유입 비중 감소",
+        "detail": "14.8% → 2.9% (-11.9%p)",
+        "note": "조회수 기준, 전월 대비 유입 구성이 가장 크게 바뀐 채널"
+      },
+      {
+        "title": "AI Assistant 유입",
+        "detail": "조회수 146건 (2.6%)",
+        "note": "AI 검색·답변을 통해 들어온 방문"
+      }
+    ]
+  },
   "sourceFile": "블로그_월간리포트_로우데이터.xlsx",
-  "updatedAt": "2026-10-29T08:11:30.089Z"
+  "updatedAt": "2026-10-30T05:18:42.286Z"
 }

@@ -22,7 +22,7 @@ function monthKeyFromHash(months) {
 }
 
 export default function App() {
-  const { months, trend, sourceFile, overview, error, homepage = {} } = dashboardData
+  const { months, trend, sourceFile, overview, error, homepage = {}, homepageSummary = null } = dashboardData
   const [activeKey, setActiveKey] = useState(() => monthKeyFromHash(months))
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
@@ -128,7 +128,7 @@ export default function App() {
         <div className="main-content">
           <p className="top-note">데이터 출처: {sourceFile} (data/ 폴더에서 자동으로 읽어옵니다)</p>
 
-        {!active && <Overview overview={overview} months={months} trend={trend} homepage={homepage} onSelect={selectMonth} />}
+        {!active && <Overview overview={overview} months={months} trend={trend} homepage={homepage} homepageSummary={homepageSummary} onSelect={selectMonth} />}
 
         {active && (
             <>
