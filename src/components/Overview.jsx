@@ -9,6 +9,13 @@ function fmtInt(n) {
   return typeof n === 'number' ? n.toLocaleString('ko-KR') : '-'
 }
 
+// 1만 이상은 "5.1만"처럼 만 단위로 줄여 표시(소수 첫째 자리까지, 끝이 .0이면 생략)
+function fmtMan(n) {
+  if (typeof n !== 'number') return '-'
+  if (n < 10000) return n.toLocaleString('ko-KR')
+  return `${Number((n / 10000).toFixed(1))}만`
+}
+
 /** 블로그 통계 / 홈페이지 통계 메인 페이지(view로 선택). 두 페이지는 사이드바에서 따로 연다.
  *  블로그: 누적 카드 → 월별 조회수 + 선택한 달 TOP5 → 통계 인사이트 → 인기 게시물 TOP10
  *  홈페이지: 누적 카드 → 월별 조회수(PV)·활성 사용자(UV) + 유입 채널 → 통계 인사이트
@@ -119,12 +126,12 @@ export default function Overview({ overview, months, trend, homepage = {}, homep
               <>
                 <div className="stat-value">{ai.value}회</div>
                 <div className="ai-sub">
-                  누적 <b>{fmtInt(cumulative.aiCumulative)}회</b>
+                  누적 <b>{fmtMan(cumulative.aiCumulative)}회</b>
                 </div>
               </>
             ) : (
               <>
-                <div className="stat-value">{fmtInt(cumulative.aiCumulative)}회</div>
+                <div className="stat-value">{fmtMan(cumulative.aiCumulative)}회</div>
                 <div className="cumulative-note">블로그 글이 AI 답변에 인용된 누적 횟수</div>
               </>
             )}
