@@ -75,6 +75,13 @@ export default function Overview({ overview, months, trend, homepage = {}, homep
   // 홈페이지 그래프에서 달을 누르면 그 달 유입 채널을 보여준다(고르지 않았으면 최근 달)
   const hpShownKey = hpPickedKey && homepage[hpPickedKey] ? hpPickedKey : hpKey
   const hpMonthLabel = hpShownKey ? `${Number(hpShownKey.slice(5))}월` : null
+  // 위쪽 카드도 선택한 달의 수치(누적이 아니라 그 달 한 달 치)와 직전 달 대비 증감을 보여준다
+  const hpKeys = Object.keys(homepage).sort()
+  const hpGa = hpShownKey ? homepage[hpShownKey] : null
+  const monthIndex = (k) => Number(k.slice(0, 4)) * 12 + Number(k.slice(5))
+  const hpPrevKey = hpShownKey ? hpKeys[hpKeys.indexOf(hpShownKey) - 1] : null
+  const hpPrev = hpPrevKey && monthIndex(hpShownKey) - monthIndex(hpPrevKey) === 1 ? homepage[hpPrevKey] : null
+  const changePct = (cur, prev) => (prev ? Math.round(((cur - prev) / prev) * 1000) / 10 : null)
 
   return (
     <div className="overview">
@@ -284,35 +291,35 @@ export default function Overview({ overview, months, trend, homepage = {}, homep
           <SectionHead
             kind="hp"
             title="홈페이지"
-            period={`${homepageSummary.firstLabel}~${homepageSummary.lastLabel} 누적 (${homepageSummary.count}개월 · 수치를 입력한 달 기준)`}
+            period={`${homepageSummary.firstLabel}~${homepageSummary.lastLabel} · 수치를 입력한 ${homepageSummary.count}개월 (아래 그래프에서 달을 누르면 위 카드와 유입 채널이 그 달로 바뀝니다)`}
           />
 
           <div className="cumulative-row">
             <div className="stat-card cumulative-card icon-teal">
               <div className="cumulative-card-head">
                 <div className="stat-icon">🌐</div>
-                <div className="cumulative-card-label">{hpKey.slice(0, 4)}년 홈페이지 누적 조회수(PV)</div>
+                <div className="cumulative-card-label">홈페이지 {hpMonthLabel} 조회수(PV)</div>
               </div>
-              <div className="stat-value">{fmtInt(homepageSummary.totalViews)}건</div>
-              <div className="cumulative-note">{homepageSummary.latest.label} 조회수 {fmtInt(homepageSummary.latest.views)}건</div>
-              <Delta pct={homepageSummary.momViewsPct} />
+              <div className="stat-value">{fmtInt(hpGa.views)}건</div>
+              <div className="cumulative-note">{hpMonthLabel} 한 달 동안의 홈페이지 조회수</div>
+              {hpPrev && <Delta pct={changePct(hpGa.views, hpPrev.views)} />}
             </div>
             <div className="stat-card cumulative-card icon-teal">
               <div className="cumulative-card-head">
                 <div className="stat-icon">🧑‍💻</div>
-                <div className="cumulative-card-label">홈페이지 {homepageSummary.latest.label} 활성 사용자(UV)</div>
+                <div className="cumulative-card-label">홈페이지 {hpMonthLabel} 활성 사용자(UV)</div>
               </div>
-              <div className="stat-value">{fmtInt(homepageSummary.latest.users)}명</div>
+              <div className="stat-value">{fmtInt(hpGa.users)}명</div>
               <div className="cumulative-note">GA4 활성 사용자(월 단위)</div>
-              <Delta pct={homepageSummary.momUsersPct} />
+              {hpPrev && <Delta pct={changePct(hpGa.users, hpPrev.users)} />}
             </div>
             <div className="stat-card cumulative-card icon-teal">
               <div className="cumulative-card-head">
                 <div className="stat-icon">🧭</div>
-                <div className="cumulative-card-label">홈페이지 {homepageSummary.latest.label} 주요 유입</div>
+                <div className="cumulative-card-label">홈페이지 {hpMonthLabel} 주요 유입</div>
               </div>
-              <div className="stat-value">{homepage[hpKey].channels[0].name}</div>
-              <div className="cumulative-note">조회수의 {homepage[hpKey].channels[0].pct}%</div>
+              <div className="stat-value">{hpGa.channels[0].name}</div>
+              <div className="cumulative-note">조회수의 {hpGa.channels[0].pct}%</div>
             </div>
           </div>
 
