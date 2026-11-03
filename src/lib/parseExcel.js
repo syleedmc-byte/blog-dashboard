@@ -17,8 +17,15 @@ function extractMonthNumber(sheetName, re) {
   return m ? parseInt(m[1], 10) : null
 }
 
+// 시트의 사용 범위가 A열/1행이 아닌 곳에서 시작해도(예: B1:N28) 격자의 (0,0)이 항상 A1이 되도록 맞춘다.
+// 그래야 grid 좌표가 실제 셀 주소와 같아서, 제목 셀의 하이퍼링크(sheet['I4'].l)를 정확히 찾는다.
 function sheetToGrid(sheet) {
-  return XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true, defval: null })
+  const ref = sheet['!ref']
+  if (!ref) return []
+  const range = XLSX.utils.decode_range(ref)
+  range.s.r = 0
+  range.s.c = 0
+  return XLSX.utils.sheet_to_json(sheet, { header: 1, raw: true, defval: null, range })
 }
 
 function cell(grid, r, c) {
@@ -126,6 +133,14 @@ function parseDevice(grid) {
   return device
 }
 
+// 네이버 블로그 통계 페이지 링크(blog.stat.naver.com/blog/article/글번호/cv, 로그인해야 열림)를
+// 누구나 열 수 있는 글 주소로 바꾼다. 이미 일반 글 주소이면 그대로 둔다.
+const BLOG_ID = 'dmcmedia_official'
+function publicPostUrl(target) {
+  const m = typeof target === 'string' ? target.match(/blog\.stat\.naver\.com\/blog\/article\/(\d+)/) : null
+  return m ? `https://blog.naver.com/${BLOG_ID}/${m[1]}` : target
+}
+
 /**
  * "인기게시물 Top 10" 표: 순위 열은 제목 열 바로 왼쪽, 조회수 열은 헤더 행에서
  * "조회수" 텍스트로 찾는다 (달마다 조회수 열의 유무/위치가 다름). 제목 셀에
@@ -151,6 +166,12 @@ function parsePosts(sheet, grid) {
     }
   }
 
+  // 조회수 헤더가 없는데(인기게시물 헤더가 제목·조회수 칸을 합쳐서 덮은 시트) 제목 바로 오른쪽 칸에 숫자가
+  // 들어 있으면 그 칸을 조회수 열로 본다. 4월처럼 조회수 열 자체가 없으면 그 칸이 비어 있어 null이다.
+  if (viewsCol == null && typeof cell(grid, header.row + 1, titleCol + 1) === 'number') {
+    viewsCol = titleCol + 1
+  }
+
   const posts = []
   for (let r = header.row + 1; r < header.row + 1 + 40; r++) {
     const rank = cell(grid, r, rankCol)
@@ -161,7 +182,7 @@ function parsePosts(sheet, grid) {
       rank: Number(rank),
       title,
       views: viewsCol != null ? cell(grid, r, viewsCol) : null,
-      url: titleCell && titleCell.l ? titleCell.l.Target : null,
+      url: titleCell && titleCell.l ? publicPostUrl(titleCell.l.Target) : null,
     })
   }
   return posts
