@@ -76,5 +76,19 @@
       { "name": "Organic Social", "users": 26, "views": 79 },
       { "name": "Organic Shopping", "users": 19, "views": 23 }
     ]
+  },
+  "2026-10": {
+    "users": 2429,
+    "views": 5787,
+    "channels": [
+      { "name": "Direct", "users": 1559, "views": 2648 },
+      { "name": "Organic Search", "users": 550, "views": 2179 },
+      { "name": "Referral", "users": 159, "views": 497 },
+      { "name": "Unassigned", "users": 85, "views": 150 },
+      { "name": "Organic Social", "users": 43, "views": 200 },
+      { "name": "AI Assistant", "users": 34, "views": 93 },
+      { "name": "Organic Shopping", "users": 15, "views": 19 },
+      { "name": "Paid Search", "users": 1, "views": 1 }
+    ]
   }
 }

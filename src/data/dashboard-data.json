@@ -3524,38 +3524,80 @@
           "pct": 1.8
         }
       ]
+    },
+    "2026-10": {
+      "users": 2429,
+      "views": 5787,
+      "channels": [
+        {
+          "name": "Direct",
+          "users": 1559,
+          "views": 2648,
+          "pct": 45.8
+        },
+        {
+          "name": "Organic Search",
+          "users": 550,
+          "views": 2179,
+          "pct": 37.7
+        },
+        {
+          "name": "Referral",
+          "users": 159,
+          "views": 497,
+          "pct": 8.6
+        },
+        {
+          "name": "Organic Social",
+          "users": 43,
+          "views": 200,
+          "pct": 3.5
+        },
+        {
+          "name": "AI Assistant",
+          "users": 34,
+          "views": 93,
+          "pct": 1.6
+        },
+        {
+          "name": "기타",
+          "users": 101,
+          "views": 170,
+          "pct": 2.9
+        }
+      ]
     }
   },
   "homepageSummary": {
-    "count": 6,
+    "count": 7,
     "firstLabel": "4월",
-    "lastLabel": "9월",
-    "totalViews": 43271,
+    "lastLabel": "10월",
+    "totalViews": 49058,
     "latest": {
-      "label": "9월",
-      "views": 5650,
-      "users": 2240
+      "label": "10월",
+      "views": 5787,
+      "users": 2429
     },
-    "momViewsPct": -18.5,
-    "momUsersPct": -29.8,
+    "momViewsPct": 2.4,
+    "momUsersPct": 8.4,
     "insights": [
       {
-        "title": "조회수 2개월 연속 감소",
-        "detail": "7월 8,670 → 9월 5,650",
-        "note": "유입이 줄고 있어 원인 점검이 필요합니다"
+        "title": "조회수 전월 대비 2.4% 증가",
+        "detail": "9월 5,650 → 10월 5,787",
+        "note": "직전 달보다 늘었습니다"
       },
       {
-        "title": "Unassigned 유입 비중 감소",
-        "detail": "14.8% → 2.9% (-11.9%p)",
+        "title": "Direct 유입 비중 증가",
+        "detail": "41.5% → 45.8% (+4.3%p)",
         "note": "조회수 기준, 전월 대비 유입 구성이 가장 크게 바뀐 채널"
       },
       {
         "title": "AI Assistant 유입",
-        "detail": "조회수 146건 (2.6%)",
+        "detail": "조회수 93건 (1.6%)",
         "note": "AI 검색·답변을 통해 들어온 방문"
       }
     ]
   },
   "sourceFile": "블로그_월간리포트_로우데이터.xlsx",
-  "updatedAt": "2026-11-03T01:01:22.882Z"
+  "updatedAt": "2026-11-03T01:20:12.254Z"
 }
