@@ -19,7 +19,7 @@ const fmt = (n) => n.toLocaleString('ko-KR')
 // selectedKey('2026-09' 형식)를 주면 그 달 막대를 강조하고, 달을 누르면 onSelect(key)를 호출한다.
 // selectedKey가 없으면 가장 최근 달을 강조한다.
 export default function HomepageTrendChart({ homepage, selectedKey = null, onSelect }) {
-  const keys = Object.keys(homepage || {}).sort().slice(-6)
+  const keys = Object.keys(homepage || {}).sort().slice(-12)
   if (keys.length === 0) return null
 
   const rows = keys.map((k) => ({ key: k, label: `${Number(k.slice(5))}월`, pv: homepage[k].views, uv: homepage[k].users }))

@@ -323,10 +323,26 @@ export default function Overview({ overview, months, trend, homepage = {}, homep
             </div>
           </div>
 
+          {/* 월 선택: 누르면 위 카드와 아래 그래프·유입 채널이 그 달로 바뀐다 (막대를 눌러도 같은 동작) */}
+          <div className="month-picker" role="tablist" aria-label="홈페이지 통계 월 선택">
+            {hpKeys.slice(-12).map((k) => (
+              <button
+                key={k}
+                type="button"
+                role="tab"
+                aria-selected={k === hpShownKey}
+                className={`month-pick${k === hpShownKey ? ' active' : ''}`}
+                onClick={() => setHpPickedKey(k)}
+              >
+                {Number(k.slice(5))}월
+              </button>
+            ))}
+          </div>
+
           <div className="chart-side-grid">
             <div className="card">
               <p className="subcard-title"><span className="accent-dot" style={{ background: PV_COLOR }} />홈페이지 월별 조회수(PV)·활성 사용자(UV)</p>
-              <p className="section-sub">최근 6개월 홈페이지 조회수는 막대, 활성 사용자는 선으로 함께 봅니다. 달을 누르면 그 달의 홈페이지 유입 채널이 오른쪽에 나옵니다</p>
+              <p className="section-sub">홈페이지 조회수는 막대, 활성 사용자는 선으로 함께 봅니다. 위의 월 버튼이나 막대를 누르면 그 달의 수치와 유입 채널이 나옵니다</p>
               <div className="chart-legend">
                 <div className="item">
                   <span className="swatch" style={{ background: PV_COLOR }} />
